@@ -1,0 +1,88 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Aufbau eines Rechners und Betriebssystem}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Fast alle heutigen Rechner sind nach der \textbf{Von-Neumann-Architektur} (1945) aufgebaut. Ihre zentrale Idee: Programme und Daten liegen im \emph{selben} Speicher. Dadurch ist ein Rechner nicht mehr für eine Aufgabe fest verdrahtet, sondern kann jedes Programm ausführen, das man in den Speicher lädt.
+
+Die \enquote{blanke} Hardware kann nur sehr einfache Dinge: Speicherinhalte in Register laden, Registerinhalte verknüpfen und Geräte ansprechen. Die Lücke bis zum Anwender schließt das \textbf{Betriebssystem}. Es verwaltet die Betriebsmittel (Rechenzeit, Hauptspeicher, Plattenplatz, Geräte) und stellt den Programmen Dienste zur Verfügung.
+
+\begin{merke}
+\textbf{Die vier Komponenten des Von-Neumann-Rechners}, verbunden durch ein Bus-System (Adressen, Daten, Steuerinformation):
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{Rechenwerk} (ALU): führt Rechenoperationen und logische Verknüpfungen aus.
+\item \textbf{Steuerwerk} (Control Unit): interpretiert die Befehle und steuert ihre Abfolge.
+\item \textbf{Speicherwerk} (Memory): enthält Programme \emph{und} Daten.
+\item \textbf{Ein-/Ausgabewerk} (I/O): Verbindung zur Außenwelt.
+\end{itemize}
+Rechenwerk und Steuerwerk bilden zusammen die CPU.
+
+\smallskip
+\textbf{Schichtenmodell:} Hardware -- Firmware -- Betriebssystem -- grafische Oberfläche -- Anwendungsprogramme. Jede Schicht nutzt die Dienste der Schicht darunter.
+
+\smallskip
+\textbf{Zentrale Aufgaben des Betriebssystems:} Prozesse verwalten, Speicher verwalten, Dateien verwalten.
+\end{merke}
+
+\beispiele
+\beispiel{Zwei Zahlen addieren}
+Die Zahlen stehen in den Speicherzellen 4 und 5. Der Rechner führt nacheinander zwei Befehle aus:
+\begin{center}
+\begin{tabular}{@{}lL{11.5cm}@{}}
+\toprule
+\textbf{Befehl} & \textbf{Was passiert?} \\
+\midrule
+\code{Load <4>} & Das Steuerwerk legt die Adresse 4 auf die Adressleitung, meldet dem Speicher \enquote{Lesen} und dem Rechenwerk \enquote{Schreiben in das erste Operanden-Register}. \\
+\code{Add <5>} & Die Adresse 5 wird angelegt, der Speicher liest. Das Rechenwerk schreibt den Wert in das zweite Operanden-Register und führt als Verknüpfung die Addition aus. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\beispiel{Der Flaschenhals}
+Jeder Befehl und jedes Datum muss über den Bus zwischen Speicher und CPU transportiert werden. Weil die Taktraten der Prozessoren schneller gestiegen sind als die Geschwindigkeit der Speicher, bremst der Speicherzugriff den Rechner aus. Man spricht vom \emph{Von-Neumann-Flaschenhals}.
+
+\beispiel{Prozesse}
+Auf einem Rechner laufen scheinbar gleichzeitig ein Browser, ein Musikprogramm und eine Entwicklungsumgebung. Jedes laufende Programm ist ein \textbf{Prozess} mit eigenem, geschütztem Speicherbereich. Das Betriebssystem teilt den Prozessen abwechselnd Rechenzeit zu (quasi-parallele Ausführung). Reicht der Hauptspeicher nicht, lagert es Teile auf die Festplatte aus (virtueller Speicher), was deutlich langsamer ist.
+
+\aufgaben
+\aufgabe{Von-Neumann-Architektur}
+\begin{enumerate}[label=\alph*)]
+\item Skizzieren Sie den Aufbau eines Von-Neumann-Rechners und beschreiben Sie die Aufgabe jeder Komponente in einem Satz.
+\item Was war an der Idee, Programme und Daten im selben Speicher abzulegen, so bedeutend?
+\item Beschreiben Sie Schritt für Schritt, was bei den Befehlen \code{Load <7>} und \code{Add <2>} auf Adress- und Steuerleitungen geschieht.
+\end{enumerate}
+
+\aufgabe{Speicher}
+\begin{enumerate}[label=\alph*)]
+\item Worin unterscheiden sich Arbeitsspeicher und Festplatte (bzw. SSD)? Nennen Sie zwei Kenngrößen, mit denen man Speicher beschreibt.
+\item Erklären Sie den Begriff \enquote{Flaschenhals} im Zusammenhang mit der Von-Neumann-Architektur.
+\end{enumerate}
+
+\aufgabe{Betriebssystem}
+\begin{enumerate}[label=\alph*)]
+\item Bringen Sie die Schichten in die richtige Reihenfolge von hardwarenah nach anwendungsnah: Betriebssystem, Anwendungsprogramme, Firmware, Hardware, grafische Oberfläche.
+\item Nennen Sie die drei zentralen Aufgaben eines Betriebssystems und geben Sie zu jeder ein Beispiel.
+\item Was ist ein Prozess? Warum muss der Speicherbereich eines Prozesses vor anderen Prozessen geschützt werden?
+\end{enumerate}
+
+\ueben
+\aufgabe{Zuordnen}
+Zu welcher Komponente des Von-Neumann-Rechners gehören die folgenden Bauteile bzw. Aufgaben? \\[1mm]
+Tastatur \quad Arbeitsspeicher \quad Addition zweier Zahlen \quad Bildschirm \quad Entschlüsseln des nächsten Befehls \quad Netzwerkkarte \quad Vergleich zweier Zahlen
+
+\aufgabe{Befehle ausführen}
+In der Speicherzelle 1 steht der Wert 7, in der Speicherzelle 2 der Wert 5. Welche Werte stehen nach der Befehlsfolge \code{Load <1>}, \code{Add <2>} im ersten und im zweiten Operanden-Register, und welches Ergebnis liefert das Rechenwerk?
+
+\aufgabe{Wahr oder falsch?}
+Entscheiden Sie und begründen Sie kurz.
+\begin{enumerate}[label=\alph*)]
+\item Im Von-Neumann-Rechner gibt es getrennte Speicher für Programme und Daten.
+\item Der Inhalt des Arbeitsspeichers geht beim Ausschalten verloren.
+\item Das Steuerwerk führt die Rechenoperationen aus.
+\item Ein Programm, das zweimal gestartet wird, läuft als zwei Prozesse.
+\item Virtueller Speicher macht einen Rechner schneller.
+\item Die Firmware liegt im Schichtenmodell zwischen Hardware und Betriebssystem.
+\end{enumerate}
+
+\aufgabe{Begriffe erklären}
+Erklären Sie jeden Begriff in einem Satz: flüchtiger Speicher, Bus-System, Betriebsmittel, Prozess, Dateisystem.

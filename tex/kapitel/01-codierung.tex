@@ -1,0 +1,113 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Information, Bits und Bytes}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Informatik ist die Wissenschaft von der systematischen, automatischen Verarbeitung von Informationen. Ein Rechner kennt aber keine \enquote{Informationen}, sondern nur \textbf{Daten}: Folgen von Nullen und Einsen. Informationen aus der realen Welt müssen deshalb als Daten \emph{repräsentiert} (codiert) werden. Erst durch die \emph{Interpretation} werden aus Daten wieder Informationen. Dieselbe Bitfolge kann je nach Zusammenhang eine Zahl, ein Buchstabe oder ein Teil eines Bildes sein.
+
+Die kleinste Einheit ist das \textbf{Bit}. Es beantwortet eine Frage mit genau zwei möglichen Antworten (0 oder 1, aus oder an). Mit jedem weiteren Bit verdoppelt sich die Anzahl der darstellbaren Zustände.
+
+\begin{merke}
+\begin{itemize}[itemsep=0.1em]
+\item $n$ Bits können $2^n$ verschiedene Zustände darstellen.
+\item Für $k$ Zustände braucht man das kleinste $n$ mit $2^n \geq k$.
+\item 1 Byte = 8 Bit, \ 2 Byte = 1 Wort, \ 4 Byte = 1 Doppelwort.
+\item Speichergrößen werden in der Vorlesung als Zweierpotenzen gerechnet: \\
+1 KB $= 2^{10}$ Byte $= 1024$ Byte, \ 1 MB $= 2^{20}$ Byte, \ 1 GB $= 2^{30}$ Byte, \ 1 TB $= 2^{40}$ Byte.
+\end{itemize}
+\end{merke}
+
+\beispiele
+\beispiel{Zustände zählen}
+Eine Lichtorgel mit 3 Lampen kennt die Zustände 000, 001, 010, 011, 100, 101, 110 und 111, also $2^3 = 8$ Zustände. Mit 10 Lampen sind es bereits $2^{10} = 1024$.
+
+\beispiel{Wie viele Bits braucht man?}
+Für die 12 Monate eines Jahres reichen 3 Bit nicht ($2^3 = 8 < 12$), 4 Bit genügen ($2^4 = 16 \geq 12$). Für 1000 verschiedene Kundennummern braucht man 10 Bit, denn $2^9 = 512 < 1000 \leq 1024 = 2^{10}$.
+
+\beispiel{Speichergrößen als Zweierpotenz}
+Ein Arbeitsspeicher von 4 GB hat $4 \cdot 2^{30} = 2^2 \cdot 2^{30} = 2^{32}$ Byte. Da ein Byte aus $8 = 2^3$ Bit besteht, sind das $2^{32} \cdot 2^3 = 2^{35}$ Bit. Beim Multiplizieren von Potenzen mit gleicher Basis werden die Exponenten addiert.
+
+\beispiel{Interpretation}
+Das Byte $0100\,0001$ bedeutet als Dualzahl gelesen 65, als ASCII-Zeichen gelesen den Buchstaben \code{A} (siehe Kapitel~\ref{sec:zeichen}). Welche Bedeutung gemeint ist, steht nicht in den Daten selbst, sondern ergibt sich aus dem Programm, das sie verarbeitet.
+
+\aufgaben
+\aufgabe{Lichtorgel}
+\begin{enumerate}[label=\alph*)]
+\item Wie viele Zustände kann eine Lichtorgel mit 5 Lampen annehmen? Wie viele sind es allgemein bei $n$ Lampen?
+\item Wie viele Lampen braucht man mindestens für 4094 Zustände? Wie viele für 100\,000 Zustände?
+\item Eine Lampe wird durch eine Lampe mit \emph{drei} Helligkeitsstufen (aus, halb, voll) ersetzt. Wie viele Zustände hat eine Lichtorgel aus 4 solchen Lampen?
+\end{enumerate}
+
+\aufgabe{Bits sparen}
+Wie viele Bit braucht man jeweils mindestens? Begründen Sie kurz.
+\begin{multicols}{2}
+\begin{enumerate}[label=\alph*)]
+\item die sieben Wochentage
+\item die Buchstaben A bis Z
+\item das Ergebnis eines Würfels
+\item die Ergebnisse zweier Würfel (einzeln)
+\item die Augensumme zweier Würfel
+\item alle Postleitzahlen von 00000 bis 99999
+\end{enumerate}
+\end{multicols}
+
+\aufgabe[\K]{Speichergrößen}
+\begin{enumerate}[label=\alph*)]
+\item Auf einem Speichermedium steht die Angabe \enquote{8 Megabyte}. Geben Sie das Speichervolumen als Zweierpotenz an (in Byte und in Bit).
+\item Geben Sie ebenso 512 KB und 16 GB als Zweierpotenz in Byte an.
+\item Wie viele Dateien von je 4 KB passen auf ein Speichermedium mit 2 GB?
+\end{enumerate}
+
+\aufgabe{Die CD}
+Eine CD fasst 650 MB. Aus wie vielen Bits besteht ihr Inhalt? Wie viele CDs mit unterschiedlichem Inhalt (auf Bitebene betrachtet) lassen sich theoretisch herstellen?
+
+\aufgabe[\S]{Bilder und Töne}
+\begin{enumerate}[label=\alph*)]
+\item Ein Bild mit $1920 \times 1080$ Pixeln wird unkomprimiert in True Color (je 8 Bit für Rot, Grün und Blau) gespeichert. Wie viele Farben kann ein Pixel annehmen, und wie viel Speicher (in MB) belegt das Bild?
+\item Auf einer Audio-CD wird das Signal 44\,100-mal pro Sekunde mit 16 Bit abgetastet, und zwar für zwei Kanäle (Stereo). Wie viel Speicher belegt eine Minute Musik?
+\item Warum sind Bild- und Musikdateien in der Praxis meist viel kleiner? Nennen Sie den Unterschied zwischen verlustfreier und verlustbehafteter Komprimierung und je ein Dateiformat.
+\end{enumerate}
+
+\ueben
+\aufgabe{Zweierpotenzen}
+Die Zweierpotenzen bis $2^{10}$ sollte man auswendig kennen. Ergänzen Sie ohne Taschenrechner: \\[1mm]
+$2^5 = $ \luecke[1.2cm] \quad $2^8 = $ \luecke[1.2cm] \quad $2^{10} = $ \luecke[1.2cm] \quad $2^{12} = $ \luecke[1.2cm] \quad $2^{16} = $ \luecke[1.5cm] \quad $2^{\,\square} = 128$ \quad $2^{\,\square} = 2048$
+
+\aufgabe{Wie viele Bit?}
+Wie viele Bit braucht man jeweils mindestens?
+\begin{multicols}{2}
+\begin{enumerate}[label=\alph*)]
+\item die Tage eines Jahres (365)
+\item die Felder eines Schachbretts
+\item die Minuten eines Tages
+\item die drei Farben einer Ampel
+\item 1000 Sitzplätze eines Kinos
+\item die Ziffern 0 bis 9
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Wie viele Zustände?}
+Wie viele verschiedene Werte lassen sich darstellen?
+\begin{multicols}{2}
+\begin{enumerate}[label=\alph*)]
+\item mit einem Byte
+\item mit 12 Bit
+\item mit einem Wort (2 Byte)
+\item mit einer Seriennummer aus 4 Hexadezimalziffern
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Einheiten umrechnen}
+\begin{multicols}{2}
+\begin{enumerate}[label=\alph*)]
+\item 3 KB in Byte
+\item 4096 Byte in KB
+\item $2^{25}$ Byte in MB
+\item 1 TB in GB
+\item 64 Bit in Byte
+\item 512 MB als Zweierpotenz in Byte
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Fotos}
+Eine Kamera nimmt Bilder mit 12 Millionen Pixeln und 24 Bit pro Pixel auf. Wie viel Speicher (in MB) belegt ein unkomprimiertes Bild? Wie viele solcher Bilder passen auf eine Speicherkarte mit 32 GB?

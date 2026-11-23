@@ -1,0 +1,271 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Objektorientierung I: Klassen und Objekte}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Die objektorientierte Programmierung denkt nicht in Haupt- und Unterprogrammen, sondern in \textbf{Objekten}, wie sie auch in der realen Welt vorkommen: ein Konto, ein Kunde, eine Prüfung. Ein Objekt hat Eigenschaften (\textbf{Attribute}) und ein Verhalten (\textbf{Methoden}). Eine \textbf{Klasse} ist der Bauplan für gleichartige Objekte; sie legt fest, welche Attribute und Methoden diese besitzen. Aus einer Klasse lassen sich beliebig viele Objekte (\textbf{Instanzen}) erzeugen.
+
+Die Daten eines Objekts sind seine \enquote{Privatsache}: Von außen greift man nicht direkt auf die Attribute zu, sondern nur über Methoden (\textbf{Kapselung}, Information Hiding). So kann das Objekt selbst dafür sorgen, dass seine Daten gültig bleiben, und die interne Darstellung lässt sich später ändern, ohne dass andere Programmteile betroffen sind.
+
+Zum Entwerfen zeichnet man \textbf{UML-Klassendiagramme}: ein Rechteck pro Klasse mit drei Bereichen für Name, Attribute und Methoden.
+
+\begin{merke}
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{Erzeugen:} \code{Konto k = new Konto(4711);} \ -- \code{new} legt das Objekt im Heap an, die Variable enthält nur eine \textbf{Referenz}. Eine Referenz ohne Objekt hat den Wert \code{null}.
+\item \textbf{Zugriff} mit dem Punkt: \code{k.einzahlen(100);}
+\item \textbf{Sichtbarkeit:} \code{private} (nur in der eigenen Klasse, UML \code{-}), \code{public} (überall, UML \code{+}). Regel: Attribute sind \code{private}, der Zugriff erfolgt über \code{get}- und \code{set}-Methoden.
+\item \textbf{Konstruktor:} heißt wie die Klasse, hat keinen Rückgabetyp und wird bei \code{new} aufgerufen. Konstruktoren können überladen werden. Gibt es keinen, erzeugt der Compiler einen parameterlosen Standardkonstruktor.
+\item \code{this} ist die Referenz auf das eigene Objekt, z.\,B. \code{this.saldo = saldo;}, wenn ein Parameter genauso heißt wie das Attribut.
+\item \textbf{static:} Klassenvariablen und Klassenmethoden gehören zur Klasse, nicht zu einem einzelnen Objekt. Eine Klassenvariable existiert nur einmal für alle Objekte. Klassenmethoden können nicht auf Instanzvariablen zugreifen.
+\item Attribute werden automatisch vorbelegt (Zahlen mit 0, Referenzen mit \code{null}), lokale Variablen nicht.
+\item \code{==} vergleicht bei Objekten nur die Referenzen, nicht die Inhalte.
+\end{itemize}
+\end{merke}
+
+\beispiele
+\beispiel{Eine Klasse in UML und in Java}
+\begin{center}
+\begin{tikzpicture}
+\node[klasse] (konto) {\textbf{Konto}
+	\nodepart{two} - kontoNr : int \\ - saldo : double \\ - \underline{maxKontoNr : int}
+	\nodepart{three} + Konto() \\ + Konto(saldo : double) \\ + getKontoNr() : int \\ + getSaldo() : double \\ + einzahlen(betrag : double) \\ + auszahlen(betrag : double) \\ + toString() : String};
+\node[right=8mm of konto, align=left, font=\small, text width=7.5cm] {Oben steht der Name der Klasse, in der Mitte stehen die Attribute, unten die Methoden. \\[1mm] \code{-} bedeutet \code{private}, \code{+} bedeutet \code{public}. \\[1mm] Unterstrichene Einträge sind statisch.};
+\end{tikzpicture}
+\end{center}
+\begin{javacode}{Konto.java}
+public class Konto {
+	private int kontoNr;
+	private double saldo;
+	private static int maxKontoNr = 10000;
+
+	public Konto() {
+		this(0);                    // ruft den anderen Konstruktor auf
+	}
+
+	public Konto(double saldo) {
+		this.kontoNr = maxKontoNr++;        // eindeutige Nummer
+		this.saldo = saldo;
+	}
+
+	public int getKontoNr() { return kontoNr; }
+
+	public double getSaldo() { return saldo; }
+
+	public void einzahlen(double betrag) {
+		saldo += betrag;
+	}
+
+	public void auszahlen(double betrag) {
+		if (betrag <= saldo) {
+			saldo -= betrag;
+		}
+	}
+
+	public String toString() {
+		return "Konto " + kontoNr + ": " + saldo;
+	}
+}
+\end{javacode}
+Drei Dinge sind hier typisch für Klausuraufgaben:
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{Eindeutige, aufsteigende Nummern} vergibt man mit einer Klassenvariablen, die im Konstruktor hochgezählt wird.
+\item Die Kontonummer wird \textbf{bei der Erzeugung festgelegt und darf danach nicht mehr verändert werden}: Es gibt eine \code{get}-Methode, aber keine \code{set}-Methode.
+\item \code{toString()} liefert eine Textdarstellung des Objekts. Java ruft diese Methode automatisch auf, wenn ein Objekt ausgegeben oder mit \code{+} an einen Text gehängt wird.
+\end{itemize}
+
+\beispiel{Objekte benutzen}
+\begin{javacode}[Ausschnitt]{KontoTest}
+Konto k1 = new Konto(500);
+Konto k2 = new Konto();
+Konto k3 = k1;                      // k3 zeigt auf dasselbe Objekt wie k1
+
+k3.einzahlen(100);
+k2.auszahlen(50);                   // nicht gedeckt, es passiert nichts
+
+System.out.println(k1);             // Konto 10000: 600.0
+System.out.println(k2);             // Konto 10001: 0.0
+System.out.println(k1 == k3);       // true  (dieselbe Referenz)
+System.out.println(k1 == k2);       // false
+\end{javacode}
+
+\beispiel{Objekte in einem Array verwalten}
+Eine Bank verwaltet höchstens 100 Konten. Das Array hat eine feste Größe, deshalb merkt sich ein Zähler, wie viele Plätze schon belegt sind.
+\begin{javacode}{Bank.java}
+public class Bank {
+	private Konto[] konten = new Konto[100];    // max. 100 Konten
+	private int anzahl = 0;
+
+	public void kontoHinzufuegen(Konto k) {
+		if (anzahl < konten.length) {
+			konten[anzahl++] = k;
+		} else {
+			System.out.println("Fehler: Die Bank ist voll.");
+		}
+	}
+
+	public void alleAusgeben() {
+		for (int i = 0; i < anzahl; i++) {
+			System.out.println(konten[i]);      // ruft toString() auf
+		}
+	}
+}
+\end{javacode}
+Im UML-Diagramm zeichnet man dafür eine \textbf{Assoziation}, eine Linie zwischen \code{Bank} und \code{Konto}, und schreibt an das Ende bei \code{Konto} die \textbf{Multiplizität} \code{0..100} (allgemein: \code{1} genau eins, \code{*} beliebig viele, \code{x..y} von x bis y).
+
+\aufgaben
+\aufgabe{Begriffe}
+\begin{enumerate}[label=\alph*)]
+\item Erklären Sie die Begriffe Klasse, Objekt, Instanz, Attribut und Methode an einem selbst gewählten Beispiel.
+\item Was versteht man unter Kapselung? Welche Vorteile hat es, Attribute \code{private} zu deklarieren?
+\item Wozu dient ein Konstruktor? Woran erkennt man ihn?
+\item Worin unterscheiden sich Instanzvariablen und Klassenvariablen? Warum ist \code{main} eine Klassenmethode?
+\end{enumerate}
+
+\aufgabe{Eine eigene Klasse}
+Implementieren Sie eine Klasse \code{Rechteck}.
+\begin{itemize}[itemsep=0.1em]
+\item Ein Rechteck hat eine Breite und eine Höhe (Kommazahlen). Die Attribute sollen nur innerhalb der Klasse sichtbar sein.
+\item Schreiben Sie einen Konstruktor für beide Werte und einen zweiten Konstruktor mit nur einem Parameter für ein Quadrat.
+\item Schreiben Sie \code{get}- und \code{set}-Methoden. Negative Werte sollen von den \code{set}-Methoden abgelehnt werden.
+\item Schreiben Sie die Methoden \code{getFlaeche()}, \code{getUmfang()}, \code{istQuadrat()} und \code{toString()}.
+\item Erstellen Sie eine Klasse \code{Test}, in der Sie mehrere Rechtecke anlegen und alle Methoden ausprobieren.
+\end{itemize}
+Zeichnen Sie zu Ihrer Klasse auch das UML-Klassendiagramm.
+
+\aufgabe{Was wird ausgegeben?}
+\begin{javacode}{Zaehler.java}
+public class Zaehler {
+	private static int anzahl = 0;
+	private int wert;
+
+	public Zaehler(int wert) {
+		this.wert = wert;
+		anzahl++;
+	}
+
+	public void erhoehe() { wert++; }
+
+	public String toString() { return wert + "/" + anzahl; }
+
+	public static void main(String[] args) {
+		Zaehler a = new Zaehler(5);
+		Zaehler b = new Zaehler(5);
+		Zaehler c = b;
+		c.erhoehe();
+		a.erhoehe();
+		a = c;
+		a.erhoehe();
+		System.out.println(a + " " + b + " " + c);
+		System.out.println(a == b);
+		System.out.println(new Zaehler(1));
+	}
+}
+\end{javacode}
+
+\aufgabe{Fehler finden}
+Die folgende Klasse und ihr Test enthalten vier Fehler, die der Compiler meldet. Finden und erklären Sie die Fehler.
+\begin{javacode}{Artikel.java}
+public class Artikel {
+	private String name;
+	private double preis;
+	private static int anzahl = 0;
+
+	public Artikel(String name, double preis) {
+		name = name;
+		this.preis = preis;
+		anzahl++;
+	}
+
+	public static double getPreis() {
+		return preis;
+	}
+
+	public void getName() {
+		return name;
+	}
+}
+
+class ArtikelTest {
+	public static void main(String[] args) {
+		Artikel a = new Artikel();
+		Artikel b = new Artikel("Stift", 1.5);
+		b.preis = 2.0;
+		System.out.println(b);
+	}
+}
+\end{javacode}
+Eine Zeile ist außerdem syntaktisch richtig, tut aber nicht, was sie soll. Welche?
+
+\aufgabe{Bibliothek}
+\begin{enumerate}[label=\alph*)]
+\item Implementieren Sie eine Klasse \code{Buch} mit Titel, Autor, ISBN und der Angabe, ob das Buch gerade ausgeliehen ist. Titel, Autor und ISBN werden bei der Erzeugung festgelegt.
+\item Implementieren Sie eine Klasse \code{Bibliothek}, die bis zu 50 Bücher in einem Array aufnehmen kann. Schreiben Sie die Methoden \code{buchAufnehmen(Buch b)}, \code{ausleihen(String isbn)}, \code{zurueckgeben(String isbn)} und \code{verfuegbareAusgeben()}. Ist kein Platz mehr vorhanden oder ein Buch bereits ausgeliehen, soll eine Fehlermeldung ausgegeben werden.
+\item Zeichnen Sie das UML-Klassendiagramm mit der Assoziation zwischen beiden Klassen.
+\end{enumerate}
+\begin{hinweis}
+\textbf{Hinweis:} Texte vergleicht man nicht mit \code{==}, sondern mit \code{equals}: \code{isbn.equals(b.getIsbn())} (siehe Kapitel~\ref{sec:strings}).
+\end{hinweis}
+
+\aufgabe[\K]{Tickets}
+In einem Support-System gibt es Tickets. Jedes Ticket verfügt über eine eindeutige Nummer, die von 1 ab aufsteigend vergeben wird, sowie über einen Beschreibungstext und eine Priorität. Der Beschreibungstext wird bei der Erzeugung festgelegt und darf danach nicht mehr verändert werden. Die Priorität (1 bis 3) kann sich später ändern; fehlt sie bei der Erzeugung, erhält das Ticket die Priorität 2. Außerdem soll jederzeit abgefragt werden können, wie viele Tickets bisher insgesamt erzeugt wurden.
+\begin{enumerate}[label=\alph*)]
+\item Modellieren Sie die Klasse in einem UML-Klassendiagramm.
+\item Definieren Sie die Klasse in Java mit allen Attributen, Konstruktoren und Methoden.
+\end{enumerate}
+
+\aufgabe[\S]{Kopieren und Vergleichen}
+\begin{enumerate}[label=\alph*)]
+\item Ergänzen Sie die Klasse \code{Buch} um einen \emph{Kopierkonstruktor} \code{public Buch(Buch b)}, der ein bereits existierendes Buch übergeben bekommt und eine Kopie davon erstellt (alle Attribute werden übernommen).
+\item Legen Sie ein Buch an, erzeugen Sie eine Kopie und vergleichen Sie beide mit \code{==}. Erklären Sie das Ergebnis.
+\item Schreiben Sie eine Methode \code{boolean istGleich(Buch b)}, die zwei Bücher inhaltlich vergleicht.
+\item Von einer Klasse \code{Einstellungen} soll es im ganzen Programm nur ein einziges Objekt geben. Wie lässt sich das mit einem privaten Konstruktor und einer Klassenmethode \code{getInstance()} erreichen (\emph{Singleton})?
+\end{enumerate}
+
+\ueben
+\aufgabe{Von UML nach Java}
+Setzen Sie das folgende Klassendiagramm in Java um. Der Tachostand darf nie kleiner werden.
+\begin{center}
+\begin{tikzpicture}
+\node[klasse] {\textbf{Auto}
+	\nodepart{two} - kennzeichen : String \\ - tachostand : int
+	\nodepart{three} + Auto(kennzeichen : String) \\ + getKennzeichen() : String \\ + getTachostand() : int \\ + fahre(kilometer : int) \\ + toString() : String};
+\end{tikzpicture}
+\end{center}
+
+\aufgabe{Von Java nach UML}
+Zeichnen Sie das UML-Klassendiagramm zu der folgenden Klasse.
+\begin{javacode}{Spieler.java}
+public class Spieler {
+	private static int anzahl = 0;
+	private String name;
+	private int punkte;
+
+	public Spieler(String name) { this.name = name; anzahl++; }
+	public String getName() { return name; }
+	public int getPunkte() { return punkte; }
+	public void addPunkte(int p) { punkte += p; }
+	public static int getAnzahl() { return anzahl; }
+}
+\end{javacode}
+
+\aufgabe{Klassen schreiben}
+Implementieren Sie die folgenden Klassen mit privaten Attributen, Konstruktor, den nötigen \code{get}-Methoden und \code{toString()}. Testen Sie jede Klasse.
+\begin{enumerate}[label=\alph*)]
+\item \textbf{Punkt:} Koordinaten $x$ und $y$; Methoden \code{verschiebe(dx, dy)} und \code{abstand(Punkt p)}.
+\item \textbf{Bruch:} Zähler und Nenner (der Nenner darf nicht 0 sein); Methoden \code{mal(Bruch b)}, \code{plus(Bruch b)} und \code{kuerzen()}.
+\item \textbf{Uhrzeit:} Stunde und Minute; Methode \code{plusMinuten(int m)}, die auch über Mitternacht hinaus richtig rechnet.
+\item \textbf{Student:} Name und Matrikelnummer. Die Matrikelnummer wird automatisch von 100000 ab aufsteigend vergeben und kann nicht geändert werden.
+\end{enumerate}
+
+\aufgabe{Kurs}
+Ein Kurs hat einen Titel und höchstens 30 Teilnehmer vom Typ \code{Student} (aus der vorigen Aufgabe). Implementieren Sie die Klasse \code{Kurs} mit den Methoden \code{anmelden(Student s)}, \code{istVoll()}, \code{getAnzahl()} und \code{teilnehmerAusgeben()}. Zeichnen Sie auch das UML-Diagramm mit der Assoziation.
+
+\aufgabe{Wahr oder falsch?}
+\begin{enumerate}[label=\alph*)]
+\item Von einer Klasse kann es beliebig viele Objekte geben.
+\item Eine Klassenmethode kann auf Instanzvariablen zugreifen.
+\item Ein Konstruktor hat den Rückgabetyp \code{void}.
+\item Zwei Variablen können auf dasselbe Objekt zeigen.
+\item Private Attribute lassen sich von außen über \code{objekt.attribut} lesen, aber nicht ändern.
+\item Eine Klasse kann mehrere Konstruktoren haben.
+\end{enumerate}

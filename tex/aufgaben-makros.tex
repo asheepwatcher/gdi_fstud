@@ -1,0 +1,46 @@
+% Bausteine für die Aufgabensammlung (aufgaben/NN-name.tex).
+% Nutzt die Lösungsbausteine der Tests (loesung, \antwort, \lsg, \ausgabe, wahrfalsch, \hoch).
+% Lösungsversion: \mitloesung definieren. Gesamtsammlung statt Einzelkapitel: \gesamtsammlung definieren.
+\input{test-makros}
+\newif\ifgesamt
+\ifdefined\gesamtsammlung\gesamttrue\fi
+
+% Kopf eines Kapitels: \aufgabenkopf{Kapitelnummer}{Kapiteltitel}
+\newcounter{uebung}
+\makeatletter
+\newcommand{\aufgabenkopf}[2]{%
+	\setcounter{uebung}{0}\gdef\kapnr{#1}%
+	\ifgesamt
+		\clearpage\setcounter{section}{\numexpr#1-1\relax}\section{#2}%
+	\else
+		\ohead{Kapitel #1}%
+		\begin{center}
+		{\@titlehead}\\[5mm]
+		{\LARGE\bfseries Aufgabensammlung\ifloesung\ -- Lösungen\fi}\\[2mm]
+		{\large Kapitel #1: #2}
+		\end{center}
+		\sammlungshinweis
+	\fi}
+\makeatother
+\newcommand{\sammlungshinweis}{%
+	\begin{hinweis}
+	\ifloesung
+	Hier stehen die Aufgaben zusammen mit ausführlichen Lösungen. Versuchen Sie jede Aufgabe zuerst selbst, bevor Sie die Lösung lesen.
+	\else
+	Die Aufgaben ergänzen das Skript und sind nach Schwierigkeit in drei Stufen geordnet: \textbf{Grundlagen} zum Einüben der Verfahren, \textbf{Klausurniveau} im Stil der Probeklausuren und \textbf{Knobelaufgaben} für alle, die tiefer einsteigen wollen. Die Lösungen stehen in einer eigenen Datei.
+	\fi
+	\end{hinweis}}
+
+% Schwierigkeitsstufe: \stufe{1}, \stufe{2} oder \stufe{3}
+\newcommand{\stufe}[1]{\par\needspace{8\baselineskip}%
+	\ifcase#1\or
+		\subsection*{\textcolor{codeSchluessel}{Stufe 1: Grundlagen}}%
+	\or
+		\subsection*{\textcolor{codeSchluessel}{Stufe 2: Klausurniveau}}%
+	\or
+		\subsection*{\textcolor{codeSchluessel}{Stufe 3: Knobelaufgaben} \textcolor{diagramm}{$\bigstar$}}%
+	\fi}
+
+% Eine Aufgabe: \uebung{Titel}
+\newcommand{\uebung}[1]{\par\medskip\needspace{5\baselineskip}\stepcounter{uebung}%
+	\noindent\textbf{Übung \kapnr.\arabic{uebung}: #1}\par\nopagebreak\smallskip}

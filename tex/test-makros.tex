@@ -1,0 +1,86 @@
+% Bausteine für die Selbsteinschätzungstests (tests/NN-name.tex).
+% Die Lösungsversion entsteht aus derselben Quelle, wenn \mitloesung definiert ist (siehe bauen.sh).
+\usepackage{comment}
+\newif\ifloesung
+\ifdefined\mitloesung\loesungtrue\fi
+\definecolor{loesungsfarbe}{RGB}{30,130,76}
+
+% Kopf des Tests: \testkopf[Variante]{Kapitelnummer}{Kapiteltitel}
+\makeatletter
+\newcommand{\testkopf}[3][]{%
+	\ohead{Kapitel #2\ifx\relax#1\relax\else, Variante #1\fi}%
+	\begin{center}
+	{\@titlehead}\\[5mm]
+	{\LARGE\bfseries Selbsteinschätzungstest\ifloesung\ -- Lösung\fi}\\[2mm]
+	{\large Kapitel #2: #3\ifx\relax#1\relax\else\ \textbullet\ Variante #1\fi}
+	\end{center}
+	\ifloesung
+	\begin{hinweis}
+	\textbf{Auswertung:} Zählen Sie die Punkte der Aufgaben ohne Stern zusammen (höchstens 20). \\
+	\textbf{Ab 14 Punkten} kennen Sie sich im Kapitel gut aus. \ \textbf{10 bis 13 Punkte:} Arbeiten Sie die Aufgaben nach, bei denen Punkte fehlen. \ \textbf{Weniger als 10 Punkte:} Wiederholen Sie das Kapitel im Skript.
+	\end{hinweis}
+	\else
+	\begin{hinweis}
+	Dieser Test ist für Sie selbst gedacht. Es gibt \textbf{kein Zeitlimit}; als Richtwert gelten 15 bis 20 Minuten. Arbeiten Sie ohne Skript und ohne Rechner und vergleichen Sie danach mit der Lösung. Mit \textbf{14 von 20 Punkten} haben Sie bestanden. Die letzte Aufgabe (\textcolor{diagramm}{$\bigstar$}) ist anspruchsvoll und zählt nicht zu den 20 Punkten.
+	\end{hinweis}
+	\fi}
+\makeatother
+
+% Aufgaben: \taufgabe{Titel}{Punkte} und \sternaufgabe{Titel}
+\newcounter{taufgabe}
+\newcommand{\taufgabe}[2]{\needspace{5\baselineskip}\stepcounter{taufgabe}%
+	\section*{Aufgabe \arabic{taufgabe}: #1 \hfill{\normalfont\small #2 Punkte}}}
+\newcommand{\sternaufgabe}[1]{\needspace{6\baselineskip}\stepcounter{taufgabe}%
+	\section*{Aufgabe \arabic{taufgabe} \textcolor{diagramm}{$\bigstar$}: #1 \hfill{\normalfont\small anspruchsvoll, ohne Wertung}}}
+
+% Lösungskasten (nur in der Lösungsversion sichtbar). \begin{loesung} und \end{loesung} stehen allein in einer Zeile.
+\ifloesung
+	\newtcolorbox{loesung}{enhanced, breakable, sharp corners, boxrule=0pt, colback=loesungsfarbe!6,
+		borderline west={2pt}{0pt}{loesungsfarbe}, left=3mm, right=2mm, top=1.5mm, bottom=1.5mm, before skip=3mm, after skip=3mm}
+\else
+	\excludecomment{loesung}
+\fi
+% Platz zum Schreiben (nur im Test)
+\newcommand{\platz}[1]{\ifloesung\else\par\vspace{#1}\fi}
+% Kurze Antwort: im Test eine Lücke, in der Lösung der Wert
+\newcommand{\antwort}[2][2.5cm]{\ifloesung\textcolor{loesungsfarbe}{\textbf{#2}}\else\luecke[#1]\fi}
+% Exponent einer Zweierpotenz: im Test ein Kästchen, in der Lösung die Zahl
+\newcommand{\hoch}[1]{\ifloesung$2^{\textcolor{loesungsfarbe}{\mathbf{#1}}}$\else$2^{\,\square}$\fi}
+% Tabellenzelle, die nur in der Lösung gefüllt ist
+\newcommand{\lsg}[1]{\ifloesung\textcolor{loesungsfarbe}{\textbf{#1}}\fi}
+% Ankreuzoptionen: \option (falsch) und \richtig (in der Lösung angekreuzt)
+\newcommand{\option}{\item[$\square$]}
+\newcommand{\richtig}{\item[\ifloesung\textcolor{loesungsfarbe}{$\boxtimes$}\else$\square$\fi]}
+% Wahr/Falsch-Tabelle: \begin{wahrfalsch} \wf{Aussage}{w} \wf{Aussage}{f} \end{wahrfalsch}
+\newcommand{\kasten}[2]{\ifloesung\ifx#1#2\textcolor{loesungsfarbe}{$\boxtimes$}\else$\square$\fi\else$\square$\fi}
+\newenvironment{wahrfalsch}{\begin{center}\renewcommand{\arraystretch}{1.35}\begin{tabular}{|L{12.2cm}|C{1.2cm}|C{1.2cm}|}\hline & \textbf{wahr} & \textbf{falsch} \\ \hline}{\end{tabular}\end{center}}
+\newcommand{\wf}[2]{#1 & \kasten{#2}{w} & \kasten{#2}{f} \\ \hline}
+% Konsolenausgabe: im Test ein leerer Kasten mit #1 Zeilen, in der Lösung der Text #2 (Zeilen mit \\ trennen)
+\newcommand{\ausgabe}[2]{\ifloesung
+	\begin{tcolorbox}[enhanced, sharp corners, boxrule=0pt, colback=loesungsfarbe!6, borderline west={2pt}{0pt}{loesungsfarbe},
+		before skip=3mm, after skip=3mm, left=3mm, top=1.5mm, bottom=1.5mm, title={Konsole}, coltitle=white,
+		attach boxed title to top left={xshift=0mm, yshift=-0.2mm},
+		boxed title style={sharp corners, boxrule=0pt, colback=loesungsfarbe, top=0.6mm, bottom=0.6mm, left=2mm, right=2mm},
+		fonttitle=\ttfamily\footnotesize\bfseries, fontupper=\ttfamily\footnotesize]#2\end{tcolorbox}%
+	\else\leerekonsole[#1]\fi}
+
+% Einstufungstest über alle Kapitel: \einstufungskopf und \kapitelblock{Nr}{Titel}
+\makeatletter
+\newcommand{\einstufungskopf}{%
+	\ihead{GDI -- Einstufungstest\ifloesung\ (Lösung)\fi}%
+	\ohead{Alle Kapitel}%
+	\begin{center}
+	{\@titlehead}\\[5mm]
+	{\LARGE\bfseries Einstufungstest zur Klausur\ifloesung\ -- Lösung\fi}\\[2mm]
+	{\large Kurzfragen zu allen Kapiteln des Skripts}
+	\end{center}
+	\begin{hinweis}
+	\ifloesung
+	Tragen Sie Ihre Punkte je Kapitel in die Auswertungstabelle am Ende ein. Die rechte Spalte zeigt, wie es für Sie weitergeht.
+	\else
+	Dieser Test prüft das Wichtigste aus allen 20 Kapiteln in kurzen Fragen. Er zeigt, welche Kapitel Sie für die Klausur schon beherrschen und welche Sie noch wiederholen sollten. Jedes Kapitel bringt 3 Punkte, insgesamt 60. Als Richtwert gelten 60 Minuten; arbeiten Sie ohne Skript und ohne Rechner. Werten Sie danach mit der Lösung aus und tragen Sie Ihre Punkte in die Tabelle am Ende ein.
+	\fi
+	\end{hinweis}}
+\makeatother
+\newcommand{\kapitelblock}[2]{\needspace{6\baselineskip}%
+	\section*{Kapitel #1: #2 \hfill{\normalfont\small 3 Punkte}}}

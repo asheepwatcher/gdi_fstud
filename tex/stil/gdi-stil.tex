@@ -1,0 +1,54 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Gemeinsame Präambel für Übungsblätter und Lösungsvorschläge
+%
+% Verwendung (siehe "Vorlage Übungsblatt.tex"):
+%   \documentclass[11pt,a4paper,DIV15]{scrartcl}
+%   \input{gdi-stil}
+%   \title{Übungsblatt 6}
+%   \input{header}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[ngerman]{babel}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{csquotes}
+\usepackage{scrlayer-scrpage}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, calc}
+
+% Überschriften und Abstände
+\setkomafont{sectioning}{\bfseries}
+\KOMAoptions{parskip=half}
+\RedeclareSectionCommand[beforeskip=-2.5ex plus -1ex minus -.2ex, afterskip=1.2ex plus .2ex]{section}
+\setlist[itemize]{itemsep=0.4em}
+\setlist[enumerate]{itemsep=0.3em}
+\date{\today}
+
+% Quellcode (javacode) und Konsolenausgaben (konsole), definiert auch die Farbe "diagramm"
+\IfFileExists{code-stil.tex}{\input{code-stil}}{\input{../code-stil}}  % auch aus Unterordnern (z. B. GDI2) nutzbar
+
+% EBNF-Regeln in Schreibmaschinenschrift, Terminale in Anführungszeichen
+%   \begin{ebnf} Zahl & \q{1} | \q{2} \\ \end{ebnf}
+\newcommand{\q}[1]{\textquotedbl#1\textquotedbl}
+\newenvironment{ebnf}{\begin{center}\ttfamily\begin{tabular}{r@{ = }l}}{\end{tabular}\end{center}}
+
+% Grafiken: Linien, Pfeile und Kreise im Blau der Codekästen
+%   \begin{tikzpicture}[syntax]
+%     \node[knoten] (a) at (0,0) {a};
+%     \draw[linie, ->] (a) -- (2,0);
+%   \end{tikzpicture}
+\tikzset{
+	syntax/.style={>={Stealth[length=2mm]}},
+	linie/.style={draw=diagramm, semithick},
+	knoten/.style={circle, draw=diagramm, semithick, minimum size=7.5mm, inner sep=0pt},
+	flaeche/.style={draw=diagramm, semithick, fill=diagramm!8}
+}
+
+\usepackage[colorlinks=false, pdfborder={0 0 0}]{hyperref}

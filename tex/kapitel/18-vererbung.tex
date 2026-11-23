@@ -1,0 +1,412 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Objektorientierung II: Vererbung, Polymorphie, Interfaces}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Oft sind Klassen einander ähnlich: Ein Girokonto \emph{ist ein} Konto, es hat nur zusätzlich einen Dispokredit. Statt alles doppelt zu schreiben, definiert man \code{Girokonto} als \textbf{Spezialisierung} von \code{Konto}. Die Unterklasse \textbf{erbt} alle Attribute und Methoden der Oberklasse, kann eigene hinzufügen und geerbte Methoden \textbf{überschreiben}, also durch eine eigene Version ersetzen.
+
+Daraus ergibt sich die \textbf{Polymorphie} (Vielgestaltigkeit): Ein Objekt einer Unterklasse kann überall dort verwendet werden, wo ein Objekt der Oberklasse erwartet wird. Eine Variable vom Typ \code{Konto} darf also auch auf ein \code{Girokonto} zeigen. Welche Version einer überschriebenen Methode ausgeführt wird, entscheidet sich erst zur Laufzeit anhand des tatsächlichen Objekts (\emph{dynamisches Binden}).
+
+Manche Oberklassen dienen nur als gemeinsame Schablone, von der selbst keine Objekte entstehen sollen: Das sind \textbf{abstrakte Klassen}. Ein \textbf{Interface} geht noch einen Schritt weiter und beschreibt nur, \emph{welche} Methoden eine Klasse anbieten muss, nicht wie.
+
+\begin{merke}
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{Vererbung:} \code{class Girokonto extends Konto}. Eine Klasse hat in Java genau eine direkte Oberklasse; die Wurzel aller Klassen ist \code{Object} (mit \code{toString()} und \code{equals()}).
+\item Der Konstruktor der Unterklasse ruft als \emph{erste Anweisung} mit \code{super(...)} einen Konstruktor der Oberklasse auf. Fehlt der Aufruf, setzt der Compiler \code{super()} ein.
+\item \textbf{Überschreiben:} gleiche Signatur in der Unterklasse, gekennzeichnet mit \code{@Override}. Die überschriebene Version der Oberklasse erreicht man mit \code{super.methode()}. \\
+Nicht verwechseln mit \textbf{Überladen}: gleicher Name, aber \emph{andere} Parameter.
+\item \code{protected} (UML \code{\#}): sichtbar in der eigenen Klasse, in Unterklassen und im selben Paket. \\
+\code{private} Attribute der Oberklasse werden zwar vererbt, sind in der Unterklasse aber nicht direkt zugreifbar.
+\item \textbf{Abstrakte Klasse} (\code{abstract}): kann keine Instanzen haben. Sie darf abstrakte Methoden (ohne Rumpf) enthalten, die jede konkrete Unterklasse implementieren muss. Zweck: Verallgemeinerung und Vererbung gemeinsamer Attribute und Methoden.
+\item \textbf{Interface:} enthält nur Konstanten und Methoden ohne Rumpf. Eine Klasse kann mit \code{implements} mehrere Interfaces implementieren (Ersatz für die in Java fehlende Mehrfachvererbung).
+\item \textbf{Typen:} Die Zuweisung an eine Variable der Oberklasse geht implizit (Up-Cast). In die Gegenrichtung braucht man einen expliziten Cast (Down-Cast). Mit \code{x instanceof K} prüft man vorher, ob \code{x} auf ein Objekt der Klasse \code{K} oder einer ihrer Unterklassen zeigt.
+\end{itemize}
+\end{merke}
+
+\beispiele
+\beispiel{Abstrakte Klasse, Vererbung und Polymorphie}
+\begin{center}
+\begin{tikzpicture}[node distance=1.1cm]
+\node[klasse] (figur) {\textbf{Figur} \\ \{abstract\}
+	\nodepart{two} - name : String
+	\nodepart{three} + getFlaeche() : double \\ + toString() : String};
+\node[klasse, minimum width=2.7cm] (rechteck) at (-1.6,-3.1) {\textbf{Rechteck}
+	\nodepart{two} - breite : double \\ - hoehe : double
+	\nodepart{three} + getFlaeche()};
+\node[klasse, minimum width=2.7cm] (dreieck) at (1.6,-3.1) {\textbf{Dreieck}
+	\nodepart{two} - grund : double \\ - hoehe : double
+	\nodepart{three} + getFlaeche()};
+\node[klasse, minimum width=2.7cm] (quadrat) at (-1.6,-5.6) {\textbf{Quadrat}
+	\nodepart{two}
+	\nodepart{three} + toString()};
+\draw[erbt] (rechteck.north) -- ++(0,0.35) -| (figur.south);
+\draw[assoz] (dreieck.north) -- ++(0,0.35) -| (figur.south);
+\draw[erbt] (quadrat) -- (rechteck);
+\end{tikzpicture}
+
+\smallskip
+{\small Der Pfeil mit der hohlen Spitze zeigt immer auf die Oberklasse.}
+\end{center}
+\begin{javacode}{Figur.java}
+public abstract class Figur {
+	private String name;
+
+	public Figur(String name) {
+		this.name = name;
+	}
+
+	public abstract double getFlaeche();    // ohne Rumpf
+
+	public String toString() {
+		return name + " mit Flaeche " + getFlaeche();
+	}
+}
+\end{javacode}
+\begin{javacode}{Rechteck.java}
+public class Rechteck extends Figur {
+	private double breite, hoehe;
+
+	public Rechteck(double breite, double hoehe) {
+		super("Rechteck");      // Konstruktor von Figur
+		this.breite = breite;
+		this.hoehe = hoehe;
+	}
+
+	@Override
+	public double getFlaeche() {
+		return breite * hoehe;
+	}
+}
+\end{javacode}
+\begin{javacode}{Quadrat.java und Dreieck.java}
+public class Quadrat extends Rechteck {
+	public Quadrat(double seite) {
+		super(seite, seite);                            // Konstruktor von Rechteck
+	}
+
+	@Override
+	public String toString() {
+		return "Quadrat! " + super.toString();          // nutzt die geerbte Version mit
+	}
+}
+
+public class Dreieck extends Figur {
+	private double grund, hoehe;
+
+	public Dreieck(double grund, double hoehe) {
+		super("Dreieck");
+		this.grund = grund;
+		this.hoehe = hoehe;
+	}
+
+	@Override
+	public double getFlaeche() {
+		return grund * hoehe / 2;
+	}
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{FigurTest}
+Figur[] figuren = { new Rechteck(4, 2.5), new Dreieck(6, 3), new Quadrat(3) };
+for (Figur f : figuren) {
+	System.out.println(f);          // welches toString() und getFlaeche() läuft, entscheidet das Objekt
+}
+\end{javacode}
+\begin{konsole}
+Rechteck mit Flaeche 10.0
+Dreieck mit Flaeche 9.0
+Quadrat! Rechteck mit Flaeche 9.0
+\end{konsole}
+Das Array hat den Typ \code{Figur[]}, enthält aber Objekte dreier verschiedener Klassen. Das ist Polymorphie. \code{new Figur("x")} wäre dagegen ein Fehler, weil \code{Figur} abstrakt ist.
+
+\beispiel{Typprüfung und Cast}
+\begin{javacode}[Ausschnitt]{Casts}
+Figur f = new Quadrat(3);                       // Up-Cast, implizit
+System.out.println(f instanceof Rechteck);      // true: ein Quadrat ist auch ein Rechteck
+System.out.println(f instanceof Dreieck);       // false
+Rechteck r = (Rechteck) f;                      // Down-Cast, explizit
+// Rechteck r2 = f;                             // Fehler beim Übersetzen: Cast fehlt
+// Dreieck d = (Dreieck) f;                     // Fehler zur Laufzeit: ClassCastException
+\end{javacode}
+
+\beispiel{Interface}
+\begin{javacode}[Ausschnitt]{Interface}
+public interface Skalierbar {
+	double MAX_FAKTOR = 10;                     // automatisch public static final
+	void skaliere(double faktor);               // automatisch public abstract
+}
+
+public class Dreieck extends Figur implements Skalierbar {
+	// ... Attribute, Konstruktor und getFlaeche() wie oben
+
+	@Override
+	public void skaliere(double faktor) {
+		grund *= faktor;
+		hoehe *= faktor;
+	}
+}
+\end{javacode}
+Ein Interface ist ein Typ wie eine Klasse: \code{Skalierbar s = new Dreieck(6, 3);} ist erlaubt, und über \code{s} lässt sich \code{skaliere} aufrufen.
+
+\beispiel{Vom Text zum Modell}
+\emph{Ein Fuhrpark besteht aus maximal 50 Fahrzeugen. Fahrzeuge sind zunächst entweder Pkw, für die die Anzahl der Sitze festgehalten wird, oder Lkw, denen ein Fahrer zugeordnet ist. Später kommen evtl. weitere Fahrzeugarten hinzu. Jedes Fahrzeug hat ein Kennzeichen und eine eindeutige Nummer, die von 1 ab aufsteigend vergeben wird. Die Anzahl der Sitze wird bei der Erzeugung festgelegt und darf danach nicht mehr verändert werden. Der Fahrer eines Lkw wird erst nach der Erzeugung festgelegt.}
+
+\begin{center}
+\begin{tabular}{@{}L{6.6cm}L{8.2cm}@{}}
+\toprule
+\textbf{Formulierung im Text} & \textbf{Umsetzung} \\
+\midrule
+\enquote{entweder \ldots\ oder \ldots, später weitere} & abstrakte Oberklasse mit Unterklassen \\
+\enquote{eindeutige Nummer, aufsteigend ab 1} & Klassenvariable (\code{static}), im Konstruktor hochzählen \\
+\enquote{bei der Erzeugung festgelegt, nicht veränderbar} & Parameter des Konstruktors, keine \code{set}-Methode \\
+\enquote{wird erst später festgelegt} & nicht im Konstruktor, sondern \code{set}-Methode \\
+\enquote{maximal 50} & Array fester Größe mit Zähler, Multiplizität \code{0..50} \\
+\enquote{gehört zu genau einem \ldots} & Attribut vom Typ der anderen Klasse, Multiplizität \code{1} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}
+\node[klasse] (park) at (0,0) {\textbf{Fuhrpark}
+	\nodepart{two} - anzahl : int
+	\nodepart{three} + fahrzeugHinzufuegen(f : Fahrzeug)};
+\node[klasse] (fz) at (8.7,0) {\textbf{Fahrzeug} \\ \{abstract\}
+	\nodepart{two} - \underline{naechsteNr : int} \\ - nr : int \\ - kennzeichen : String
+	\nodepart{three} + Fahrzeug(kennzeichen : String)};
+\node[klasse] (pkw) at (4.7,-3.5) {\textbf{Pkw}
+	\nodepart{two} - sitze : int
+	\nodepart{three} + Pkw(kennzeichen : String, sitze : int)};
+\node[klasse] (lkw) at (10.6,-3.5) {\textbf{Lkw}
+	\nodepart{two} - fahrer : String
+	\nodepart{three} + Lkw(kennzeichen : String) \\ + setFahrer(fahrer : String)};
+\draw[assoz] (park.east) -- (park.east -| fz.west);
+\node[above right, font=\footnotesize\ttfamily] at (park.east) {1};
+\node[above left, font=\footnotesize\ttfamily] at (park.east -| fz.west) {0..50};
+\draw[erbt] (pkw.north) -- ++(0,0.45) -| (fz.south);
+\draw[assoz] (lkw.north) -- ++(0,0.45) -| (fz.south);
+\end{tikzpicture}
+\end{center}
+\begin{javacode}[breakable]{Fuhrpark.java, Fahrzeug.java, Pkw.java, Lkw.java}
+public class Fuhrpark {
+	private Fahrzeug[] fahrzeuge = new Fahrzeug[50];    // max. 50 Fahrzeuge
+	private int anzahl = 0;
+
+	public void fahrzeugHinzufuegen(Fahrzeug f) {
+		if (anzahl < fahrzeuge.length) {
+			fahrzeuge[anzahl++] = f;
+		}
+	}
+}
+
+public abstract class Fahrzeug {
+	private static int naechsteNr = 1;
+	private int nr;
+	private String kennzeichen;
+
+	public Fahrzeug(String kennzeichen) {
+		this.nr = naechsteNr++;
+		this.kennzeichen = kennzeichen;
+	}
+}
+
+public class Pkw extends Fahrzeug {
+	private int sitze;
+
+	public Pkw(String kennzeichen, int sitze) {
+		super(kennzeichen);
+		this.sitze = sitze;
+	}
+}
+
+public class Lkw extends Fahrzeug {
+	private String fahrer;
+
+	public Lkw(String kennzeichen) {
+		super(kennzeichen);
+	}
+
+	public void setFahrer(String fahrer) {
+		this.fahrer = fahrer;
+	}
+}
+\end{javacode}
+
+\aufgaben
+\aufgabe[\K]{Begriffe}
+\begin{enumerate}[label=\alph*)]
+\item Was versteht man bei der objektorientierten Programmierung unter \enquote{Polymorphie}? Geben Sie auch ein kleines Beispiel an.
+\item Was versteht man unter einer \enquote{abstrakten Klasse}? Wozu werden solche Klassen verwendet?
+\item Erklären Sie den Unterschied zwischen Überladen und Überschreiben.
+\item Worin unterscheiden sich eine abstrakte Klasse und ein Interface?
+\end{enumerate}
+
+\aufgabe{Was wird ausgegeben?}
+\begin{javacode}{Tiere.java}
+class Tier {
+	public Tier() { System.out.println("Tier erzeugt"); }
+	public String laut() { return "..."; }
+	public String vorstellen() { return "Ich mache " + laut(); }
+}
+
+class Hund extends Tier {
+	public Hund() { System.out.println("Hund erzeugt"); }
+	@Override
+	public String laut() { return "Wuff"; }
+}
+
+class Welpe extends Hund {
+	@Override
+	public String laut() { return super.laut() + " (leise)"; }
+}
+
+public class Tiere {
+	public static void main(String[] args) {
+		Tier t = new Welpe();
+		System.out.println(t.vorstellen());
+		Tier u = new Tier();
+		System.out.println(u.vorstellen());
+		System.out.println(t instanceof Hund);
+		System.out.println(u instanceof Hund);
+	}
+}
+\end{javacode}
+
+\aufgabe{Erlaubt oder nicht?}
+Gegeben seien die Klassen \code{Figur} (abstrakt), \code{Rechteck}, \code{Quadrat} und \code{Dreieck} aus dem ersten Beispiel. Welche der folgenden Zeilen sind erlaubt? Welche führen zu einem Fehler beim Übersetzen, welche zu einem Fehler zur Laufzeit?
+\begin{javacode}[Ausschnitt]{Zuweisungen}
+Figur f1 = new Figur("Kreis");
+Figur f2 = new Quadrat(2);
+Rechteck r1 = new Quadrat(2);
+Quadrat q1 = new Rechteck(2, 2);
+Quadrat q2 = (Quadrat) f2;
+Dreieck d1 = (Dreieck) f2;
+Object o = new Dreieck(1, 1);
+double a = o.getFlaeche();
+\end{javacode}
+
+\aufgabe{Geschenke}
+In dieser Aufgabe entsteht Schritt für Schritt eine kleine Klassenhierarchie. Alle Attribute sollen nur innerhalb ihrer Klasse sichtbar sein, und jede Klasse soll eine \code{toString}-Methode erhalten, die alle Attribute als Text zurückgibt.
+\begin{enumerate}[label=\alph*)]
+\item \textbf{Modellierung:} Zeichnen Sie zunächst ein UML-Klassendiagramm für die im Folgenden beschriebenen Klassen.
+\item \textbf{Geschenk:} Ein Geschenk hat einen Preis. Die Klasse ist abstrakt und enthält die abstrakte Methode \code{entsorgungshinweisAnzeigen()}, die in jeder Unterklasse einen passenden Text ausgibt.
+\item \textbf{Gutschein:} Ein Gutschein ist ein spezielles Geschenk. Gespeichert werden das Geschäft und der Betrag. Die Methode \code{gutscheinEinloesen(double betrag)} zieht den Betrag ab oder gibt eine Fehlermeldung aus, wenn das Guthaben nicht reicht. Jeder Gutschein erhält automatisch eine eindeutige Seriennummer der Form \code{G-1000000}, \code{G-1000001}, \ldots
+\item \textbf{Buch:} Ein Buch ist ein spezielles Geschenk mit einer ISBN.
+\item \textbf{Elektrogerät:} Ein abstraktes spezielles Geschenk mit einem Hersteller. \textbf{Kamera} (Auflösung in Megapixel) und \textbf{Handy} (Displaygröße in Zoll) sind spezielle Elektrogeräte.
+\item \textbf{Person:} Jede Person hat einen Namen, eine automatisch vergebene ID (beginnend bei 1) und ein Array für 4 Geschenke. Schreiben Sie \code{geschenkUeberreichen(Geschenk g)} (mit Fehlermeldung, wenn kein Platz mehr ist) und \code{geschenkeAusgeben()}, das alle Geschenke samt Entsorgungshinweis ausgibt.
+\item \textbf{Test:} Legen Sie zwei Gutscheine, ein Buch, ein Handy und eine Kamera sowie eine Person an. Überreichen Sie alle fünf Geschenke, geben Sie die Geschenke aus und lösen Sie bei einem Gutschein mehr ein, als vorhanden ist.
+\item \textbf{Interface:} Die Klasse \code{BluRay} (Filmname, Länge, FSK) ist ein weiteres Geschenk. Sie und die Klasse \code{Buch} (ergänzt um ein Attribut \code{fsk}) sollen das folgende Interface implementieren. Ein Geschenk ist altersbeschränkt, wenn \code{fsk} größer als 0 ist. Erweitern Sie \code{geschenkeAusgeben()} so, dass mit \code{instanceof} geprüft und ausgegeben wird, ob ein Geschenk altersbeschränkt ist, und zählen Sie die altersbeschränkten Geschenke.
+\begin{javacode}[Ausschnitt]{Altersbeschraenkt.java}
+public interface Altersbeschraenkt {
+	public boolean istAltersbeschraenkt();
+	public int getAltersbeschraenkung();
+}
+\end{javacode}
+\end{enumerate}
+
+\aufgabe{Gehälter}
+Eine Firma beschäftigt Angestellte, Manager und Praktikanten. Alle Mitarbeiter haben einen Namen und ein Grundgehalt. Angestellte erhalten das Grundgehalt, Manager zusätzlich einen Bonus, Praktikanten 40\,\% des Grundgehalts.
+\begin{enumerate}[label=\alph*)]
+\item Implementieren Sie eine abstrakte Klasse \code{Mitarbeiter} mit der abstrakten Methode \code{berechneGehalt()} und die drei Unterklassen.
+\item Legen Sie in einer Testklasse ein Array mit verschiedenen Mitarbeitern an und berechnen Sie in einer Schleife die Summe aller Gehälter. An welcher Stelle Ihres Programms zeigt sich die Polymorphie?
+\end{enumerate}
+
+\aufgabe[\K]{Modellierung: Lieferdienst}
+Ziel sei die Realisierung einer Software für einen Lieferdienst. Kunden geben \emph{Bestellungen} auf. Jede Bestellung besteht aus maximal 30 Artikeln.
+
+\emph{Artikel} können dabei zunächst entweder \emph{Speisen} sein, für die festgehalten werden muss, ob sie vegetarisch sind, oder \emph{Getränke}, für die die Füllmenge in Millilitern festgehalten wird. Später werden evtl. noch weitere Artikelarten eingeführt.
+
+Jeder Artikel kann in verschiedenen Bestellungen vorkommen und verfügt über eine eindeutige Artikelnummer, die von 100 ab aufsteigend vergeben werden soll. Für jeden Artikel gibt es eine Bezeichnung und einen Preis. Der Preis wird bei der Erzeugung festgelegt und darf danach nicht mehr verändert werden.
+\begin{enumerate}[label=\alph*)]
+\item Modellieren Sie in einem UML-Klassendiagramm alle für die beschriebene Anwendung notwendigen Klassen und ihre Beziehungen zueinander.
+\item Definieren Sie alle notwendigen Klassen in Java. Außer den Konstruktoren brauchen keine Methodenimplementierungen angegeben zu werden. Geben Sie jedoch die Signaturen der Methoden an, die zum Aufbau einer Bestellung erforderlich sind.
+\end{enumerate}
+
+\aufgabe[\K]{Modellierung: Sportverein}
+Ziel sei die Modellierung einer einfachen Vereinsverwaltung. Jede \emph{Mannschaft} gehört zu genau einer \emph{Abteilung}. Zu jeder Abteilung kann es mehrere Mannschaften geben. Es muss aktuell zwischen Jugendmannschaften und Seniorenmannschaften unterschieden werden. Weitere Arten können später folgen.
+\begin{itemize}[itemsep=0.1em]
+\item Jede Abteilung soll über einen Namen und eine eindeutige Abteilungsnummer verfügen, die von 10 ab aufsteigend vergeben werden soll.
+\item \emph{Jugendmannschaften} verfügen über eine Altersklasse. Sie wird bei der Erzeugung der Mannschaft angegeben und darf danach nicht mehr verändert werden können.
+\item \emph{Seniorenmannschaften} verfügen über einen Trainer. Dieser wird erst nach der Erzeugung der Mannschaft festgelegt.
+\end{itemize}
+\begin{enumerate}[label=\alph*)]
+\item Modellieren Sie in einem UML-Klassendiagramm alle notwendigen Klassen und ihre Beziehungen zueinander.
+\item Definieren Sie alle vier Klassen in Java. Es müssen nur die Signaturen und Implementierungen der Methoden angegeben werden, die zum Aufbau der Daten erforderlich sind. Alle je erzeugten Mannschaften sollen in der Klasse \code{Mannschaft} in einer geeigneten Datenstruktur gespeichert werden. Es wird nie mehr als 200 Mannschaften geben.
+\end{enumerate}
+
+\aufgabe[\S]{Gleichheit}
+\begin{enumerate}[label=\alph*)]
+\item Jede Klasse erbt von \code{Object} die Methode \code{equals(Object obj)}, die standardmäßig nur die Referenzen vergleicht. Überschreiben Sie \code{equals} in der Klasse \code{Rechteck} so, dass zwei Rechtecke mit gleicher Breite und Höhe als gleich gelten. Prüfen Sie dazu zuerst mit \code{instanceof}, ob das übergebene Objekt überhaupt ein Rechteck ist.
+\item Was gibt \code{System.out.println(new Rechteck(1, 2))} aus, wenn weder \code{Rechteck} noch \code{Figur} die Methode \code{toString} überschreiben würden?
+\item Warum darf eine Klasse mehrere Interfaces implementieren, aber nur von einer Klasse erben? Überlegen Sie, welches Problem entstünde, wenn zwei Oberklassen dieselbe Methode unterschiedlich implementieren.
+\end{enumerate}
+
+\ueben
+\aufgabe{Hierarchien entwerfen}
+Zeichnen Sie jeweils ein UML-Klassendiagramm mit sinnvollen Attributen. Welche Klassen sollten abstrakt sein?
+\begin{enumerate}[label=\alph*)]
+\item Person, Student, Dozent, Tutor
+\item Konto, Girokonto, Sparkonto
+\item Medium, Buch, Film, Hörbuch
+\end{enumerate}
+
+\aufgabe{Konstruktoren und super}
+Was gibt das Programm aus?
+\begin{javacode}{Ketten.java}
+class A {
+	public A() { System.out.println("A()"); }
+	public A(int x) { System.out.println("A(" + x + ")"); }
+	public String wer() { return "A"; }
+}
+
+class B extends A {
+	public B() { System.out.println("B()"); }
+	public B(int x) { super(x); System.out.println("B(" + x + ")"); }
+	@Override
+	public String wer() { return "B" + super.wer(); }
+}
+
+public class Ketten {
+	public static void main(String[] args) {
+		A a = new B();
+		A b = new B(7);
+		System.out.println(a.wer() + " " + b.wer());
+	}
+}
+\end{javacode}
+
+\aufgabe{Konten}
+\begin{enumerate}[label=\alph*)]
+\item Implementieren Sie die Klasse \code{Konto} mit Kontonummer und Saldo sowie \code{einzahlen} und \code{auszahlen} (nur bei ausreichendem Saldo).
+\item Die Klasse \code{Girokonto} erweitert \code{Konto} um einen Dispokredit und überschreibt \code{auszahlen}: Das Konto darf bis zur Höhe des Dispos überzogen werden.
+\item Die Klasse \code{Sparkonto} erweitert \code{Konto} um einen Zinssatz und eine Methode \code{zinsenGutschreiben()}.
+\item Legen Sie ein Array vom Typ \code{Konto[]} mit verschiedenen Konten an und heben Sie von jedem Konto 500 Euro ab. Welche Methode wird jeweils ausgeführt?
+\end{enumerate}
+
+\aufgabe{Lebewesen}
+Implementieren Sie die folgenden Klassen. Die Attribute aller Klassen sollen nur innerhalb der Klasse sichtbar sein, und jede Klasse erhält eine \code{toString}-Methode.
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{Lebewesen:} Größe, Gewicht und Alter. Die Klasse dient nur als Schablone, es soll keine Instanzen geben. Jedes Lebewesen kann ein für es typisches Geräusch machen (\code{geraeuschMachen()}).
+\item \textbf{Tier:} ein Lebewesen mit Art und Heimatgebiet.
+\item \textbf{Hund:} ein spezielles Tier mit einer Rasse. Ein Hund bellt.
+\item \textbf{Pferd:} ein spezielles Tier, für das gespeichert wird, ob es eingeritten ist.
+\item \textbf{Mensch:} ein Lebewesen mit Namen und einer automatisch vergebenen Ausweisnummer. Ein Mensch kann bis zu 5 Haustiere besitzen (\code{kaufeHaustier(Tier t)}) und sie einem anderen Menschen übertragen (\code{uebertrageHaustiere(Mensch m)}).
+\end{itemize}
+
+\aufgabe{Abstrakte Klasse oder Interface?}
+Entscheiden und begründen Sie.
+\begin{enumerate}[label=\alph*)]
+\item Verschiedene Geräte (Drucker, Lampe, Heizung) sollen sich alle ein- und ausschalten lassen, haben sonst aber nichts gemeinsam.
+\item Angestellte und Praktikanten haben Name und Personalnummer gemeinsam, ihr Gehalt wird aber unterschiedlich berechnet.
+\item Eine Klasse soll gleichzeitig \enquote{druckbar} und \enquote{vergleichbar} sein.
+\end{enumerate}
+
+\aufgabe[\K]{Modellierung: Werkstatt}
+Ziel sei die Modellierung einer Software für eine Autowerkstatt. Zu jedem \emph{Auftrag} gehören maximal 15 Positionen.
+
+\emph{Positionen} sind zunächst entweder \emph{Ersatzteile}, für die eine Teilenummer festgehalten wird, oder \emph{Arbeitsleistungen}, für die die Dauer in Minuten festgehalten wird. Später kommen evtl. weitere Arten hinzu. Jede Position hat eine Bezeichnung und einen Preis.
+
+Jeder Auftrag verfügt über eine eindeutige Auftragsnummer, die von 1 ab aufsteigend vergeben wird, und über das Kennzeichen des Fahrzeugs, das bei der Erzeugung festgelegt wird und danach nicht mehr verändert werden darf. Der Name des zuständigen Mechanikers wird erst später festgelegt.
+\begin{enumerate}[label=\alph*)]
+\item Modellieren Sie in einem UML-Klassendiagramm alle notwendigen Klassen und ihre Beziehungen zueinander.
+\item Definieren Sie alle notwendigen Klassen in Java mit Konstruktoren und den Methoden, die zum Aufbau eines Auftrags erforderlich sind.
+\end{enumerate}

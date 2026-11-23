@@ -1,0 +1,140 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Boolesche Algebra}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+In der Booleschen Algebra (nach George Boole) haben Variablen nur zwei Werte: \textbf{0 (falsch)} und \textbf{1 (wahr)}. Mit wenigen Verknüpfungen lassen sich daraus beliebig komplizierte Bedingungen bauen. Jede Bedingung in einem Programm (\code{if}, \code{while}) ist ein boolescher Ausdruck. Um zu prüfen, was ein Ausdruck liefert oder ob zwei Ausdrücke gleichwertig sind, geht man in einer \textbf{Wahrheitstafel} alle Belegungen systematisch durch. Bei $n$ Variablen sind das $2^n$ Zeilen.
+
+\begin{merke}
+\begin{center}
+\begin{tabular}{cc|cccc}
+$a$ & $b$ & $a \wedge b$ (AND) & $a \vee b$ (OR) & $a \oplus b$ (XOR) & $\neg a$ (NOT) \\ \hline
+0 & 0 & 0 & 0 & 0 & 1 \\
+0 & 1 & 0 & 1 & 1 & 1 \\
+1 & 0 & 0 & 1 & 1 & 0 \\
+1 & 1 & 1 & 1 & 0 & 0
+\end{tabular}
+\end{center}
+\textbf{Wichtige Gesetze} (jeweils auch mit vertauschten Rollen von $\wedge$ und $\vee$):
+
+\smallskip
+\begin{tabular}{@{}ll@{\qquad}ll@{}}
+Kommutativ: & $a \wedge b = b \wedge a$ & Neutralität: & $a \wedge 1 = a$, \ $a \vee 0 = a$ \\
+Assoziativ: & $(a \wedge b) \wedge c = a \wedge (b \wedge c)$ & Extremal: & $a \wedge 0 = 0$, \ $a \vee 1 = 1$ \\
+Distributiv: & $a \wedge (b \vee c) = (a \wedge b) \vee (a \wedge c)$ & Komplementär: & $a \wedge \neg a = 0$, \ $a \vee \neg a = 1$ \\
+Idempotenz: & $a \wedge a = a$ & Doppelnegation: & $\neg(\neg a) = a$ \\
+Absorption: & $a \vee (a \wedge b) = a$ & De Morgan: & $\neg(a \wedge b) = \neg a \vee \neg b$ \\
+ & $a \wedge (a \vee b) = a$ & & $\neg(a \vee b) = \neg a \wedge \neg b$
+\end{tabular}
+\end{merke}
+
+\beispiele
+\beispiel{Gleichwertigkeit mit der Wahrheitstafel prüfen}
+Liefern $a \vee (\neg a \wedge b)$ und $a \vee b$ für jede Belegung denselben Wert?
+\begin{center}
+\begin{tabular}{cc|cc|c|c}
+$a$ & $b$ & $\neg a$ & $\neg a \wedge b$ & $a \vee (\neg a \wedge b)$ & $a \vee b$ \\ \hline
+0 & 0 & 1 & 0 & \textbf{0} & \textbf{0} \\
+0 & 1 & 1 & 1 & \textbf{1} & \textbf{1} \\
+1 & 0 & 0 & 0 & \textbf{1} & \textbf{1} \\
+1 & 1 & 0 & 0 & \textbf{1} & \textbf{1}
+\end{tabular}
+\end{center}
+Die beiden letzten Spalten stimmen in allen vier Zeilen überein, die Ausdrücke sind also gleichwertig. Ein einziger Unterschied würde genügen, um das Gegenteil zu zeigen.
+
+\beispiel{Vereinfachen mit den Gesetzen}
+\begin{align*}
+a \wedge \neg(\neg a \vee b)
+&= a \wedge (\neg\neg a \wedge \neg b) && \text{De Morgan} \\
+&= a \wedge (a \wedge \neg b) && \text{Doppelnegation} \\
+&= (a \wedge a) \wedge \neg b && \text{Assoziativ} \\
+&= a \wedge \neg b && \text{Idempotenz}
+\end{align*}
+
+\beispiel{Vom Text zum Ausdruck}
+Ein Kunde bekommt Rabatt, wenn er Mitglied ist ($m$) oder wenn er für mehr als 100 Euro einkauft ($e$) und keine Aktionsware im Korb hat ($k$). Als Ausdruck: $r = m \vee (e \wedge \neg k)$. In Java schreibt man dafür \code{m || (e \&\& !k)}.
+
+\aufgaben
+\aufgabe{Wahrheitstafel mit drei Variablen}
+Liefern die Ausdrücke $a \wedge (b \vee c)$ und $(a \wedge b) \vee c$ für jede Belegung von $a$, $b$ und $c$ denselben Wert? Überprüfen Sie dies mit einer Wahrheitstafel und begründen Sie Ihre Antwort.
+
+\aufgabe{De Morgan}
+\begin{enumerate}[label=\alph*)]
+\item Weisen Sie beide Gesetze von De Morgan mit einer Wahrheitstafel nach.
+\item Ein häufiger Fehler: Liefern $\neg(a \wedge b)$ und $\neg a \wedge \neg b$ dasselbe? Geben Sie eine Belegung an, die den Unterschied zeigt.
+\end{enumerate}
+
+\aufgabe{Vereinfachen}
+Vereinfachen Sie mithilfe der Gesetze so weit wie möglich. Geben Sie in jedem Schritt das verwendete Gesetz an.
+\begin{multicols}{2}
+\begin{enumerate}[label=\alph*)]
+\item $a \wedge \neg(b \vee \neg a)$
+\item $\neg(a \wedge \neg(b \vee a))$
+\item $(a \wedge b) \vee (a \wedge \neg b)$
+\item $\neg(\neg a \vee \neg b) \vee (a \wedge c)$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Vom Text zum Ausdruck}
+\begin{enumerate}[label=\alph*)]
+\item Eine Heizung soll laufen, wenn es kälter als 18 Grad ist ($k$) und das Fenster nicht offen ist ($f$), oder wenn der Frostschutz aktiv ist ($s$). Geben Sie einen booleschen Ausdruck an und stellen Sie die Wahrheitstafel auf.
+\item Eine Alarmanlage soll auslösen, wenn sie scharf geschaltet ist und mindestens einer von zwei Sensoren anspricht. Geben Sie einen Ausdruck an.
+\end{enumerate}
+
+\aufgabe[\S]{Mit weniger auskommen}
+\begin{enumerate}[label=\alph*)]
+\item Drücken Sie $a \oplus b$ (XOR) nur mit $\wedge$, $\vee$ und $\neg$ aus und prüfen Sie Ihr Ergebnis mit einer Wahrheitstafel.
+\item Die Verknüpfung NAND ist definiert als $\neg(a \wedge b)$. Zeigen Sie, dass sich $\neg a$, $a \wedge b$ und $a \vee b$ allein mit NAND ausdrücken lassen.
+\item Wie viele verschiedene Verknüpfungen von zwei Variablen (also verschiedene Ergebnisspalten einer Wahrheitstafel) gibt es insgesamt?
+\end{enumerate}
+
+\ueben
+\aufgabe{Wahrheitstafeln}
+Stellen Sie für jeden Ausdruck die Wahrheitstafel auf.
+\begin{multicols}{4}
+\begin{enumerate}[label=\alph*)]
+\item $\neg a \vee b$
+\item $a \wedge \neg b$
+\item $(a \vee b) \wedge \neg(a \wedge b)$
+\item $a \vee (b \wedge c)$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Auswerten}
+Welchen Wert haben die Ausdrücke für $a = 1$, $b = 0$ und $c = 1$?
+\begin{multicols}{4}
+\begin{enumerate}[label=\alph*)]
+\item $a \wedge b \vee c$
+\item $\neg(a \vee b) \wedge c$
+\item $a \oplus c$
+\item $\neg a \vee \neg b \vee \neg c$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Gleichwertig?}
+Prüfen Sie mit einer Wahrheitstafel, ob die beiden Ausdrücke gleichwertig sind.
+\begin{enumerate}[label=\alph*)]
+\item $a \wedge (a \vee b)$ \ und \ $a$
+\item $\neg a \vee b$ \ und \ $\neg(a \wedge \neg b)$
+\item $a \oplus b$ \ und \ $(a \vee b) \wedge (\neg a \vee \neg b)$
+\item $(a \wedge b) \vee c$ \ und \ $(a \vee c) \wedge (b \vee c)$
+\end{enumerate}
+
+\aufgabe{Vereinfachen}
+\begin{multicols}{2}
+\begin{enumerate}[label=\alph*)]
+\item $a \wedge (\neg a \vee b)$
+\item $(a \vee b) \wedge (a \vee \neg b)$
+\item $\neg(\neg a \wedge \neg b)$
+\item $(a \wedge b) \vee (\neg a \wedge b) \vee (a \wedge \neg b)$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{De Morgan in Java}
+Formen Sie die Bedingungen mit den Gesetzen von De Morgan so um, dass kein \code{!} mehr vor einer Klammer steht.
+\begin{multicols}{2}
+\begin{enumerate}[label=\alph*)]
+\item \code{!(x > 5 \&\& y < 3)}
+\item \code{!(fertig || !gueltig)}
+\end{enumerate}
+\end{multicols}

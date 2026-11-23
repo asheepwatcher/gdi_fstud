@@ -1,0 +1,209 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Etwas theoretische Informatik}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Die theoretische Informatik fragt nach den Grenzen: Welche Sprachen kann eine Maschine erkennen? Was lässt sich überhaupt berechnen? Und kann man beweisen, dass ein Programm korrekt ist?
+
+Das Kapitel knüpft an die Grammatiken aus Kapitel~\ref{sec:grammatiken} an. Zu jeder Stufe der Chomsky-Hierarchie gehört ein \textbf{Automat}, also ein einfaches Modell einer Maschine, das Wörter liest und sie entweder akzeptiert oder zurückweist. Je allgemeiner die Grammatik, desto mächtiger muss die Maschine sein. Die mächtigste ist die \textbf{Turingmaschine}. Nach der \textbf{These von Church} kann sie alles berechnen, was sich überhaupt berechnen lässt. Trotzdem gibt es Probleme, für die \emph{kein} Algorithmus existiert. Das bekannteste ist das \textbf{Halteproblem}.
+
+\begin{merke}[Sprachen und Automaten]
+\begin{center}
+\begin{tabular}{@{}llL{6.4cm}@{}}
+\toprule
+\textbf{Grammatik} & \textbf{Automat} & \textbf{Beispiel} \\
+\midrule
+Typ 3 (regulär) & endlicher Automat & Bezeichner, Zahlen (lexikalische Analyse) \\
+Typ 2 (kontextfrei) & Kellerautomat (mit Stack) & korrekt geklammerte Ausdrücke, Syntax von Programmiersprachen \\
+Typ 0 (allgemein) & Turingmaschine & alles Berechenbare \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{Endlicher Automat} $M = (S, A, \delta, s_0, F)$: Zustände $S$, Alphabet $A$, Übergangsfunktion $\delta$, Anfangszustand $s_0$, akzeptierende Zustände $F \subseteq S$. Ein Wort wird akzeptiert, wenn der Automat nach dem letzten Zeichen in einem akzeptierenden Zustand ist.
+\item \textbf{Reguläre Ausdrücke} beschreiben dieselben Sprachen wie endliche Automaten: \\
+$e + f$ (Alternative), \ $e \cdot f$ oder $ef$ (Hintereinanderausführung), \ $e^*$ (beliebig oft, auch nullmal). \\
+Bindung: $^*$ vor $\cdot$ vor $+$.
+\end{itemize}
+\end{merke}
+
+\begin{merke}[Berechenbarkeit und Korrektheit]
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{These von Church:} Jede vernünftige Präzisierung des Begriffs \enquote{Algorithmus} führt auf dieselbe Menge berechenbarer Funktionen.
+\item Es gibt mehr Funktionen als Algorithmen (Algorithmen sind abzählbar, Funktionen nicht). Also gibt es \textbf{nicht berechenbare} Funktionen.
+\item \textbf{Halteproblem:} Es gibt keinen Algorithmus, der für jedes beliebige Programm entscheidet, ob es anhält.
+\item \textbf{Satz von Rice:} Jede nicht-triviale Eigenschaft der von einem Programm berechneten Funktion ist nicht entscheidbar, z.\,B. \enquote{Ist das Programm korrekt?} oder \enquote{Berechnen zwei Programme dasselbe?}.
+\item \textbf{Korrektheit} ist immer relativ zu einer Spezifikation. $\{\mathit{VOR}\}\ \mathit{ANW}\ \{\mathit{NACH}\}$ bedeutet: Gilt vor der Anweisung die Vorbedingung und terminiert die Anweisung, dann gilt danach die Nachbedingung.
+\item \textbf{Verifikation:} formaler Beweis der Korrektheit. \ \textbf{Validation:} nicht-formaler Nachweis, z.\,B. durch systematisches Testen. Tests zeigen die Anwesenheit von Fehlern, nie deren Abwesenheit.
+\end{itemize}
+\end{merke}
+
+\beispiele
+\beispiel{Ein endlicher Automat für natürliche Zahlen}
+Akzeptiert werden die 0 sowie alle Zahlen ohne führende Null.
+
+\noindent\begin{minipage}[c]{0.48\linewidth}
+\centering
+\begin{tikzpicture}[syntax, font=\small]
+	\node[knoten] (s0) at (0,0) {$s_0$};
+	\node[knoten, double, double distance=1.2pt] (s1) at (3,0.9) {$s_1$};
+	\node[knoten, double, double distance=1.2pt] (s2) at (3,-0.9) {$s_2$};
+	\draw[linie, ->] (-1.1,0) -- (s0);
+	\draw[linie, ->] (s0) -- node[above, sloped] {0} (s1);
+	\draw[linie, ->] (s0) -- node[below, sloped] {1..9} (s2);
+	\draw[linie, ->] (s2) to[out=-30, in=30, looseness=6] node[right] {0..9} (s2);
+\end{tikzpicture}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.5\linewidth}
+\begin{itemize}[itemsep=0.1em]
+\item \code{120}: \ $s_0 \xrightarrow{1} s_2 \xrightarrow{2} s_2 \xrightarrow{0} s_2$. \ $s_2$ ist akzeptierend, das Wort wird akzeptiert.
+\item \code{012}: \ $s_0 \xrightarrow{0} s_1$, danach gibt es keinen Übergang mehr. Das Wort wird nicht akzeptiert.
+\end{itemize}
+Akzeptierende Zustände sind doppelt umrandet.
+\end{minipage}
+
+\smallskip
+Derselbe Sachverhalt als regulärer Ausdruck: \ $0 + (1 + 2 + \ldots + 9)(0 + 1 + \ldots + 9)^*$
+
+\beispiel{Warum Klammern einen Keller brauchen}
+Die Sprache der korrekt geklammerten Ausdrücke, z.\,B. \code{(()())}, ist nicht regulär. Ein endlicher Automat müsste sich merken, wie viele Klammern noch offen sind. Dafür bräuchte er für jede mögliche Anzahl einen eigenen Zustand, also unendlich viele. Ein \textbf{Kellerautomat} löst das mit einem Stack: Bei jeder öffnenden Klammer legt er ein Zeichen ab, bei jeder schließenden nimmt er eines herunter. Das Wort ist korrekt, wenn der Stack am Ende leer ist und nie von einem leeren Stack genommen werden musste.
+
+\beispiel{Eine Turingmaschine addiert 1}
+Eine Turingmaschine besitzt ein unbegrenztes Band und einen Schreib-Lese-Kopf. In jedem Schritt liest sie ein Zeichen, überschreibt es, bewegt den Kopf um ein Feld nach links oder rechts und wechselt den Zustand. Die folgende Maschine addiert 1 zu einer Dualzahl (\code{\#} steht für ein leeres Feld):
+\begin{itemize}[itemsep=0.1em]
+\item $s_0$: Laufe nach rechts bis zum Ende der Zahl, dann weiter mit $s_1$.
+\item $s_1$: Laufe nach links und ersetze jede 1 durch 0. Ersetze die erste 0 (oder das erste \code{\#}) durch 1, dann weiter mit $s_2$.
+\item $s_2$: Laufe nach links bis zum Anfang der Zahl und halte an.
+\end{itemize}
+Aus \code{1011} wird so \code{1100}: Die beiden Einsen am Ende werden zu Nullen, die Null davor wird zur Eins.
+
+\beispiel{Das Halteproblem in Kurzform}
+Angenommen, es gäbe eine Methode \code{haelt(p, e)}, die für jedes Programm \code{p} und jede Eingabe \code{e} entscheidet, ob \code{p} anhält. Dann könnte man ein Programm \code{q} schreiben, das genau das Gegenteil von dem tut, was \code{haelt} über es vorhersagt: Es läuft endlos, wenn \code{haelt} \enquote{hält an} sagt, und hält sofort an, wenn \code{haelt} \enquote{läuft endlos} sagt. Wendet man \code{q} auf sich selbst an, ist jede Antwort von \code{haelt} falsch. Also kann es \code{haelt} nicht geben.
+
+\beispiel{Vor- und Nachbedingungen}
+\begin{itemize}[itemsep=0.1em]
+\item $\{X = 0\}\ X := X + 1\ \{X = 1\}$ ist wahr.
+\item $\{X = i \wedge Y = j\}\ X := Y;\ Y := X\ \{X = j \wedge Y = i\}$ ist falsch: Nach der ersten Zuweisung ist der alte Wert von $X$ verloren. Richtig ist der Tausch über eine Hilfsvariable: $Z := X;\ X := Y;\ Y := Z$.
+\item $\{X = a\}$ \ \textbf{while} $X \neq 0$ \textbf{do} $X := X - 1$ \ $\{X = 0\}$ ist für alle ganzen Zahlen $a$ wahr, auch für negative: Dort terminiert die Schleife nicht, und die Aussage gilt nur für den Fall, dass sie terminiert. Das Programm ist \emph{partiell} korrekt, aber nicht \emph{total} korrekt.
+\end{itemize}
+
+\aufgaben
+\aufgabe{Einen Automaten lesen}
+Gegeben sei der folgende endliche Automat über dem Alphabet $A = \{a, b\}$.
+\begin{center}
+\begin{tikzpicture}[syntax, font=\small]
+	\node[knoten] (s0) at (0,0) {$s_0$};
+	\node[knoten] (s1) at (3,0) {$s_1$};
+	\node[knoten, double, double distance=1.2pt] (s2) at (6,0) {$s_2$};
+	\draw[linie, ->] (-1.1,0) -- (s0);
+	\draw[linie, ->] (s0) -- node[above] {a} (s1);
+	\draw[linie, ->] (s1) to[bend left=20] node[above] {b} (s2);
+	\draw[linie, ->] (s2) to[bend left=20] node[below] {a} (s1);
+	\draw[linie, ->] (s0) to[out=120, in=60, looseness=6] node[above] {b} (s0);
+	\draw[linie, ->] (s1) to[out=120, in=60, looseness=6] node[above] {a} (s1);
+	\draw[linie, ->] (s2) to[out=-110, in=-70, looseness=1] node[below] {b} (s0);
+\end{tikzpicture}
+\end{center}
+\begin{enumerate}[label=\alph*)]
+\item Geben Sie $S$, $s_0$ und $F$ an und stellen Sie die Übergangsfunktion $\delta$ als Tabelle dar.
+\item Welche der Wörter \code{ab}, \code{abab}, \code{aab}, \code{aba}, \code{b} und $\varepsilon$ werden akzeptiert? Geben Sie jeweils die Folge der Zustände an.
+\item Beschreiben Sie die akzeptierte Sprache in Worten und als regulären Ausdruck.
+\end{enumerate}
+
+\aufgabe{Automaten entwerfen}
+Zeichnen Sie jeweils einen endlichen Automaten.
+\begin{enumerate}[label=\alph*)]
+\item Alphabet $\{0, 1\}$: alle geraden Dualzahlen (Wörter, die auf 0 enden).
+\item Alphabet $\{0, 1\}$: alle Wörter mit einer geraden Anzahl von Einsen.
+\item Bezeichner: ein Buchstabe, gefolgt von beliebig vielen Buchstaben oder Ziffern. (Fassen Sie die Übergänge zu \enquote{Buchstabe} und \enquote{Ziffer} zusammen.)
+\end{enumerate}
+
+\aufgabe{Reguläre Ausdrücke}
+\begin{enumerate}[label=\alph*)]
+\item Welche der Wörter \code{b}, \code{ab}, \code{aba}, \code{abab}, \code{aabb} und $\varepsilon$ gehören zu den Sprachen der folgenden regulären Ausdrücke? \\[1mm]
+$(a + b)^* b$ \qquad\qquad $a(ba)^*$ \qquad\qquad $a^* b^*$
+\item Geben Sie reguläre Ausdrücke an für: alle Dualzahlen ohne führende Nullen; alle Wörter über $\{a, b\}$ mit genau einem $b$; alle Wörter über $\{a, b\}$, die mit $a$ beginnen und mit $a$ enden.
+\end{enumerate}
+
+\aufgabe{Sprachen und Maschinen}
+\begin{enumerate}[label=\alph*)]
+\item Ordnen Sie den Chomsky-Typen 3, 2 und 0 jeweils den passenden Automaten zu.
+\item Begründen Sie, warum sich die Sprache $\{\, a^n b^n \mid n \in \mathbb{N} \,\}$ nicht mit einem endlichen Automaten erkennen lässt. Wie würde ein Kellerautomat vorgehen?
+\item Welche Phase eines Compilers arbeitet mit regulären Ausdrücken, welche mit einer kontextfreien Grammatik?
+\end{enumerate}
+
+\aufgabe{Turingmaschine}
+\begin{enumerate}[label=\alph*)]
+\item Verfolgen Sie die Turingmaschine aus dem Beispiel Schritt für Schritt für die Eingaben \code{1010} und \code{111}. Notieren Sie nach jedem Schritt den Bandinhalt, die Position des Kopfes und den Zustand.
+\item Beschreiben Sie in Worten eine Turingmaschine, die alle Bits einer Dualzahl umdreht (Einerkomplement).
+\end{enumerate}
+
+\aufgabe{Grenzen der Berechenbarkeit}
+\begin{enumerate}[label=\alph*)]
+\item Was besagt die These von Church? Warum lässt sie sich nicht beweisen?
+\item Erklären Sie in eigenen Worten, was das Halteproblem ist.
+\item Ein Hersteller bewirbt ein Werkzeug, das für jedes beliebige Programm automatisch feststellt, ob es korrekt ist. Was sagen Sie dazu? Auf welchen Satz stützen Sie sich?
+\end{enumerate}
+
+\aufgabe{Korrektheit}
+\begin{enumerate}[label=\alph*)]
+\item Welche der folgenden Aussagen sind wahr? Begründen Sie. \\[1mm]
+$\{X = 5\}\ X := X \cdot 2\ \{X = 10\}$ \qquad\qquad
+$\{X > 0\}\ X := X - 1\ \{X > 0\}$ \\[1mm]
+$\{X = a \wedge a \geq 0\}$ \ \textbf{while} $X \neq 0$ \textbf{do} $X := X - 1$ \ $\{X = 0\}$
+\item Ist das Programm aus der dritten Aussage partiell korrekt? Ist es total korrekt?
+\item Erklären Sie den Unterschied zwischen Verifikation und Validation.
+\end{enumerate}
+
+\ueben
+\aufgabe{Von der Tabelle zum Automaten}
+Ein endlicher Automat über dem Alphabet $\{0, 1\}$ hat die Zustände $q_0$ (Anfangszustand) und $q_1$ (akzeptierend) und die folgende Übergangsfunktion.
+\begin{center}
+\begin{tabular}{c|cc}
+$\delta$ & 0 & 1 \\ \hline
+$q_0$ & $q_0$ & $q_1$ \\
+$q_1$ & $q_1$ & $q_0$
+\end{tabular}
+\end{center}
+\begin{enumerate}[label=\alph*)]
+\item Zeichnen Sie den Automaten.
+\item Welche der Wörter \code{1}, \code{11}, \code{0100}, \code{1011} und $\varepsilon$ werden akzeptiert?
+\item Beschreiben Sie die akzeptierte Sprache in Worten.
+\end{enumerate}
+
+\aufgabe{Noch mehr Automaten}
+Zeichnen Sie jeweils einen endlichen Automaten über dem Alphabet $\{a, b\}$.
+\begin{enumerate}[label=\alph*)]
+\item alle Wörter, die mit $a$ beginnen
+\item alle Wörter gerader Länge
+\item alle Wörter, die $aa$ enthalten
+\item alle Wörter, die auf $ba$ enden
+\end{enumerate}
+
+\aufgabe{Reguläre Ausdrücke lesen und schreiben}
+\begin{enumerate}[label=\alph*)]
+\item Geben Sie zu jedem Ausdruck drei Wörter der Sprache und ein Wort an, das nicht dazugehört: \\[1mm]
+$ab^*$ \qquad $(ab)^*$ \qquad $(a + b)a^*$ \qquad $a^*ba^*$
+\item Geben Sie reguläre Ausdrücke an für: alle Wörter über $\{0, 1\}$, die mit 1 beginnen und auf 0 enden; alle Wörter über $\{a, b\}$, in denen nie zwei $b$ direkt aufeinander folgen.
+\end{enumerate}
+
+\aufgabe{Drei Beschreibungen einer Sprache}
+Die Sprache $L$ besteht aus allen Wörtern der Form $a b^n$ mit $n \in \mathbb{N}_0$. Geben Sie einen regulären Ausdruck, einen endlichen Automaten und eine Grammatik vom Typ 3 für $L$ an.
+
+\aufgabe{Vor- und Nachbedingungen}
+Welche Aussagen sind wahr?
+\begin{enumerate}[label=\alph*)]
+\item $\{X = 3\}\ X := X + X\ \{X = 6\}$
+\item $\{X = a\}\ X := X + 1;\ X := X - 1\ \{X = a\}$
+\item $\{X \geq 0\}\ X := X - 1\ \{X \geq 0\}$
+\item $\{X = a \wedge Y = b\}\ X := X + Y;\ Y := X - Y;\ X := X - Y\ \{X = b \wedge Y = a\}$
+\end{enumerate}
+
+\aufgabe{Wahr oder falsch?}
+\begin{enumerate}[label=\alph*)]
+\item Jede reguläre Sprache ist auch kontextfrei.
+\item Ein endlicher Automat kann die Sprache $\{a^n b^n\}$ erkennen.
+\item Es gibt Funktionen, die kein Programm berechnen kann.
+\item Durch ausreichend viele Tests lässt sich die Korrektheit eines Programms beweisen.
+\item Ein total korrektes Programm ist auch partiell korrekt.
+\end{enumerate}

@@ -1,0 +1,132 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Gemeinsamer Stil für Quellcode und Konsolenausgaben
+% Einbinden mit \input{code-stil} in der Präambel.
+%
+% Quellcode (mit Dateiname als Reiter):
+%   \begin{javacode}{Pizza.java} ... \end{javacode}
+%   \begin{javacode}[Ausschnitt]{Beispiel} ... \end{javacode}   (ohne Zeilennummern)
+%   \begin{javacode}[breakable]{Lang.java} ... \end{javacode}  (darf über Seiten umbrechen)
+%
+% Konsolenausgabe (Eingaben des Benutzers zwischen @...@):
+%   \begin{konsole} Bitte Jahr eingeben:
+%   @2026@ \end{konsole}
+%
+% Leere Konsole zum Ausfüllen (z. B. in Tests), Höhe in Zeilen:
+%   \leerekonsole[5]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\RequirePackage{xcolor}
+\RequirePackage{listings}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage[varqu,varl,scaled=0.95]{zi4}   % Inconsolata als Schreibmaschinenschrift
+
+% Farben passend zu den Grafiken (Syntaxdiagramme, Dreieck, Pizza)
+\definecolor{diagramm}{RGB}{74,144,217}
+\definecolor{codeHintergrund}{RGB}{244,248,253}
+\definecolor{codeSchluessel}{RGB}{28,86,160}
+\definecolor{codeKommentar}{RGB}{125,132,145}
+\definecolor{codeString}{RGB}{40,128,72}
+\definecolor{codeZeilennr}{RGB}{150,170,195}
+\definecolor{konsoleHintergrund}{RGB}{238,239,242}
+\definecolor{konsoleText}{RGB}{45,50,60}
+\definecolor{konsoleEingabe}{RGB}{204,102,0}
+\definecolor{konsoleReiter}{RGB}{110,118,130}
+
+% Umlaute in Kommentaren und Strings
+\lstdefinestyle{gdiUmlaute}{
+	literate=
+		{ä}{{\"a}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+		{Ä}{{\"A}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+		{ß}{{\ss}}1
+}
+
+\lstdefinestyle{gdiJava}{
+	style=gdiUmlaute,
+	aboveskip=0pt,
+	belowskip=0pt,
+	language=Java,
+	basicstyle=\ttfamily\footnotesize,
+	keywordstyle=\color{codeSchluessel}\bfseries,
+	commentstyle=\color{codeKommentar}\itshape,
+	stringstyle=\color{codeString},
+	numbers=left,
+	numberstyle=\scriptsize\ttfamily\color{codeZeilennr},
+	numbersep=10pt,
+	tabsize=4,
+	columns=fullflexible,
+	keepspaces=true,
+	showstringspaces=false,
+	breaklines=true,
+	postbreak=\space
+}
+
+\lstdefinestyle{gdiKonsole}{
+	style=gdiUmlaute,
+	aboveskip=0pt,
+	belowskip=0pt,
+	language={},
+	basicstyle=\ttfamily\footnotesize\color{konsoleText},
+	columns=fullflexible,
+	keepspaces=true,
+	breaklines=true,
+	moredelim=[is][\color{konsoleEingabe}\bfseries]{@}{@}
+}
+
+% Gemeinsames Aussehen der Kästen
+\tcbset{
+	gdiKasten/.style={
+		enhanced, breakable,
+		listing only,
+		sharp corners,
+		boxrule=0pt,
+		top=1.5mm, bottom=1.5mm, right=2mm,
+		before skip=3mm, after skip=3mm,
+		attach boxed title to top left={xshift=0mm, yshift=-0.2mm},
+		boxed title style={sharp corners, boxrule=0pt, top=0.6mm, bottom=0.6mm, left=2mm, right=2mm},
+		fonttitle=\ttfamily\footnotesize\bfseries
+	}
+}
+
+% Quellcode: heller Kasten mit blauer Linie links und Dateiname als Reiter
+\newtcblisting{javacode}[2][]{
+	gdiKasten,
+	listing options={style=gdiJava},
+	colback=codeHintergrund,
+	unbreakable,
+	borderline west={2pt}{0pt}{diagramm},
+	left=8mm,
+	title={#2},
+	coltitle=white,
+	boxed title style={colback=diagramm},
+	#1
+}
+% Kurzer Ausschnitt ohne Zeilennummern
+\tcbset{Ausschnitt/.style={listing options={style=gdiJava, numbers=none}, left=3mm}}
+
+% Konsolenausgabe: hellgrauer Kasten (druckerfreundlich), Eingaben orange
+\newtcblisting{konsole}[1][Konsole]{
+	gdiKasten,
+	listing options={style=gdiKonsole},
+	colback=konsoleHintergrund,
+	unbreakable,
+	left=3mm,
+	title={#1},
+	borderline west={2pt}{0pt}{konsoleReiter},
+	coltitle=white,
+	boxed title style={colback=konsoleReiter}
+}
+
+% Leere Konsole zum Ausfüllen (z. B. in Tests): \leerekonsole[Anzahl Zeilen]
+\newcommand{\leerekonsole}[1][5]{%
+	\begin{tcolorbox}[
+		enhanced, unbreakable, sharp corners, boxrule=0pt,
+		colback=konsoleHintergrund,
+		borderline west={2pt}{0pt}{konsoleReiter},
+		before skip=3mm, after skip=3mm,
+		height=\dimexpr #1\dimexpr 8mm\relax + 3mm\relax,
+		title={Konsole}, coltitle=white,
+		attach boxed title to top left={xshift=0mm, yshift=-0.2mm},
+		boxed title style={sharp corners, boxrule=0pt, colback=konsoleReiter, top=0.6mm, bottom=0.6mm, left=2mm, right=2mm},
+		fonttitle=\ttfamily\footnotesize\bfseries
+	]\end{tcolorbox}%
+}

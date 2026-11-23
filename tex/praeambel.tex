@@ -1,0 +1,73 @@
+% Gemeinsame Präambel für Skript.tex und die Einzelkapitel (einzelkapitel.tex)
+% Gemeinsamer Stil der Übungsblätter und Tests (Kopie im Ordner stil/)
+\makeatletter\def\input@path{{stil/}}\makeatother
+\input{gdi-stil}
+\input{header}
+\usepackage{needspace}
+\usepackage{multicol}
+\usetikzlibrary{shapes.geometric, shapes.multipart, positioning}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Bausteine des Skripts
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Merkkasten (wie "Kurz erklärt" auf den Arbeitsblättern)
+\newtcolorbox{merke}[1][Merke]{enhanced, breakable, colback=diagramm!5, colframe=diagramm!80, boxrule=0.6pt, arc=1.5mm,
+	left=3mm, right=3mm, top=1.5mm, bottom=1.5mm, title=#1, fonttitle=\bfseries\small, colbacktitle=diagramm!80, coltitle=white,
+	before skip=3mm, after skip=3mm}
+% Hinweis-Kasten in den Farben der Code-Kästen
+\newtcolorbox{hinweis}{enhanced, sharp corners, boxrule=0pt, colback=codeHintergrund,
+	borderline west={2pt}{0pt}{diagramm}, left=3mm, top=1.5mm, bottom=1.5mm, before skip=3mm, after skip=3mm}
+
+% Die drei Teile jedes Kapitels
+\newcommand{\teil}[1]{\needspace{9\baselineskip}\subsection*{\textcolor{codeSchluessel}{#1}}}
+\newcommand{\worum}{\teil{Worum geht es?}}
+\newcommand{\beispiele}{\teil{Beispiele}}
+\newcommand{\aufgaben}{\teil{Aufgaben}}
+\newcommand{\ueben}{\teil{Zum Weiterüben}}
+
+% Beispiel mit Titel
+\newcounter{beispiel}[section]
+\newcommand{\beispiel}[1]{\par\medskip\needspace{6\baselineskip}\refstepcounter{beispiel}%
+	\noindent\textbf{\textcolor{diagramm}{Beispiel \thesection.\arabic{beispiel}:} #1}\par\nopagebreak\smallskip}
+
+% Aufgabe mit Titel; optionale Markierung: \K = wie in der Klausur, \S = anspruchsvoll
+\newcounter{aufgabe}[section]
+\renewcommand{\theaufgabe}{\thesection.\arabic{aufgabe}}
+\newcommand{\K}{\ \tcbox[on line, sharp corners, boxrule=0pt, colback=diagramm!80, coltext=white, left=1mm, right=1mm, top=0.2mm, bottom=0.2mm, fontupper=\sffamily\bfseries\scriptsize]{KLAUSUR}}
+\renewcommand{\S}{\ \textcolor{diagramm}{$\bigstar$}}
+\newcommand{\aufgabe}[2][]{\par\medskip\needspace{4\baselineskip}\refstepcounter{aufgabe}%
+	\noindent\textbf{Aufgabe \theaufgabe: #2}#1\par\nopagebreak\smallskip}
+
+% Tabellen
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\leer}{\rule[-0.6em]{0pt}{2.0em}}
+\newcommand{\luecke}[1][3cm]{\rule[-0.4ex]{#1}{0.4pt}}
+\newcommand{\code}[1]{\texttt{#1}}
+% In Schreibmaschinenschrift keine Ligaturen (-- bleibt --) und " bleibt ein Anführungszeichen
+\DisableLigatures{encoding = *, family = tt*}
+\AtBeginDocument{\shorthandoff{"}}
+
+% Flussdiagramme (wie in den Tests zu Blatt 4)
+\tikzset{
+	startstop/.style={rectangle, rounded corners=3mm, draw=diagramm, semithick, fill=diagramm!15, minimum width=2cm, minimum height=7mm, font=\small},
+	io/.style={trapezium, trapezium left angle=75, trapezium right angle=105, draw=diagramm, semithick, fill=white, minimum height=7mm, font=\small, align=center},
+	process/.style={rectangle, draw=diagramm, semithick, fill=white, minimum width=2.6cm, minimum height=7mm, font=\small, align=center},
+	decision/.style={diamond, aspect=2.4, draw=diagramm, semithick, fill=diagramm!8, inner sep=1pt, font=\small, align=center},
+	arrow/.style={-{Latex[length=2mm]}, draw=diagramm, thick},
+	lbl/.style={font=\footnotesize, fill=white, inner sep=1.5pt},
+	% UML-Klassen
+	klasse/.style={rectangle split, rectangle split parts=3, draw=diagramm, semithick, fill=diagramm!5, font=\ttfamily\footnotesize, align=left, rectangle split part align={center,left,left}, minimum width=3.2cm},
+	erbt/.style={-{Triangle[open, length=3mm, width=3mm]}, draw=diagramm, semithick},
+	assoz/.style={draw=diagramm, semithick}
+}
+
+% Kopf- und Fußzeile
+\clearpairofpagestyles
+\ihead{GDI -- Kompaktskript}
+\ohead{\rightmark}
+\cfoot{\pagemark}
+\automark{section}
+\setkomafont{pageheadfoot}{\normalfont\small\color{codeKommentar}}
+\setcounter{tocdepth}{1}
+\emergencystretch=3em

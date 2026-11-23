@@ -1,0 +1,152 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Rechnen mit Dualzahlen und Zweierkomplement}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Dualzahlen addiert man schriftlich wie Dezimalzahlen, nur entsteht schon bei $1 + 1$ ein Übertrag. Für negative Zahlen gibt es mehrere Darstellungen. Ein einfaches \textbf{Vorzeichenbit} oder das \textbf{Einerkomplement} (alle Bits umdrehen) haben Nachteile: Es gibt zwei Darstellungen der Null, und die normale Addition liefert falsche Ergebnisse. Rechner verwenden deshalb das \textbf{Zweierkomplement}. Dann gilt $a - b = a + (-b)$, und es muss nur addiert werden. Wichtig ist dabei die \textbf{feste Breite}: Ein Rechner arbeitet immer mit einer festen Anzahl von Bits (z.\,B. 8, 9 oder 32).
+
+\begin{merke}
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{Addition:} $0+0=0$, \ $0+1=1$, \ $1+1=10$ (0 schreiben, 1 merken), \ $1+1+1=11$.
+\item \textbf{Negieren im Zweierkomplement:} alle Bits umdrehen (Einerkomplement) und 1 addieren.
+\item Das vorderste Bit zeigt das \textbf{Vorzeichen}: 0 = positiv, 1 = negativ. Es gibt nur eine Null.
+\item \textbf{Wertebereich} bei $n$ Bit: $-2^{n-1}$ bis $2^{n-1}-1$, bei 8 Bit also $-128$ bis $127$.
+\item Ein Übertrag über die feste Breite hinaus wird \textbf{weggelassen}.
+\item Verlässt ein Ergebnis den Wertebereich, entsteht ein \textbf{Überlauf}: Das Ergebnis ist falsch. Man erkennt ihn daran, dass der Übertrag \emph{in} die Vorzeichenstelle und der Übertrag \emph{aus} der Vorzeichenstelle verschieden sind.
+\end{itemize}
+\end{merke}
+
+\beispiele
+\beispiel{Eine negative Zahl darstellen}
+Gesucht ist $-37$ als 8-Bit-Zahl im Zweierkomplement.
+\[
+37 = 0010\,0101
+\;\xrightarrow{\;\text{umdrehen}\;}\; 1101\,1010
+\;\xrightarrow{\;+1\;}\; 1101\,1011 = -37
+\]
+Dasselbe Verfahren führt auch zurück: Aus $1101\,1011$ wird durch Umdrehen $0010\,0100$ und mit $+1$ wieder $0010\,0101 = 37$. So liest man den Betrag einer negativen Zahl ab.
+
+\beispiel{Subtraktion als Addition (9 Bit)}
+Gesucht ist $75 - 29$. Zuerst wird $-29$ gebildet, dann addiert.
+
+\noindent\begin{minipage}[c]{0.5\linewidth}
+\begin{align*}
+75 &= 0\,0100\,1011 \\
+29 &= 0\,0001\,1101 \\
+-29 &= 1\,1110\,0010 + 1 = 1\,1110\,0011
+\end{align*}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.45\linewidth}
+\[
+\begin{array}{r@{\;\;}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c}
+ & & 0 & 0 & 1 & 0 & 0 & 1 & 0 & 1 & 1 \\
++ & & 1 & 1 & 1 & 1 & 0 & 0 & 0 & 1 & 1 \\ \hline
+ & \textcolor{codeKommentar}{(1)} & 0 & 0 & 0 & 1 & 0 & 1 & 1 & 1 & 0
+\end{array}
+\]
+\end{minipage}
+
+\smallskip
+Der Übertrag in die zehnte Stelle fällt weg. Das Ergebnis $0\,0010\,1110_2 = 32 + 8 + 4 + 2 = 46$ stimmt.
+
+\beispiel{Ein negatives Ergebnis lesen (8 Bit)}
+$20 - 50$: \ $20 = 0001\,0100$ und $-50 = 1100\,1110$. Die Summe ist $1110\,0010$. Das vorderste Bit ist 1, das Ergebnis ist also negativ. Umdrehen und 1 addieren liefert $0001\,1110 = 30$, das Ergebnis ist $-30$.
+
+\beispiel{Überlauf}
+Mit 8 Bit ergibt $100 + 100$ die Bitfolge $0110\,0100 + 0110\,0100 = 1100\,1000$. Im Zweierkomplement steht das für $-56$, denn $200$ liegt außerhalb des Wertebereichs. Genau das passiert in Java, wenn man den Wertebereich von \code{int} (32 Bit) verlässt: Es gibt keine Fehlermeldung, sondern ein falsches Ergebnis.
+\begin{javacode}[Ausschnitt]{Überlauf in Java}
+int s = 1200000000 + 1500000000 + 1000000000;
+System.out.println(s);      // -594967296 statt 3700000000
+\end{javacode}
+
+\aufgaben
+\aufgabe{Schriftlich addieren}
+Addieren Sie schriftlich im Dualsystem und machen Sie die Probe im Dezimalsystem.
+\begin{multicols}{3}
+\begin{enumerate}[label=\alph*)]
+\item $0001\,0110 + 0010\,1101$
+\item $0011\,1010 + 0001\,1111$
+\item $0101\,0101 + 0010\,1011$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Zweierkomplement bilden}
+Stellen Sie die Zahlen $-1$, $-66$, $-99$, $-123$ und $-128$ als 8-Bit-Zahlen im Zweierkomplement dar.
+
+\aufgabe{Zweierkomplement lesen}
+Die folgenden Bitfolgen sind 8-Bit-Zahlen im Zweierkomplement. Welche Dezimalzahlen stellen sie dar?
+\begin{multicols}{4}
+\begin{enumerate}[label=\alph*)]
+\item $0111\,1111$
+\item $1111\,0000$
+\item $1000\,0001$
+\item $1010\,1010$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Subtrahieren durch Addieren}
+Führen Sie die folgenden Rechnungen schriftlich mit Dualzahlen im Zweierkomplement durch. Die Dualzahlen haben jeweils eine Breite von 9 Bit. Die Ergebnisse sollen durch \emph{Addition} gebildet werden.
+\begin{multicols}{4}
+\begin{enumerate}[label=\alph*)]
+\item $40 + 60$
+\item $88 - 77$
+\item $115 - 85$
+\item $60 - 100$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe[\K]{Negative Zahl ableiten}
+\begin{enumerate}[label=\alph*)]
+\item Wie sieht die Darstellung der Zahl $57_{10}$ als 8-Bit-Dualzahl aus? (Wenn Sie Aufgabe 2.5\,c) bearbeitet haben, können Sie Ihr Ergebnis übernehmen.)
+\item Leiten Sie daraus die Darstellung der Zahl $-57_{10}$ im Zweierkomplement als 8-Bit-Dualzahl ab.
+\end{enumerate}
+
+\aufgabe{Drei Darstellungen im Vergleich}
+Stellen Sie die Zahl $-5$ mit 4 Bit auf drei Arten dar: mit Vorzeichenbit, im Einerkomplement und im Zweierkomplement. Berechnen Sie anschließend in jeder der drei Darstellungen $5 + (-5)$ durch einfache duale Addition. Welche Darstellung liefert das richtige Ergebnis?
+
+\aufgabe[\S]{Grenzen des Wertebereichs}
+\begin{enumerate}[label=\alph*)]
+\item Welches ist die kleinste und welches die größte Zahl, die sich mit 6 Bit bzw. mit 16 Bit im Zweierkomplement darstellen lässt?
+\item Bilden Sie mit 8 Bit das Zweierkomplement von $-128$ ($1000\,0000$). Was fällt auf, und wie lässt sich das erklären?
+\item Welches Ergebnis liefert die 8-Bit-Rechnung $100 + 50$? Prüfen Sie mit der Übertragsregel aus dem Merkkasten, ob ein Überlauf vorliegt. Prüfen Sie ebenso $(-100) + (-50)$ und $100 + (-50)$.
+\end{enumerate}
+
+\ueben
+\aufgabe{Addieren}
+\begin{multicols}{3}
+\begin{enumerate}[label=\alph*)]
+\item $0000\,1111 + 0000\,0001$
+\item $0010\,1010 + 0001\,0101$
+\item $0110\,0110 + 0001\,1011$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Negative Zahlen darstellen}
+Stellen Sie $-5$, $-17$, $-64$, $-100$ und $-127$ als 8-Bit-Zahlen im Zweierkomplement dar.
+
+\aufgabe{Negative Zahlen lesen}
+Welche Dezimalzahlen stellen die folgenden 8-Bit-Zahlen im Zweierkomplement dar?
+\begin{multicols}{5}
+\begin{enumerate}[label=\alph*)]
+\item $1111\,1111$
+\item $1000\,0000$
+\item $1100\,0000$
+\item $0101\,0101$
+\item $1001\,1001$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Rechnen mit 8 Bit}
+Führen Sie die Rechnungen als Addition im Zweierkomplement mit 8 Bit durch. Geben Sie jeweils an, ob ein Überlauf auftritt.
+\begin{multicols}{5}
+\begin{enumerate}[label=\alph*)]
+\item $50 - 20$
+\item $20 - 50$
+\item $-30 - 40$
+\item $100 + 27$
+\item $100 + 28$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Wertebereiche}
+Geben Sie den Wertebereich im Zweierkomplement für 4 Bit, 10 Bit, 12 Bit und 32 Bit an. Welchem Java-Datentyp entspricht der letzte?

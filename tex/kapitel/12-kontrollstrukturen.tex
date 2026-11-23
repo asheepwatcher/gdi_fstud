@@ -1,0 +1,320 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Java: Kontrollstrukturen}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Ohne Kontrollstrukturen würde ein Programm seine Anweisungen nur stur von oben nach unten abarbeiten. Kontrollstrukturen steuern den Ablauf: Eine \textbf{Verzweigung} führt Anweisungen nur unter einer Bedingung aus, eine \textbf{Schleife} wiederholt sie. Mehrere Anweisungen werden mit geschweiften Klammern zu einem \textbf{Block} zusammengefasst. Ein Block gilt wie eine einzige Anweisung, und Variablen, die in einem Block deklariert werden, sind nur dort gültig.
+
+\begin{merke}
+\begin{itemize}[itemsep=0.1em]
+\item \code{if (Bedingung) Anweisung1 else Anweisung2} \ -- der \code{else}-Teil ist optional. Ein \code{else} gehört immer zum \emph{nächstgelegenen} \code{if}, das noch kein \code{else} hat.
+\item \code{else if}: Die Bedingungen werden der Reihe nach geprüft. Der erste zutreffende Zweig wird ausgeführt, alle weiteren werden übersprungen.
+\item \code{switch}: Verzweigung anhand der Werte \emph{eines} Ausdrucks. Die Ausführung beginnt bei der passenden \code{case}-Marke und läuft weiter, bis ein \code{break} erreicht wird. \code{default} fängt alle übrigen Werte ab.
+\item \code{while (Bedingung)}: \emph{abweisende} Schleife. Die Bedingung wird vor jedem Durchlauf geprüft, der Rumpf wird also möglicherweise gar nicht ausgeführt.
+\item \code{do \ldots\ while (Bedingung);}: \emph{annehmende} Schleife. Der Rumpf wird mindestens einmal ausgeführt, die Bedingung wird danach geprüft.
+\item \code{for (Initialisierung; Bedingung; Weiterschaltung)}: \emph{Zählschleife}.
+\item \code{break} beendet die umgebende Schleife sofort. \code{continue} bricht nur den aktuellen Durchlauf ab und springt zur nächsten Prüfung der Bedingung.
+\end{itemize}
+\end{merke}
+
+\beispiele
+\beispiel{Mehrfachauswahl mit else if}
+\begin{javacode}[Ausschnitt]{Note}
+int punkte = 73;
+String note;
+if (punkte >= 90) {
+	note = "sehr gut";
+} else if (punkte >= 75) {
+	note = "gut";
+} else if (punkte >= 50) {
+	note = "bestanden";
+} else {
+	note = "nicht bestanden";
+}
+System.out.println(note);       // bestanden
+\end{javacode}
+Die Reihenfolge ist wichtig: Stünde \code{punkte >= 50} an erster Stelle, würde für 95 Punkte schon dieser Zweig gewählt.
+
+\beispiel{switch mit zusammengefassten Marken}
+\begin{javacode}[Ausschnitt]{Tage eines Monats}
+int monat = 4;
+int tage;
+switch (monat) {
+	case 4: case 6: case 9: case 11:
+		tage = 30;
+		break;
+	case 2:
+		tage = 28;
+		break;
+	default:
+		tage = 31;
+}
+System.out.println(tage);       // 30
+\end{javacode}
+
+\beispiel{Dieselbe Aufgabe mit drei Schleifen}
+Alle drei Ausschnitte berechnen die Summe $1 + 2 + \ldots + 100 = 5050$.
+\begin{tcbraster}[raster columns=3, raster equal height, raster column skip=3mm]
+\begin{javacode}[Ausschnitt]{while}
+int sum = 0;
+int i = 1;
+while (i <= 100) {
+	sum += i;
+	i++;
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{for}
+int sum = 0;
+for (int i = 1; i <= 100; i++) {
+	sum += i;
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{do-while}
+int sum = 0;
+int i = 1;
+do {
+	sum += i;
+	i++;
+} while (i <= 100);
+\end{javacode}
+\end{tcbraster}
+
+\beispiel{Schreibtischtest einer Schleife}
+\noindent\begin{minipage}[t]{0.5\linewidth}
+\begin{javacode}[Ausschnitt]{ggT}
+int a = 48, b = 18;
+while (b != 0) {
+	int r = a % b;
+	a = b;
+	b = r;
+}
+System.out.println("ggT = " + a);
+\end{javacode}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.42\linewidth}
+\vspace{2mm}
+\begin{tabular}{l|r|r|r}
+\textbf{Durchlauf} & \code{r} & \code{a} & \code{b} \\ \hline
+Start & & 48 & 18 \\
+1. & 12 & 18 & 12 \\
+2. & 6 & 12 & 6 \\
+3. & 0 & 6 & 0
+\end{tabular}
+
+\medskip
+Ausgabe: \code{ggT = 6}
+\end{minipage}
+
+\beispiel{Geschachtelte Schleifen}
+\noindent\begin{minipage}[t]{0.6\linewidth}
+\begin{javacode}[Ausschnitt]{Dreieck}
+for (int i = 1; i <= 4; i++) {
+	for (int j = 1; j <= i; j++) {
+		System.out.print("*");
+	}
+	System.out.println();
+}
+\end{javacode}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.34\linewidth}
+\begin{konsole}
+*
+**
+***
+****
+\end{konsole}
+\end{minipage}
+
+\smallskip
+Für jeden Wert der äußeren Schleife läuft die innere Schleife vollständig durch.
+
+\aufgaben
+\aufgabe{Welches else gehört wohin?}
+Was gibt der folgende Ausschnitt aus? Zu welchem \code{if} gehört das \code{else}? Was wird ausgegeben, wenn \code{n} zu Beginn den Wert 7 hat? Setzen Sie anschließend Klammern so, dass die Einrückung der Wahrheit entspricht.
+\begin{javacode}[Ausschnitt]{IfTest}
+int n = 3, m, k = 0;
+if (n > 5) { m = 1; } else { m = 2; }
+if (m == 2)
+	if (k > 0)
+		System.out.println("A");
+else
+	System.out.println("B");
+System.out.println("C");
+\end{javacode}
+
+\aufgabe{Dreiecke}
+Schreiben Sie ein Java-Programm, das drei Seitenlängen einliest und mit \code{if}, \code{else if} und \code{else} ausgibt, ob sich daraus ein Dreieck bilden lässt und, wenn ja, ob es gleichseitig, gleichschenklig oder unregelmäßig ist. (Ein Dreieck existiert, wenn jede Seite kürzer ist als die Summe der beiden anderen.) Welche Eingaben eignen sich, um alle Zweige zu testen?
+
+\aufgabe{switch}
+\begin{enumerate}[label=\alph*)]
+\item Was gibt der folgende Ausschnitt aus? Was müsste man ändern, damit nur die passende Note ausgegeben wird?
+\begin{javacode}[Ausschnitt]{Noten}
+int note = 2;
+switch (note) {
+	case 1: System.out.println("sehr gut");
+	case 2: System.out.println("gut");
+	case 3: System.out.println("befriedigend");
+		break;
+	case 4: System.out.println("ausreichend");
+	default: System.out.println("nicht bestanden");
+}
+\end{javacode}
+\item Schreiben Sie einen Taschenrechner, der zwei Zahlen und ein Rechenzeichen (\code{+}, \code{-}, \code{*}, \code{/}) verarbeitet und das Ergebnis mit einer \code{switch}-Anweisung berechnet. Bei einem unbekannten Zeichen und bei einer Division durch 0 soll eine Fehlermeldung erscheinen.
+\item Welche Vorteile hat \code{switch} gegenüber einer \code{else if}-Kaskade, und wann lässt es sich nicht verwenden?
+\end{enumerate}
+
+\aufgabe{Was wird ausgegeben?}
+\begin{tcbraster}[raster columns=2, raster equal height=rows, raster column skip=3mm, raster row skip=1mm]
+\begin{javacode}[Ausschnitt]{a)}
+for (int i = 10; i > 0; i -= 3) {
+	System.out.print(i + " ");
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{b)}
+int i = 0;
+while (i < 5) {
+	i += 2;
+	System.out.print(i + " ");
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{c)}
+int i = 5;
+do {
+	System.out.print(i + " ");
+	i--;
+} while (i > 5);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{d)}
+for (int i = 1; i <= 3; i++) {
+	for (int j = i; j <= 3; j++) {
+		System.out.print(i * j + " ");
+	}
+}
+\end{javacode}
+\end{tcbraster}
+\begin{javacode}[Ausschnitt]{e)}
+for (int i = 1; i <= 10; i++) {
+	if (i % 2 == 0) continue;
+	if (i > 7) break;
+	System.out.print(i + " ");
+}
+System.out.println("Fertig");
+\end{javacode}
+
+\aufgabe{Schleifen umformen}
+Gegeben ist die folgende Schleife. Schreiben Sie sie zuerst als \code{while}-Schleife und dann als \code{do}-\code{while}-Schleife. Worauf müssen Sie bei der \code{do}-\code{while}-Variante achten, wenn \code{n} auch 0 sein kann?
+\begin{javacode}[Ausschnitt]{Zählschleife}
+int produkt = 1;
+for (int i = 1; i <= n; i++) {
+	produkt *= i;
+}
+\end{javacode}
+
+\aufgabe{Programme mit Schleifen}
+\begin{enumerate}[label=\alph*)]
+\item \textbf{Quersumme:} Lesen Sie eine natürliche Zahl ein und berechnen Sie ihre Quersumme (für 4711 also 13).
+\item \textbf{Einmaleins:} Geben Sie das kleine Einmaleins als Tabelle mit 10 Zeilen und 10 Spalten aus. Was ändert sich für das große Einmaleins von 11 bis 20?
+\item \textbf{Primzahltest:} Lesen Sie eine Zahl $n > 1$ ein und geben Sie aus, ob sie eine Primzahl ist. Brechen Sie die Schleife ab, sobald ein Teiler gefunden wurde.
+\item \textbf{Zahlenraten:} Das Programm denkt sich mit \code{(int) (Math.random() * 100) + 1} eine Zahl zwischen 1 und 100 aus. Der Benutzer rät so lange, bis er sie gefunden hat. Nach jedem Versuch erscheint \enquote{zu groß} oder \enquote{zu klein}, am Ende die Anzahl der Versuche. Warum ist hier eine \code{do}-\code{while}-Schleife sinnvoll?
+\end{enumerate}
+
+\aufgabe[\K]{Collatz-Folge}
+Eine Zahlenfolge ist so aufgebaut: Die Startzahl ist beliebig. Ist die aktuelle Zahl gerade, wird sie durch 2 geteilt, sonst mit 3 multipliziert und um 1 erhöht. Bei 1 endet die Folge. Schreiben Sie ein Programm, das die Startzahl einliest, die Folge ausgibt und die Anzahl der Schritte zählt.
+\begin{konsole}
+Startzahl eingeben:
+@3@
+3 10 5 16 8 4 2 1
+Schritte: 7
+\end{konsole}
+
+\aufgabe[\S]{Probieren mit System}
+\begin{enumerate}[label=\alph*)]
+\item \textbf{Wechselgeld:} Auf wie viele Arten lässt sich 1 Euro mit Münzen zu 50, 20 und 10 Cent bezahlen? Lassen Sie ein Programm mit geschachtelten Schleifen alle Möglichkeiten ausgeben und zählen.
+\item \textbf{Perfekte Zahlen:} Eine Zahl heißt perfekt, wenn sie gleich der Summe ihrer Teiler (ohne sich selbst) ist, z.\,B. $6 = 1 + 2 + 3$. Geben Sie alle perfekten Zahlen bis 10\,000 aus.
+\end{enumerate}
+
+\ueben
+\aufgabe{Verzweigungen}
+Schreiben Sie jeweils ein kurzes Programm.
+\begin{enumerate}[label=\alph*)]
+\item Zwei Zahlen werden eingelesen. Ausgegeben wird, welche größer ist oder ob beide gleich sind.
+\item Eine Zahl wird eingelesen. Ausgegeben wird \code{positiv}, \code{negativ} oder \code{null}.
+\item Aus einer Punktzahl von 0 bis 100 wird eine Note von 1 bis 5 bestimmt (ab 90, 80, 65 und 50 Punkten). Ungültige Punktzahlen führen zu einer Fehlermeldung.
+\item Zu einer Monatsnummer von 1 bis 12 wird mit \code{switch} der Monatsname ausgegeben.
+\end{enumerate}
+
+\aufgabe{Was wird ausgegeben?}
+\begin{tcbraster}[raster columns=2, raster equal height=rows, raster column skip=3mm, raster row skip=1mm]
+\begin{javacode}[Ausschnitt]{a)}
+for (int i = 0; i < 10; i += 4) {
+	System.out.print(i + " ");
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{b)}
+int n = 100;
+while (n > 1) {
+	n = n / 3;
+	System.out.print(n + " ");
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{c)}
+for (int i = 3; i > 0; i--) {
+	for (int j = 0; j < i; j++) {
+		System.out.print(i);
+	}
+	System.out.println();
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{d)}
+int s = 0;
+for (int i = 1; i <= 5; i++) {
+	if (i == 3) continue;
+	s += i;
+}
+System.out.println(s);
+\end{javacode}
+\end{tcbraster}
+
+\aufgabe{Schreibtischtest}
+Führen Sie den Ausschnitt für \code{n = 6} und für \code{n = 7} von Hand aus und notieren Sie die Werte von \code{i} und \code{t} nach jedem Durchlauf. Was zählt der Ausschnitt?
+\begin{javacode}[Ausschnitt]{Zählen}
+int t = 0;
+for (int i = 1; i <= n; i++) {
+	if (n % i == 0) {
+		t++;
+	}
+}
+System.out.println(t);
+\end{javacode}
+
+\aufgabe{Fehler finden}
+Jeder Ausschnitt soll die Zahlen von 1 bis 10 ausgeben, enthält aber einen Fehler. Beschreiben Sie, was stattdessen passiert, und korrigieren Sie.
+\begin{tcbraster}[raster columns=3, raster equal height=rows, raster column skip=3mm]
+\begin{javacode}[Ausschnitt]{a)}
+int i = 1;
+while (i <= 10) {
+	System.out.println(i);
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{b)}
+for (int i = 1; i < 10; i++) {
+	System.out.println(i);
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{c)}
+for (int i = 1; i <= 10; i++);
+{
+	System.out.println(i);
+}
+\end{javacode}
+\end{tcbraster}
+
+\aufgabe{Noch mehr Programme}
+\begin{enumerate}[label=\alph*)]
+\item Geben Sie alle Teiler einer eingelesenen Zahl aus.
+\item Berechnen Sie die Summe aller geraden Zahlen von 2 bis $n$.
+\item Berechnen Sie $x^n$ mit einer Schleife (ohne \code{Math.pow}).
+\item Ein Kapital wird jährlich mit 3\,\% verzinst. Nach wie vielen Jahren hat es sich verdoppelt?
+\item Geben Sie die Zahlen von 1 bis 100 aus. Für Vielfache von 3 soll statt der Zahl \code{Fizz} stehen, für Vielfache von 5 \code{Buzz} und für Vielfache von beiden \code{FizzBuzz}.
+\item Geben Sie für eine eingelesene Höhe $h$ ein auf dem Kopf stehendes Dreieck aus Sternen aus (erste Zeile $h$ Sterne, letzte Zeile ein Stern).
+\end{enumerate}

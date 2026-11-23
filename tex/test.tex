@@ -1,0 +1,11 @@
+% Erzeugt einen einzelnen Selbsteinschätzungstest. Wird von bauen.sh aufgerufen;
+% \testdatei (und für die Lösungsversion \mitloesung) werden dort gesetzt.
+\documentclass[11pt,a4paper,DIV14,headsepline]{scrartcl}
+\input{praeambel}
+\input{test-makros}
+\ihead{GDI -- Selbsteinschätzungstest\ifloesung\ (Lösung)\fi}
+\ohead{}
+
+\begin{document}
+\input{tests/\testdatei}
+\end{document}

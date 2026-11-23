@@ -1,0 +1,253 @@
+% Formelsammlung zum Kompaktskript (zwei Seiten)
+\documentclass[fontsize=10pt,a4paper,DIV=20,headsepline]{scrartcl}
+\input{praeambel}
+\ihead{GDI -- Formelsammlung}
+\ohead{Grundlagen der Informatik}
+\setlength{\columnsep}{5mm}
+\setlength{\parskip}{0pt}
+
+% Kasten für einen Themenblock
+\newtcolorbox{fs}[1]{enhanced, colback=diagramm!4, colframe=diagramm!70, boxrule=0.5pt, arc=1mm,
+	left=1.5mm, right=1.5mm, top=0.8mm, bottom=0.8mm, title={#1}, fonttitle=\bfseries\footnotesize,
+	colbacktitle=diagramm!70, coltitle=white, toptitle=0.2mm, bottomtitle=0.2mm,
+	before skip=1.2mm, after skip=1.2mm, fontupper=\footnotesize}
+% kompakte Liste
+\newenvironment{kl}{\begin{itemize}[leftmargin=3mm, itemsep=0.1mm, topsep=0.3mm, parsep=0pt, label=\textcolor{diagramm}{\textbullet}]}{\end{itemize}}
+% kurzer Code-Block ohne Zeilennummern
+\lstdefinestyle{fsCode}{style=gdiJava, numbers=none, basicstyle=\ttfamily\scriptsize, aboveskip=0.5mm, belowskip=0mm, xleftmargin=0mm}
+\lstnewenvironment{fscode}{\lstset{style=fsCode}}{}
+
+\begin{document}
+\begin{multicols}{2}
+\raggedcolumns
+
+\begin{fs}{Bits und Bytes}
+\begin{kl}
+\item $n$ Bit ergeben $2^n$ Zustände. Für $k$ Zustände: kleinstes $n$ mit $2^n \geq k$.
+\item 1 Byte $=$ 8 Bit, \ 1 Wort $=$ 2 Byte, \ 1 Doppelwort $=$ 4 Byte
+\item 1 KB $= 2^{10}$ B, \ 1 MB $= 2^{20}$ B, \ 1 GB $= 2^{30}$ B, \ 1 TB $= 2^{40}$ B
+\end{kl}
+\smallskip
+{\scriptsize\setlength{\tabcolsep}{2.2pt}
+\begin{tabular}{@{}l|*{9}{r}@{}}
+$n$ & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\
+$2^n$ & 1 & 2 & 4 & 8 & 16 & 32 & 64 & 128 & 256 \\ \hline
+$n$ & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 & 20 \\
+$2^n$ & 512 & 1024 & 2048 & 4096 & 8192 & 16384 & 32768 & 65536 & $\approx 10^6$
+\end{tabular}}
+\end{fs}
+
+\begin{fs}{Zahlensysteme}
+\begin{kl}
+\item $(z_k \ldots z_1 z_0)_b = z_k \cdot b^k + \ldots + z_1 \cdot b + z_0$, \ Ziffern $0$ bis $b - 1$
+\item \textbf{Divisionsmethode:} wiederholt durch $b$ teilen, Reste \textbf{von unten nach oben} lesen
+\item \textbf{Subtraktionsmethode:} Stellenwerte von groß nach klein abziehen (passt: 1, sonst 0), Ziffern \textbf{von oben nach unten} lesen
+\item Dual $\leftrightarrow$ oktal: Dreiergruppen, \ dual $\leftrightarrow$ hex: Vierergruppen, jeweils \textbf{von rechts}
+\end{kl}
+\smallskip
+{\scriptsize\setlength{\tabcolsep}{2.4pt}
+\begin{tabular}{@{}l|*{8}{c}@{}}
+hex & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\
+dual & 0000 & 0001 & 0010 & 0011 & 0100 & 0101 & 0110 & 0111 \\ \hline
+hex & 8 & 9 & A & B & C & D & E & F \\
+dual & 1000 & 1001 & 1010 & 1011 & 1100 & 1101 & 1110 & 1111
+\end{tabular}}
+\end{fs}
+
+\begin{fs}{Zweierkomplement mit $n$ Bit}
+\begin{kl}
+\item \textbf{Negieren:} alle Bits umdrehen, dann 1 addieren. \ Rücklesen: ebenso, Minus davor.
+\item Vorderstes Bit: 0 positiv, 1 negativ. Es gibt nur eine Null.
+\item Wertebereich $-2^{n-1}$ bis $2^{n-1} - 1$ \ (8 Bit: $-128 \ldots 127$, \ 16 Bit: $-32\,768 \ldots 32\,767$)
+\item $a - b = a + (-b)$. Ein Übertrag über die feste Breite fällt weg.
+\item \textbf{Überlauf}, wenn Übertrag \emph{in} die Vorzeichenstelle $\neq$ Übertrag \emph{aus} ihr.
+\end{kl}
+\end{fs}
+
+\begin{fs}{Nachkommastellen und Gleitkomma}
+\begin{kl}
+\item $2^{-1} = 0{,}5$, \ $2^{-2} = 0{,}25$, \ $2^{-3} = 0{,}125$, \ $2^{-4} = 0{,}0625$, \ $2^{-5} = 0{,}03125$
+\item Dezimal $\to$ dual: Nachkommateil immer wieder $\cdot\,2$, Ziffer vor dem Komma notieren, \textbf{von oben nach unten} lesen
+\item Normieren auf $1{,}M \cdot 2^E$. Gespeichert: Vorzeichen, $E + \mathit{Bias}$, $M$ ohne führende 1
+\item \code{float}: $1 + 8 + 23$ Bit, Bias 127 \quad \code{double}: $1 + 11 + 52$ Bit, Bias 1023
+\item $0{,}1$, $0{,}2$, \ldots\ sind dual periodisch $\Rightarrow$ Gleitkommazahlen nie mit \code{==} vergleichen
+\end{kl}
+\end{fs}
+
+\begin{fs}{Textcodierung}
+\begin{kl}
+\item \textbf{ASCII} (7 Bit): \code{A} $= 41_{16} = 65$, \ \code{a} $= 61_{16} = 97$, \ \code{0} $= 30_{16} = 48$; \ klein $=$ groß $+\ 20_{16}$
+\item \textbf{ISO 8859-1} (8 Bit): \code{Ä} C4, \code{Ö} D6, \code{Ü} DC, \code{ä} E4, \code{ö} F6, \code{ü} FC, \code{ß} DF
+\item \textbf{UTF-8} (1 bis 4 Byte): \ \code{0xxxxxxx} \ | \ \code{110xxxxx 10xxxxxx} \ | \ \code{1110xxxx 10xxxxxx 10xxxxxx}
+\item \textbf{UTF-16}: 2 (selten 4) Byte. In Java ist ein \code{char} 2 Byte groß.
+\end{kl}
+\end{fs}
+
+\begin{fs}{Boolesche Algebra}
+\begin{center}{\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}cc|cccc@{}}
+$a$ & $b$ & $a \wedge b$ & $a \vee b$ & $a \oplus b$ & $\neg a$ \\ \hline
+0 & 0 & 0 & 0 & 0 & 1 \\
+0 & 1 & 0 & 1 & 1 & 1 \\
+1 & 0 & 0 & 1 & 1 & 0 \\
+1 & 1 & 1 & 1 & 0 & 0
+\end{tabular}}\end{center}\vspace{-2mm}
+
+\begin{kl}
+\item De Morgan: $\neg(a \wedge b) = \neg a \vee \neg b$, \ $\neg(a \vee b) = \neg a \wedge \neg b$
+\item Absorption: $a \vee (a \wedge b) = a$, \ $a \wedge (a \vee b) = a$
+\item Distributiv: $a \wedge (b \vee c) = (a \wedge b) \vee (a \wedge c)$, \ $a \vee (b \wedge c) = (a \vee b) \wedge (a \vee c)$
+\item $a \wedge \neg a = 0$, \ $a \vee \neg a = 1$, \ $a \wedge 1 = a$, \ $a \vee 0 = a$, \ $a \wedge 0 = 0$, \ $a \vee 1 = 1$, \ $\neg\neg a = a$
+\item Eine Wahrheitstafel mit $n$ Variablen hat $2^n$ Zeilen.
+\end{kl}
+\end{fs}
+
+\begin{fs}{Rechner und Algorithmen}
+\begin{kl}
+\item \textbf{Von Neumann:} Rechenwerk (ALU), Steuerwerk, Speicherwerk, Ein-/Ausgabewerk, verbunden durch den Bus. Programme \emph{und} Daten im selben Speicher.
+\item Schichten: Hardware -- Firmware -- Betriebssystem -- Oberfläche -- Anwendungen
+\item \textbf{terminierend:} endet nach endlich vielen Schritten. \ \textbf{determiniert:} gleiche Eingabe, gleiches Ergebnis. \ \textbf{deterministisch:} nächster Schritt stets eindeutig. \ \textbf{total korrekt} $=$ partiell korrekt $+$ terminierend
+\item \textbf{Compiler:} übersetzt vor der Ausführung. \ \textbf{Interpreter:} zur Laufzeit. \ Java: \code{javac} $\to$ Byte-Code $\to$ JVM
+\end{kl}
+\end{fs}
+
+\begin{fs}{Grammatiken und EBNF}
+\begin{kl}
+\item $G = (N, T, P, S)$: Nichtterminale, Terminale, Produktionen, Startsymbol
+\item EBNF: \code{"a"} Terminal, \ \code{A B} Folge, \ \code{A | B} oder, \ \code{[A]} 0- oder 1-mal, \ \code{\{A\}} 0-mal oder öfter, \ \code{(A)} Gruppe
+\item $a^n b^n$, $n \in \mathbb{N}$: $\{(S, aSb), (S, ab)\}$; \ mit $n \in \mathbb{N}_0$: $\{(S, aSb), (S, \varepsilon)\}$
+\end{kl}
+\smallskip
+{\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{2.3cm}p{5.6cm}@{}}
+\textbf{Typ 3} regulär & rechts höchstens ein Nichtterminal, immer am Rand; \emph{endlicher Automat} \\
+\textbf{Typ 2} kontextfrei & links genau ein Nichtterminal; \emph{Kellerautomat} \\
+\textbf{Typ 1} kontextsensitiv & Regeln verkürzen nicht: $|p| \leq |q|$ \\
+\textbf{Typ 0} allgemein & beliebige Regeln; \emph{Turingmaschine}
+\end{tabular}}
+\end{fs}
+
+\begin{fs}{Theoretische Informatik}
+\begin{kl}
+\item Endlicher Automat $M = (S, A, \delta, s_0, F)$: akzeptiert, wenn er nach dem letzten Zeichen in $F$ ist.
+\item Reguläre Ausdrücke: $e + f$ (oder), $ef$ (Folge), $e^*$ (beliebig oft, auch nie); Bindung $^*$ vor $\cdot$ vor $+$
+\item These von Church; Halteproblem und Satz von Rice: nicht entscheidbar
+\item $\{\mathit{VOR}\}\ \mathit{ANW}\ \{\mathit{NACH}\}$: Gilt VOR und terminiert ANW, gilt danach NACH.
+\end{kl}
+\end{fs}
+
+\end{multicols}
+\newpage
+\begin{multicols}{2}
+\raggedcolumns
+
+\begin{fs}{Java: Datentypen}
+{\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll@{\hspace{3mm}}ll@{}}
+\code{byte} & 1 Byte, $-128 \ldots 127$ & \code{short} & 2 Byte, $-32\,768 \ldots 32\,767$ \\
+\code{int} & 4 Byte, ca. $\pm 2{,}1 \cdot 10^9$ & \code{long} & 8 Byte, ca. $\pm 9{,}2 \cdot 10^{18}$ \\
+\code{float} & 4 Byte & \code{double} & 8 Byte \\
+\code{char} & 2 Byte, Unicode & \code{boolean} & \code{true} oder \code{false}
+\end{tabular}}
+\begin{kl}
+\item Implizit: \code{byte} $\to$ \code{short} $\to$ \code{int} $\to$ \code{long} $\to$ \code{float} $\to$ \code{double}, \ \code{char} $\to$ \code{int}. \ Andersherum nur mit Cast: \code{(int) 3.9} ist 3.
+\item Ganzzahl durch Ganzzahl ist ganzzahlig: \code{7 / 2} ist 3, \ \code{7 \% 2} ist 1, \ \code{7 / 2.0} ist 3.5
+\item Literale: \code{42} int, \code{42L} long, \code{1.5} double, \code{1.5f} float, \code{'x'} char, \code{"x"} String
+\item Lokale Variablen vor dem ersten Lesen initialisieren. \ Konstante: \code{final double PI = 3.14;}
+\end{kl}
+\end{fs}
+
+\begin{fs}{Java: Operatoren}
+\begin{kl}
+\item Priorität: \code{++ -- !} Cast \ > \ \code{* / \%} \ > \ \code{+ -} \ > \ \code{< <= > >=} \ > \ \code{== !=} \ > \ \code{\&\&} \ > \ \code{||} \ > \ \code{?:} \ > \ \code{= +=} \ldots
+\item \code{x++}: alten Wert verwenden, dann erhöhen. \ \code{++x}: erst erhöhen, dann verwenden.
+\item \code{a op= b} bedeutet \code{a = a op b}; der alte Wert von \code{a} wird zuerst gemerkt.
+\item \code{\&\&}, \code{||}: rechte Seite nur, wenn nötig. \ \code{\&}, \code{|}: immer beide Seiten.
+\item Von links: \code{"x" + 1 + 2} ist \code{"x12"}, \ \code{1 + 2 + "x"} ist \code{"3x"}
+\end{kl}
+\end{fs}
+
+\begin{fs}{Java: Ein- und Ausgabe, Kontrollstrukturen}
+\begin{fscode}
+import java.util.Scanner;
+Scanner sc = new Scanner(System.in);
+int n = sc.nextInt();   double d = sc.nextDouble();
+String s = sc.next();
+System.out.println("n = " + n);    // print: ohne Umbruch
+double r = Math.round(x * 100) / 100.0;   // 2 Stellen
+
+if (a > 0) { ... } else if (a < 0) { ... } else { ... }
+switch (n) {
+	case 1: ...; break;
+	case 2: case 3: ...; break;
+	default: ...
+}
+while (b) { ... }        // evtl. nie
+do { ... } while (b);    // mindestens einmal
+for (int i = 0; i < n; i++) { ... }
+for (int w : feld) { ... }  // nur lesen
+\end{fscode}
+\end{fs}
+
+\begin{fs}{Java: Arrays und Methoden}
+\begin{fscode}
+int[] f = new int[5];   int[] g = {3, 1, 4};
+int[][] m = new int[2][3];
+static int max(int a, int b) { return a > b ? a : b; }
+\end{fscode}
+\begin{kl}
+\item Index \code{0} bis \code{f.length - 1}, sonst \code{ArrayIndexOutOfBoundsException}. Vorbelegung 0, 0.0, \code{false}, \code{null}.
+\item \code{m.length} ist 2 (Zeilen), \code{m[0].length} ist 3. \ \code{b = a} kopiert nur die Referenz, \code{a == b} vergleicht Referenzen.
+\item Signatur $=$ Name $+$ Parametertypen (ohne Rückgabetyp). Überladen: gleicher Name, andere Parameter.
+\item Call-by-value: Parameter sind Kopien; bei Arrays und Objekten wird die Referenz kopiert.
+\end{kl}
+\end{fs}
+
+\begin{fs}{Rekursion und Komplexität}
+\begin{kl}
+\item Rekursion braucht einen \textbf{Basisfall} und einen \textbf{Rekursionsschritt} zu einem kleineren Problem. Auswerten: Aufrufe notieren, Ergebnisse von innen nach außen einsetzen.
+\item Endrekursiv: Der Aufruf ist die letzte Aktion, z.\,B. \code{return fak(n - 1, akk * n);}
+\item $O(1) \subset O(\log n) \subset O(n) \subset O(n \log n) \subset O(n^2) \subset O(n^3) \subset O(2^n)$
+\item Konstanten und kleinere Summanden entfallen: $O(3n^2 + 5n) = O(n^2)$
+\item Schleife: Durchläufe $\times$ Rumpf. Geschachtelt: multiplizieren. Nacheinander: der größte zählt. Halbieren pro Schritt: $\log n$.
+\end{kl}
+\end{fs}
+
+\begin{fs}{Objektorientierung}
+\begin{fscode}
+public class Konto {
+	private static int naechsteNr = 1;   // für eindeutige Nummern
+	private int nr;
+	private double saldo;
+	public Konto(double saldo) {   // Konstruktor
+		this.nr = naechsteNr++;
+		this.saldo = saldo;
+	}
+	public double getSaldo() { return saldo; }
+}
+public abstract class Figur {
+	public abstract double getFlaeche();
+}
+public class Kreis extends Figur implements Skalierbar {
+	public Kreis(double r) { super(); ... }   // zuerst!
+	@Override public double getFlaeche() { ... }
+}
+\end{fscode}
+\begin{kl}
+\item UML: \code{-} private, \code{+} public, \code{\#} protected, unterstrichen $=$ \code{static}, kursiv bzw. \{abstract\} $=$ abstrakt. Hohle Pfeilspitze zeigt auf die Oberklasse. Multiplizität \code{1}, \code{*}, \code{0..n}.
+\item Unveränderlich: im Konstruktor setzen, keine \code{set}-Methode. Später festgelegt: \code{set}-Methode.
+\item Abstrakte Klasse: keine Objekte. Interface: nur Methoden ohne Rumpf und Konstanten; mehrere pro Klasse.
+\item \code{Figur f = new Kreis(1);} (Up-Cast) \ \code{Kreis k = (Kreis) f;} (Down-Cast) \ \code{f instanceof Kreis}
+\end{kl}
+\end{fs}
+
+\begin{fs}{Strings und Wrapper}
+\begin{kl}
+\item \code{length()}, \code{charAt(i)}, \code{indexOf(t)} ($-1$, falls nicht enthalten), \code{substring(von, bis)} (\code{bis} exklusiv), \code{equals(t)}, \code{replace(a, b)}, \code{endsWith(t)}, \code{toCharArray()}
+\item Strings sind unveränderlich: \code{s = s.replace('a', 'b');} \ Vergleich nie mit \code{==}, immer mit \code{equals}.
+\item \code{Integer.parseInt("42")}, \ \code{Integer.toString(42)}, \ \code{Integer.MAX\_VALUE}, \ \code{Integer i = 5;} (Autoboxing)
+\end{kl}
+\end{fs}
+
+\end{multicols}
+\end{document}

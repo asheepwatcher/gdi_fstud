@@ -1,0 +1,256 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Java: Variablen, Datentypen, Ein- und Ausgabe}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Java ist eine \textbf{imperative} Sprache: Ein Programm besteht aus einer Folge von Anweisungen, die Werte berechnen und in \textbf{Variablen} speichern. Eine Variable ist ein Name für einen Speicherbereich. Java ist außerdem \textbf{streng typisiert}: Jede Variable muss vor ihrer Verwendung mit einem \textbf{Datentyp} deklariert werden. Der Typ legt fest, welche Werte die Variable aufnehmen kann und welche Operationen erlaubt sind. Der Compiler prüft das schon beim Übersetzen.
+
+Der Quelltext steht in einer Datei \code{Name.java}. Der Compiler \code{javac} erzeugt daraus den Byte-Code \code{Name.class}, den die JVM mit \code{java Name} ausführt. Die Ausführung beginnt immer in der Methode \code{main}.
+
+\begin{merke}[Primitive Datentypen]
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Typ} & \textbf{Größe} & \textbf{Wertebereich} & \textbf{Beispiel} \\
+\midrule
+\code{boolean} & -- & \code{true}, \code{false} & \code{boolean ok = true;} \\
+\code{byte} & 1 Byte & $-128$ bis $127$ & \code{byte b = 100;} \\
+\code{short} & 2 Byte & $-32\,768$ bis $32\,767$ & \code{short s = -5;} \\
+\code{int} & 4 Byte & $-2\,147\,483\,648$ bis $2\,147\,483\,647$ & \code{int n = 4711;} \\
+\code{long} & 8 Byte & ca. $\pm 9{,}2 \cdot 10^{18}$ & \code{long l = 5000000000L;} \\
+\code{char} & 2 Byte & $0$ bis $65\,535$ (Unicode-Zeichen) & \code{char c = 'x';} \\
+\code{float} & 4 Byte & ca. $\pm 3{,}4 \cdot 10^{38}$ & \code{float f = 1.5f;} \\
+\code{double} & 8 Byte & ca. $\pm 1{,}8 \cdot 10^{308}$ & \code{double d = 1.2345;} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{itemize}[itemsep=0.1em]
+\item Ganzzahlige Literale sind vom Typ \code{int}, Kommazahlen vom Typ \code{double}.
+\item \code{String} (Zeichenkette in doppelten Anführungszeichen) ist \emph{kein} primitiver Typ, sondern eine Klasse.
+\item \textbf{Lokale Variablen} haben keinen Standardwert. Sie müssen vor dem ersten Lesen einen Wert erhalten.
+\item \textbf{Konstanten} werden mit \code{final} vereinbart und großgeschrieben: \code{final double PI = 3.1415;}
+\end{itemize}
+\end{merke}
+
+\begin{merke}[Typumwandlung]
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{Implizit} (automatisch) nur \enquote{nach oben}, weil dabei nichts verloren geht:
+\begin{center}
+\code{byte} $\to$ \code{short} $\to$ \code{int} $\to$ \code{long} $\to$ \code{float} $\to$ \code{double} \qquad sowie \qquad \code{char} $\to$ \code{int}
+\end{center}
+\item \textbf{Explizit} mit dem Cast-Operator \code{(typ)} in der Gegenrichtung. Dabei können Informationen verloren gehen: Nachkommastellen werden abgeschnitten, zu große Werte laufen über.
+\item Bei Rechnungen mit verschiedenen Typen wird automatisch in den größeren Typ umgewandelt. Sind beide Operanden ganzzahlig, ist auch das Ergebnis ganzzahlig: \code{7 / 2} ergibt \code{3}.
+\item Sobald ein Operand von \code{+} ein \code{String} ist, wird der andere in Text umgewandelt und angehängt.
+\end{itemize}
+\end{merke}
+
+\beispiele
+\beispiel{Ein vollständiges Programm mit Ein- und Ausgabe}
+\begin{javacode}{Temperatur.java}
+import java.util.Scanner;
+
+public class Temperatur {
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Temperatur in Grad Celsius eingeben:");
+		int celsius = sc.nextInt();                    // ganze Zahl einlesen
+		double fahrenheit = celsius * 9 / 5.0 + 32;
+		fahrenheit = Math.round(fahrenheit * 10) / 10.0;   // auf eine Stelle runden
+		System.out.println(celsius + " Grad Celsius = " + fahrenheit + " Grad Fahrenheit");
+		sc.close();
+	}
+}
+\end{javacode}
+\begin{konsole}
+Temperatur in Grad Celsius eingeben:
+@21@
+21 Grad Celsius = 69.8 Grad Fahrenheit
+\end{konsole}
+\code{System.out.println} gibt einen Text mit Zeilenumbruch aus, \code{System.out.print} ohne. Kommazahlen liest man mit \code{sc.nextDouble()}, Texte mit \code{sc.next()}.
+
+\beispiel{Ganzzahldivision, Rest und Textverkettung}
+\begin{javacode}[Ausschnitt]{Rechnen}
+int a = 9, b = 4;
+System.out.println(a / b);              // 2      (ganzzahlige Division)
+System.out.println(a % b);              // 1      (Rest der Division)
+System.out.println((double) a / b);     // 2.25   (a wird zuerst umgewandelt)
+System.out.println("Erg: " + a + b);    // Erg: 94   (von links: erst Text + 9, dann + 4)
+System.out.println("Erg: " + (a + b));  // Erg: 13
+System.out.println(a + b + " Erg");     // 13 Erg    (von links: erst 9 + 4)
+\end{javacode}
+
+\beispiel{Typumwandlungen}
+\begin{javacode}[Ausschnitt]{Umwandeln}
+int i = 4;
+double d = i;               // erlaubt (implizit): d ist 4.0
+int j = (int) 8.8;          // nur mit Cast: j ist 8, die Nachkommastellen fallen weg
+short s = (short) 40000;    // Überlauf: s ist -25536
+int code = 'A' + 1;         // char wird zu int: 66
+char c = (char) code;       // 'B'
+\end{javacode}
+Ohne Cast meldet der Compiler bei \code{int j = 8.8;} den Fehler \emph{Type mismatch: cannot convert from double to int}.
+
+\aufgaben
+\aufgabe{Bezeichner und Konventionen}
+\begin{enumerate}[label=\alph*)]
+\item Welche der folgenden Bezeichner sind in Java erlaubt? Begründen Sie. \\
+\code{2fast} \quad \code{\_wert} \quad \code{class} \quad \code{maxWert} \quad \code{mein-wert} \quad \code{\$summe} \quad \code{true} \quad \code{Zähler}
+\item Wie sollten nach den Namenskonventionen eine Variable für die Anzahl der Studierenden, eine Konstante für die Mehrwertsteuer, eine Methode zum Berechnen des Preises und eine Klasse für ein Bankkonto heißen?
+\end{enumerate}
+
+\aufgabe{Den passenden Datentyp wählen}
+Welchen Datentyp würden Sie jeweils verwenden? Begründen Sie kurz.
+\begin{multicols}{2}
+\begin{enumerate}[label=\alph*)]
+\item die Einwohnerzahl der Erde
+\item eine Klausurnote wie 1,7
+\item die Antwort auf \enquote{bestanden?}
+\item ein einzelner Buchstabe
+\item die Anzahl der Tage eines Monats
+\item ein Name
+\end{enumerate}
+\end{multicols}
+
+\aufgabe[\K]{Lässt sich das ausführen?}
+Lassen sich die folgenden Codebeispiele ausführen? Falls nein, erläutern Sie kurz den Fehler. Falls ja: Was wird ausgegeben?
+\begin{tcbraster}[raster columns=3, raster equal height=rows, raster column skip=3mm, raster row skip=1mm]
+\begin{javacode}[Ausschnitt]{a)}
+long l = 5;
+int i = l;
+System.out.println(i);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{b)}
+int i = 7;
+double d = i;
+System.out.println(d / 2);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{c)}
+int x;
+x++;
+System.out.println(x);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{d)}
+char c = 'a';
+c++;
+System.out.println(c);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{e)}
+float f = 1.5;
+System.out.println(f);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{f)}
+int i = (int) 3.99;
+System.out.println(i);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{g)}
+final int MAX = 10;
+MAX = 11;
+System.out.println(MAX);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{h)}
+boolean b = 1;
+System.out.println(b);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{i)}
+int i = 10 / 4;
+double d = 10 / 4;
+System.out.println(i + d);
+\end{javacode}
+\end{tcbraster}
+
+\aufgabe{Was gibt das Programm aus?}
+\begin{javacode}{Ausgabe.java}
+public class Ausgabe {
+	public static void main(String[] args) {
+		int a = 17;
+		int b = 5;
+		double c = 5;
+		System.out.println(a / b);
+		System.out.println(a % b);
+		System.out.println(a / c);
+		System.out.println("a+b=" + a + b);
+		System.out.println(a + b + "=a+b");
+		System.out.println((double) (a / b));
+		System.out.println((char) ('a' + b));
+	}
+}
+\end{javacode}
+
+\aufgabe{Zeit umrechnen}
+Schreiben Sie ein Java-Programm, das eine Anzahl von Sekunden von der Konsole einliest und in Stunden, Minuten und Sekunden umrechnet.
+\begin{konsole}
+Sekunden eingeben:
+@3725@
+--------------------------------
+3725 Sekunden sind 1 h 2 min 5 s
+\end{konsole}
+
+\aufgabe{Durchschnitt}
+\begin{enumerate}[label=\alph*)]
+\item Schreiben Sie ein Java-Programm, das drei ganze Zahlen einliest und ihren Durchschnitt auf zwei Nachkommastellen gerundet ausgibt. Testen Sie mit den Zahlen 1, 2 und 2.
+\item Ernst hat \code{double schnitt = (a + b + c) / 3;} geschrieben und erhält für 1, 2 und 2 das Ergebnis \code{1.0}. Erklären Sie den Fehler und nennen Sie zwei Möglichkeiten, ihn zu beheben.
+\end{enumerate}
+
+\aufgabe[\S]{Grenzfälle}
+Überlegen Sie zuerst, was die folgenden Ausschnitte ausgeben, und prüfen Sie Ihre Vermutung dann am Rechner. Erklären Sie jeweils das Ergebnis.
+\begin{tcbraster}[raster columns=3, raster equal height=rows, raster column skip=3mm]
+\begin{javacode}[Ausschnitt]{a)}
+byte b = (byte) 130;
+System.out.println(b);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{b)}
+int max = Integer.MAX_VALUE;
+System.out.println(max + 1);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{c)}
+long g = 1000000 * 1000000;
+System.out.println(g);
+\end{javacode}
+\end{tcbraster}
+Wie muss Ausschnitt c) geändert werden, damit das richtige Ergebnis $10^{12}$ ausgegeben wird?
+
+\ueben
+\aufgabe{Literale}
+Welchen Datentyp haben die folgenden Literale? \\[1mm]
+\code{42} \quad \code{42L} \quad \code{3.0} \quad \code{3f} \quad \code{'a'} \quad \code{"a"} \quad \code{true} \quad \code{0x1F} \quad \code{1e3}
+
+\aufgabe{Richtig deklariert?}
+Welche Deklarationen sind korrekt? Korrigieren Sie die fehlerhaften.
+\begin{javacode}[Ausschnitt]{Deklarationen}
+int 1x = 5;
+double d = 3;
+int i = 3.0;
+char c = "a";
+String s = 'abc';
+boolean b = "true";
+long l = 10;
+byte k = 200;
+\end{javacode}
+
+\aufgabe{Ausdrücke auswerten}
+Welchen Wert und welchen Typ haben die Ausdrücke?
+\begin{multicols}{3}
+\begin{enumerate}[label=\alph*)]
+\item \code{7 / 2}
+\item \code{7 / 2.0}
+\item \code{7 \% 2}
+\item \code{(double) (7 / 2)}
+\item \code{(double) 7 / 2}
+\item \code{10 / 3 * 3}
+\item \code{10 * 3 / 3}
+\item \code{1 + 2 + "3"}
+\item \code{"1" + 2 + 3}
+\item \code{'a' + 1}
+\item \code{(char) ('a' + 1)}
+\item \code{(int) 3.7 + (int) -3.7}
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Kleine Programme}
+Schreiben Sie jeweils ein vollständiges Programm mit Eingabe über den \code{Scanner}.
+\begin{enumerate}[label=\alph*)]
+\item Aus dem Radius eines Kreises werden Umfang und Fläche berechnet (auf zwei Nachkommastellen gerundet).
+\item Aus Kapital, Zinssatz (in Prozent) und Laufzeit in Jahren werden die einfachen Zinsen berechnet.
+\item Ein Betrag in Cent wird in Euro und Cent zerlegt (\code{1234} ergibt \code{12 Euro 34 Cent}).
+\item Aus dem Geburtsjahr und dem aktuellen Jahr wird das Alter in Jahren und ungefähr in Tagen berechnet.
+\end{enumerate}

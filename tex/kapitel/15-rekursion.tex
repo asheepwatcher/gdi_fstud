@@ -1,0 +1,306 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Rekursion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Eine Methode ist \textbf{rekursiv}, wenn sie sich selbst aufruft. Die Idee dahinter: Ein Problem wird auf ein \emph{kleineres} Problem derselben Art zurückgeführt, so lange, bis es so klein ist, dass die Lösung direkt angegeben werden kann. Viele Aufgaben lassen sich so sehr kompakt und elegant formulieren. Der Preis dafür: Jeder Aufruf legt Parameter und lokale Variablen auf dem Aufrufstapel ab. Rekursive Lösungen sind deshalb meist langsamer und speicherhungriger als iterative Lösungen (mit Schleifen).
+
+\begin{merke}
+\begin{itemize}[itemsep=0.1em]
+\item Jede rekursive Methode braucht einen \textbf{Basisfall} (Abbruchbedingung), der ohne weiteren Aufruf auskommt, und einen \textbf{Rekursionsschritt}, der das Problem verkleinert.
+\item Fehlt der Basisfall oder wird er nie erreicht, ruft sich die Methode endlos auf, bis der Stapel voll ist (\code{StackOverflowError}).
+\item Zum Nachvollziehen schreibt man die Aufrufe untereinander, bis der Basisfall erreicht ist, und setzt die Ergebnisse dann \textbf{von innen nach außen} ein.
+\item Eine Methode ist \textbf{endrekursiv}, wenn der rekursive Aufruf die letzte Aktion ist und mit seinem Ergebnis nicht mehr weitergerechnet wird. Endrekursive Methoden lassen sich leicht in Schleifen umformen.
+\item Jede einfache Rekursion lässt sich durch eine Schleife ersetzen. Iterative Lösungen sind vorzuziehen, wenn sehr viele Aufrufe nötig wären oder die Laufzeit kritisch ist.
+\end{itemize}
+\end{merke}
+
+\beispiele
+\beispiel{Fakultät}
+Aus der Definition $n! = n \cdot (n-1)!$ mit $0! = 1$ wird direkt eine Methode.
+
+\noindent\begin{minipage}[t]{0.5\linewidth}
+\begin{javacode}[Ausschnitt]{rekursiv}
+static long fak(int n) {
+	if (n == 0) {
+		return 1;               // Basisfall
+	}
+	return n * fak(n - 1);      // Rekursionsschritt
+}
+\end{javacode}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.45\linewidth}
+\vspace{1mm}
+\begin{tabular}{@{}l@{\;}l@{}}
+\code{fak(3)} & \code{= 3 * fak(2)} \\
+ & \code{= 3 * (2 * fak(1))} \\
+ & \code{= 3 * (2 * (1 * fak(0)))} \\
+ & \code{= 3 * (2 * (1 * 1))} \\
+ & \code{= 6}
+\end{tabular}
+\end{minipage}
+
+\beispiel{Eine unbekannte rekursive Methode nachvollziehen}
+\begin{javacode}[Ausschnitt]{Was macht diese Methode?}
+static String raetsel(int n) {
+	if (n < 10) {
+		return "" + n;
+	}
+	return n % 10 + raetsel(n / 10);
+}
+\end{javacode}
+Für \code{raetsel(472)} notiert man die Aufrufe und setzt dann von unten nach oben ein:
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Aufruf} & \textbf{liefert} & \textbf{Ergebnis} \\
+\midrule
+\code{raetsel(472)} & \code{2 + raetsel(47)} & \code{"274"} \\
+\code{raetsel(47)} & \code{7 + raetsel(4)} & \code{"74"} \\
+\code{raetsel(4)} & \code{"4"} (Basisfall) & \code{"4"} \\
+\bottomrule
+\end{tabular}
+\end{center}
+Die Methode liefert die Ziffern einer Zahl in umgekehrter Reihenfolge. Die Zahl der Aufrufe entspricht der Zahl der Ziffern von $n$; der Aufwand wächst also nur logarithmisch mit $n$ (siehe Kapitel~\ref{sec:komplexitaet}).
+
+\beispiel{Rekursiv, endrekursiv, iterativ}
+Dreimal die Summe $1 + 2 + \ldots + n$:
+\begin{javacode}[Ausschnitt]{Drei Varianten}
+// rekursiv: nach dem Aufruf wird noch addiert, also nicht endrekursiv
+static int summe(int n) {
+	return n == 0 ? 0 : n + summe(n - 1);
+}
+
+// endrekursiv: das Zwischenergebnis wird in einem zusätzlichen Parameter (Akkumulator) mitgeführt
+static int summe(int n, int akk) {
+	return n == 0 ? akk : summe(n - 1, akk + n);       // erster Aufruf: summe(n, 0)
+}
+
+// iterativ
+static int summeIter(int n) {
+	int akk = 0;
+	for (int i = 1; i <= n; i++) {
+		akk += i;
+	}
+	return akk;
+}
+\end{javacode}
+
+\beispiel{Türme von Hanoi}
+$n$ der Größe nach sortierte Scheiben sollen vom Startstapel \code{a} auf den Zielstapel \code{b} gebracht werden. Es darf immer nur eine Scheibe bewegt werden, und nie darf eine größere auf einer kleineren liegen. Der Stapel \code{z} dient als Zwischenablage. Die rekursive Idee: Um $n$ Scheiben zu versetzen, versetzt man erst $n-1$ Scheiben auf den Hilfsstapel, dann die größte Scheibe auf das Ziel und anschließend die $n-1$ Scheiben vom Hilfsstapel auf das Ziel.
+\begin{javacode}[Ausschnitt]{Hanoi}
+static void bewege(char a, char b, char z, int n) {
+	if (n == 1) {
+		System.out.println("Bewege Scheibe von " + a + " auf " + b);
+	} else {
+		bewege(a, z, b, n - 1);     // n-1 Scheiben von a nach z (über b)
+		bewege(a, b, z, 1);         // die größte Scheibe von a nach b
+		bewege(z, b, a, n - 1);     // n-1 Scheiben von z nach b (über a)
+	}
+}
+\end{javacode}
+Der Aufruf \code{bewege('a', 'b', 'z', 3)} erzeugt 7 Züge: a$\to$b, a$\to$z, b$\to$z, a$\to$b, z$\to$a, z$\to$b, a$\to$b. Allgemein werden $2^n - 1$ Züge benötigt, der Aufwand wächst also exponentiell.
+
+\aufgaben
+\aufgabe{Rekursion auswerten}
+Was liefern bzw. was geben die folgenden Aufrufe aus? Schreiben Sie Ihr Vorgehen schrittweise auf.
+\begin{tcbraster}[raster columns=2, raster equal height=rows, raster column skip=3mm, raster row skip=1mm]
+\begin{javacode}[Ausschnitt]{a) \ f(7)}
+static int f(int n) {
+	return n <= 1 ? 1 : n * f(n - 2);
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{b) \ g(84, 36)}
+static int g(int a, int b) {
+	return b == 0 ? a : g(b, a % b);
+}
+\end{javacode}
+\end{tcbraster}
+\begin{javacode}[Ausschnitt]{c) \ h(3)}
+static void h(int n) {
+	if (n > 0) {
+		System.out.print(n + " ");
+		h(n - 1);
+		System.out.print(n + " ");
+	}
+}
+\end{javacode}
+
+\aufgabe[\K]{Rekursion verstehen}
+Gegeben sei die folgende Klasse.
+\begin{javacode}{Test.java}
+public class Test {
+	private static int tuWas(int a, int b) {
+		if (b == 0)
+			return 0;
+		if (b % 2 == 0)
+			return tuWas(a + a, b / 2);
+		return tuWas(a + a, b / 2) + a;
+	}
+
+	public static void main(String[] args) {
+		System.out.println(tuWas(7, 5));
+		System.out.println(tuWas(3, 8));
+		System.out.println(tuWas(10, 0));
+	}
+}
+\end{javacode}
+\begin{enumerate}[label=\alph*)]
+\item Was wird beim Aufruf der \code{main}-Methode auf dem Bildschirm ausgegeben? Was berechnet \code{tuWas} allgemein?
+\item Bestimmen Sie die Worst-Case-Komplexität des Rechenaufwands in Abhängigkeit von $b$. Welche Ordnung ergibt sich?
+\item Ersetzen Sie die Methode \code{tuWas} durch eine iterative Lösung (mit einer Schleife).
+\end{enumerate}
+
+\aufgabe{Rekursive Methoden schreiben}
+Implementieren Sie die folgenden Methoden rekursiv, also ohne Schleifen.
+\begin{javacode}[Ausschnitt]{Signaturen}
+public static int quersumme(int n)              // quersumme(4711) liefert 13
+public static int anzahlZiffern(int n)          // anzahlZiffern(4711) liefert 4
+public static long potenz(int x, int n)         // potenz(2, 10) liefert 1024
+public static String dual(int n)                // dual(10) liefert "1010"
+public static int summe(int[] f, int bis)       // Summe der Elemente f[0] bis f[bis]
+\end{javacode}
+\begin{hinweis}
+\textbf{Hinweis:} Die folgende iterative Methode wandelt eine Dezimalzahl in eine Dualzahl um. Sie können sich für \code{dual} daran orientieren.
+\begin{javacode}[Ausschnitt]{iterativ}
+public static String dualIter(int n) {
+	String dual = "";
+	while (n > 0) {
+		dual = n % 2 + dual;
+		n = n / 2;
+	}
+	return dual;
+}
+\end{javacode}
+\end{hinweis}
+
+\aufgabe{Palindrome}
+Ein Wort wird Palindrom genannt, wenn es von vorne und von hinten gelesen identisch ist, z.\,B. \textbf{anna} und \textbf{reliefpfeiler}.
+\begin{enumerate}[label=\alph*)]
+\item Schreiben Sie eine iterative Methode, die prüft, ob ein Wort ein Palindrom ist.
+\item Schreiben Sie eine rekursive Methode für dieselbe Aufgabe.
+\item Schreiben Sie nach demselben Muster eine rekursive Methode \code{umdrehen}, die den Bereich eines Arrays zwischen \code{anfang} und \code{ende} umdreht.
+\end{enumerate}
+\begin{javacode}[Ausschnitt]{Signaturen und Aufruf}
+public static boolean isPalindrom(char[] array)
+public static boolean isPalindromRek(char[] array, int anfang, int ende)
+public static void umdrehen(char[] array, int anfang, int ende)
+
+public static void main(String[] args) {
+	String wort = "anna";
+	char[] array = wort.toCharArray();       // String in ein char-Array umwandeln
+	System.out.println(wort + ": " + isPalindrom(array));
+	System.out.println(wort + ": " + isPalindromRek(array, 0, array.length - 1));
+}
+\end{javacode}
+
+\aufgabe[\K]{Geschachtelte Rekursion}
+Betrachten Sie die folgende Java-Methode:
+\begin{javacode}[Ausschnitt]{test}
+public static int test(int x) {
+	return (x % 3 == 0) ? test(test(--x)) : x / 2 + 1;
+}
+\end{javacode}
+\begin{enumerate}[label=\alph*)]
+\item Welche Rückgabe liefert der Aufruf \code{test(36)}? Schreiben Sie Ihr Vorgehen bei der Auswertung schrittweise auf.
+\item Was ändert sich, wenn die \code{return}-Anweisung durch die folgende ersetzt wird?
+\begin{javacode}[Ausschnitt]{Variante}
+	return (x % 3 == 0) ? test(test(x--)) : x / 2 + 1;
+\end{javacode}
+\end{enumerate}
+
+\aufgabe[\K]{Eine Zahlenfolge, rekursiv}\label{auf:folgerek}
+Geben Sie für die Zahlenfolge aus Aufgabe 14.6 (durch 3 teilbar: durch 3 teilen, sonst 1 addieren, Ende bei 1) eine Implementierung der Methode \code{berechneFolge} an, die die Folge \emph{rekursiv} ermittelt. Ergänzen Sie dazu die Methode um einen weiteren Parameter \code{int start}. Der erste Aufruf erfolgt dann mit
+\begin{javacode}[Ausschnitt]{Aufruf}
+berechneFolge(folge, startzahl, 0);
+\end{javacode}
+
+\aufgabe{Türme von Hanoi}
+\begin{enumerate}[label=\alph*)]
+\item Geben Sie die Zugfolge für $n = 2$ an und zeichnen Sie für $n = 3$ den Baum der Aufrufe von \code{bewege}.
+\item Wie viele Züge werden für $n = 4$, $n = 10$ und $n = 64$ benötigt? Wie lange dauert das Umsetzen von 64 Scheiben, wenn pro Sekunde eine Scheibe bewegt wird?
+\item Ergänzen Sie die Methode so, dass sie die Anzahl der ausgeführten Züge zurückgibt.
+\end{enumerate}
+
+\aufgabe[\S]{Fibonacci}
+Die Fibonacci-Zahlen sind definiert durch $F_0 = 0$, $F_1 = 1$ und $F_n = F_{n-1} + F_{n-2}$.
+\begin{enumerate}[label=\alph*)]
+\item Schreiben Sie eine rekursive Methode \code{fibonacci(int n)} direkt nach der Definition.
+\item Zeichnen Sie den Baum der Aufrufe für \code{fibonacci(5)}. Wie viele Aufrufe finden insgesamt statt, und wie oft wird \code{fibonacci(2)} berechnet? Warum ist diese Lösung für große $n$ unbrauchbar?
+\item Schreiben Sie eine iterative Variante mit linearem Aufwand. Messen Sie die Laufzeit beider Varianten für $n = 40$. Die aktuelle Zeit in Millisekunden liefert \code{System.currentTimeMillis()}.
+\item Schreiben Sie die Methode \code{fak} aus dem ersten Beispiel endrekursiv.
+\end{enumerate}
+
+\ueben
+\aufgabe{Noch mehr auswerten}
+Was liefern die Aufrufe?
+\begin{tcbraster}[raster columns=3, raster equal height=rows, raster column skip=3mm]
+\begin{javacode}[Ausschnitt]{a) \ a(5)}
+static int a(int n) {
+	if (n == 0) return 0;
+	return n + a(n - 1);
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{b) \ b(2, 5)}
+static int b(int x, int n) {
+	if (n == 0) return 1;
+	return x * b(x, n - 1);
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{c) \ c(1000)}
+static int c(int n) {
+	if (n < 10) return 1;
+	return 1 + c(n / 10);
+}
+\end{javacode}
+\end{tcbraster}
+
+\aufgabe{Wie viele Aufrufe?}
+Wie oft wird die Methode \code{f} beim Aufruf \code{f(4)} insgesamt aufgerufen? Wie viele Aufrufe sind es allgemein bei \code{f(n)}?
+\begin{javacode}[Ausschnitt]{f}
+static int f(int n) {
+	if (n == 0) return 1;
+	return f(n - 1) + f(n - 1);
+}
+\end{javacode}
+
+\aufgabe{Was geht hier schief?}
+Was passiert bei den Aufrufen \code{g(5)} und \code{h(5)}? Korrigieren Sie die Methoden.
+\begin{tcbraster}[raster columns=2, raster equal height=rows, raster column skip=3mm]
+\begin{javacode}[Ausschnitt]{g}
+static int g(int n) {
+	return n * g(n - 1);
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{h}
+static int h(int n) {
+	if (n == 0) return 0;
+	return n + h(n - 2);
+}
+\end{javacode}
+\end{tcbraster}
+
+\aufgabe{Rekursiv und iterativ}
+\begin{enumerate}[label=\alph*)]
+\item Schreiben Sie die Methode \code{a} aus der ersten Aufgabe dieses Abschnitts iterativ.
+\item Schreiben Sie die folgende Methode rekursiv.
+\begin{javacode}[Ausschnitt]{iterativ}
+static int produkt(int[] f) {
+	int p = 1;
+	for (int i = 0; i < f.length; i++) {
+		p *= f[i];
+	}
+	return p;
+}
+\end{javacode}
+\end{enumerate}
+
+\aufgabe{Rekursive Methoden schreiben}
+\begin{javacode}[Ausschnitt]{Signaturen}
+public static void countdown(int n)                     // gibt n, n-1, ..., 1 aus
+public static int ggT(int a, int b)                     // nach der Definition aus Kapitel 8
+public static boolean istZweierpotenz(int n)            // 1, 2, 4, 8, ... liefern true
+public static int maximum(int[] f, int bis)             // Maximum von f[0] bis f[bis]
+public static int zaehle(int[] f, int wert, int ab)     // Vorkommen von wert ab Position ab
+public static int collatzSchritte(int n)                // Anzahl der Schritte bis zur 1
+\end{javacode}

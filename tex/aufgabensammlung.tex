@@ -1,0 +1,43 @@
+% Gesamte Aufgabensammlung in einem Dokument (für die Lösungen \mitloesung definieren).
+\documentclass[11pt,a4paper,DIV14,headsepline]{scrartcl}
+\def\gesamtsammlung{1}
+\input{praeambel}
+\input{aufgaben-makros}
+\ihead{GDI -- Aufgabensammlung\ifloesung\ (Lösungen)\fi}
+\newcommand{\akap}[1]{\IfFileExists{aufgaben/#1.tex}{\input{aufgaben/#1}}{}}
+
+\begin{document}
+\thispagestyle{empty}
+\makeatletter
+\begin{center}
+{\@titlehead}\\[3cm]
+{\Huge\bfseries Aufgabensammlung\ifloesung\\[3mm]{\LARGE Lösungen}\fi}\\[6mm]
+{\large Übungsaufgaben in drei Schwierigkeitsstufen\\zu allen Kapiteln des Kompaktskripts}
+\end{center}
+\makeatother
+\vfill
+\sammlungshinweis
+\newpage
+\tableofcontents
+
+\akap{01-codierung}
+\akap{02-zahlensysteme}
+\akap{03-zweierkomplement}
+\akap{04-nachkomma}
+\akap{05-zeichen}
+\akap{06-boole}
+\akap{07-rechner}
+\akap{08-algorithmen}
+\akap{09-grammatiken}
+\akap{10-java-grundlagen}
+\akap{11-operatoren}
+\akap{12-kontrollstrukturen}
+\akap{13-arrays}
+\akap{14-methoden}
+\akap{15-rekursion}
+\akap{16-komplexitaet}
+\akap{17-klassen}
+\akap{18-vererbung}
+\akap{19-strings-wrapper}
+\akap{20-theoinf}
+\end{document}

@@ -1,0 +1,272 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Java: Ausdrücke und Operatoren}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Ein \textbf{Ausdruck} beschreibt eine Auswertungsvorschrift: Operatoren werden auf Operanden (Variablen, Literale, Methodenaufrufe) angewandt, und am Ende steht ein Wert. In welcher Reihenfolge die Operatoren ausgewertet werden, bestimmen ihre \textbf{Prioritäten}; mit runden Klammern lässt sich eine andere Reihenfolge erzwingen. Einige Operatoren haben \textbf{Nebeneffekte}: Sie liefern nicht nur einen Wert, sondern verändern nebenbei eine Variable. Genau das macht Ausdrücke wie \code{x = y++ + --z} zu einer beliebten Klausuraufgabe.
+
+\begin{merke}[Die wichtigsten Operatoren]
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{Arithmetisch:} \code{+ - * /} und \code{\%} (Rest der Division, Modulo).
+\item \textbf{Inkrement und Dekrement:} \code{++} erhöht um 1, \code{--} verringert um 1.
+	\begin{itemize}[itemsep=0em]
+	\item Präfix \code{++x}: \emph{erst} ändern, \emph{dann} den neuen Wert verwenden.
+	\item Postfix \code{x++}: \emph{erst} den alten Wert verwenden, \emph{dann} ändern.
+	\end{itemize}
+\item \textbf{Zuweisung:} \code{=} sowie die Kurzformen \code{+= -= *= /= \%=}. \ \code{a op= b} bedeutet \code{a = a op b}.
+\item \textbf{Vergleich:} \code{== != < <= > >=}, das Ergebnis ist immer ein \code{boolean}.
+\item \textbf{Logisch:} \code{\&\&} (und), \code{||} (oder), \code{!} (nicht), \code{\textasciicircum} (entweder oder). Bei \code{\&\&} und \code{||} wird der rechte Operand nur ausgewertet, wenn das Ergebnis noch nicht feststeht (\emph{kurze Auswertung}). Die Varianten \code{\&} und \code{|} werten immer beide Seiten aus.
+\item \textbf{Bedingungsoperator:} \code{Bedingung ? Ausdruck1 : Ausdruck2} liefert \code{Ausdruck1}, falls die Bedingung wahr ist, sonst \code{Ausdruck2}.
+\end{itemize}
+\end{merke}
+
+\begin{merke}[Prioritäten (von hoch nach niedrig)]
+\begin{center}
+\begin{tabular}{@{}cl@{\qquad\qquad}cl@{}}
+1 & \code{++ -- !} Vorzeichen, Cast & 5 & \code{\&\&} \\
+2 & \code{* / \%} & 6 & \code{||} \\
+3 & \code{+ -} & 7 & \code{? :} \\
+4 & \code{< <= > >=}, danach \code{== !=} & 8 & \code{= += -= *= /= \%=}
+\end{tabular}
+\end{center}
+Operanden werden in Java immer \textbf{von links nach rechts} ausgewertet. Nebeneffekte eines linken Operanden sind also schon geschehen, wenn der rechte ausgewertet wird.
+\end{merke}
+
+\beispiele
+\beispiel{Präfix und Postfix}
+\begin{tcbraster}[raster columns=2, raster equal height, raster column skip=3mm]
+\begin{javacode}[Ausschnitt]{Postfix}
+int n = 5;
+int m = n++;     // m = 5, n = 6
+\end{javacode}
+\begin{javacode}[Ausschnitt]{Präfix}
+int n = 5;
+int m = ++n;     // m = 6, n = 6
+\end{javacode}
+\end{tcbraster}
+
+\beispiel{Einen Ausdruck Schritt für Schritt auswerten}
+Welche Werte haben \code{x} und \code{y} nach \code{int x = 2; int y = x++ * 3 + --x;}?
+\begin{center}
+\begin{tabular}{@{}llc@{}}
+\toprule
+\textbf{Teilausdruck} & \textbf{Wert} & \textbf{x danach} \\
+\midrule
+\code{x++} & 2 (alter Wert) & 3 \\
+\code{x++ * 3} & $2 \cdot 3 = 6$ & 3 \\
+\code{--x} & 2 (neuer Wert) & 2 \\
+\code{x++ * 3 + --x} & $6 + 2 = 8$ & 2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Ergebnis: \code{y = 8} und \code{x = 2}.
+
+\beispiel{Zusammengesetzte Zuweisung mit Nebeneffekt}
+Bei \code{a op= b} merkt sich Java \emph{zuerst} den alten Wert von \code{a}, wertet dann \code{b} aus und weist am Ende das Ergebnis zu.
+\begin{javacode}[Ausschnitt]{Zuweisung}
+int x = 4;
+x += x++;        // 4 + 4 = 8.   Die Erhöhung auf 5 wird von der Zuweisung überschrieben.
+
+int y = 3;
+y *= ++y;        // 3 * 4 = 12.  Links zählt der alte Wert 3, rechts der neue Wert 4.
+\end{javacode}
+
+\beispiel{Bedingungsoperator}
+\begin{javacode}[Ausschnitt]{Bedingungsoperator}
+int max = (a > b) ? a : b;                 // das Maximum von a und b
+int betrag = (a < 0) ? -a : a;             // der Betrag von a
+String text = (n % 2 == 0) ? "gerade" : "ungerade";
+\end{javacode}
+
+\beispiel{Logische Operatoren und kurze Auswertung}
+\begin{javacode}[Ausschnitt]{Logik}
+int num1 = 2, num2 = 3;
+System.out.println(num1 == 2 && num2 < 8);          // true
+System.out.println(num1 != 2 || !(num2 < 2));       // true
+System.out.println(num1 == 2 ^ num2 > 0);           // false (beide Seiten sind wahr)
+
+int n = 0;
+System.out.println(n != 0 && 10 / n > 2);           // false, es wird nicht durch 0 geteilt
+\end{javacode}
+Mit \code{\&} statt \code{\&\&} würde in der letzten Zeile auch die rechte Seite ausgewertet, und das Programm bräche mit einer \code{ArithmeticException} ab.
+
+\aufgaben
+\aufgabe{Inkrement und Dekrement}
+Welche Werte haben die Variablen nach Ausführung der Ausschnitte? Überlegen Sie zuerst ohne Rechner.
+\begin{tcbraster}[raster columns=3, raster equal height=rows, raster column skip=3mm, raster row skip=1mm]
+\begin{javacode}[Ausschnitt]{a)}
+int n = 7;
+int m = n--;
+\end{javacode}
+\begin{javacode}[Ausschnitt]{b)}
+int a = 4;
+int b = --a * 3;
+\end{javacode}
+\begin{javacode}[Ausschnitt]{c)}
+int x = 2;
+int y = x++ + x++;
+\end{javacode}
+\begin{javacode}[Ausschnitt]{d)}
+int i = 6;
+int j = --i - i--;
+\end{javacode}
+\begin{javacode}[Ausschnitt]{e)}
+int k = 5;
+k -= k--;
+\end{javacode}
+\begin{javacode}[Ausschnitt]{f)}
+int p = 3;
+int q = ++p * p++;
+\end{javacode}
+\end{tcbraster}
+
+\aufgabe[\K]{Programmverständnis I}
+Gegeben seien die Variablenbelegungen \code{int x = 2; int y = 5; int z = 3;}
+
+Welchen Wert haben die Variablen nach der Ausführung der einzelnen alternativen Zeilen? \textbf{Der Ausgangswert bei jeder Zeile sei die oben angegebene Belegung.}
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|L{6.5cm}|C{1.5cm}|C{1.5cm}|C{1.5cm}|}
+\hline
+ & \textbf{x} & \textbf{y} & \textbf{z} \\ \hline
+\code{z *= ++z;} & & & \\ \hline
+\code{x = y-- - ++z;} & & & \\ \hline
+\code{y -= (x < z) ? x : 2 * x;} & & & \\ \hline
+\code{x = (y++ > 5) ? y : 3 * y;} & & & \\ \hline
+\end{tabular}
+\end{center}
+
+\aufgabe[\K]{Programmverständnis II}
+Gegeben seien die Variablenbelegungen \code{int x = 4; int y = 1; int z = 2;}
+
+Welchen Wert haben die Variablen nach der Ausführung der einzelnen alternativen Zeilen? \textbf{Der Ausgangswert bei jeder Zeile sei die oben angegebene Belegung.}
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|L{6.5cm}|C{1.5cm}|C{1.5cm}|C{1.5cm}|}
+\hline
+ & \textbf{x} & \textbf{y} & \textbf{z} \\ \hline
+\code{z = y++;} & & & \\ \hline
+\code{y = y++ + ++y;} & & & \\ \hline
+\code{x += x *= z--;} & & & \\ \hline
+\code{z -= (x-- - --y);} & & & \\ \hline
+\end{tabular}
+\end{center}
+
+\aufgabe{Logische Ausdrücke}
+Gegeben seien \code{int a = 5; int b = 10; boolean c = false;} Welchen Wert liefern die folgenden Ausdrücke?
+\begin{multicols}{2}
+\begin{enumerate}[label=\alph*)]
+\item \code{a < b \&\& !c}
+\item \code{a > b || b \% a == 0}
+\item \code{a == 5 \textasciicircum\ b == 10}
+\item \code{!(a < b) || c \&\& a > 0}
+\end{enumerate}
+\end{multicols}
+\begin{enumerate}[label=\alph*), start=5]
+\item Welche Werte haben \code{a} und \code{b} nach der Auswertung von \code{(a++ > 5) \&\& (b++ > 5)}? Was ändert sich, wenn \code{\&} statt \code{\&\&} verwendet wird?
+\end{enumerate}
+
+\aufgabe{Bedingungsoperator}
+\begin{enumerate}[label=\alph*)]
+\item Schreiben Sie die folgende Verzweigung als eine einzige Zuweisung mit dem Bedingungsoperator.
+\begin{javacode}[Ausschnitt]{Verzweigung}
+if (punkte >= 50) {
+	ergebnis = "bestanden";
+} else {
+	ergebnis = "nicht bestanden";
+}
+\end{javacode}
+\item Schreiben Sie ein Java-Programm, welches das Maximum dreier eingelesener Zahlen $a$, $b$ und $c$ ermittelt. Verwenden Sie zur Bestimmung den Bedingungsoperator.
+\item Geben Sie einen Ausdruck an, der für eine Zahl \code{n} das Vorzeichen als $-1$, $0$ oder $1$ liefert.
+\end{enumerate}
+
+\aufgabe{Überlauf erkennen}
+\begin{enumerate}[label=\alph*)]
+\item Lesen Sie eine \code{int}-Variable \code{a} von der Konsole ein und weisen Sie sie mit einem Cast einer \code{byte}-Variablen \code{b} zu. Prüfen Sie mit dem Bedingungsoperator, ob der Wertebereich von \code{byte} ausgereicht hat, und geben Sie \code{b} sowie eine passende Meldung aus. Testen Sie mit 127, 128 und 300.
+\item Lesen Sie zwei positive \code{int}-Zahlen ein und geben Sie ihre Summe aus. Prüfen Sie, ob es bei der Addition zu einem Überlauf gekommen ist. Testen Sie mit 2147483647 und 2.
+\end{enumerate}
+
+\aufgabe[\S]{Prioritäten}
+\begin{enumerate}[label=\alph*)]
+\item Setzen Sie Klammern so, dass die Auswertungsreihenfolge sichtbar wird, ohne das Ergebnis zu verändern: \\
+\code{a + b * c > d || !e \&\& f} \qquad\qquad \code{x = y = z + 1} \qquad\qquad \code{a < b == c < d}
+\item Welche Werte liefern \code{7 / 2 * 2.0}, \ \code{7 / 2.0 * 2}, \ \code{-7 / 2} und \code{-7 \% 3}? Begründen Sie.
+\item Welchen Wert hat \code{i} nach der Anweisung \code{i = i++;}? Erklären Sie Schritt für Schritt.
+\end{enumerate}
+
+\ueben
+\aufgabe{Zuweisungsoperatoren}
+Welchen Wert hat \code{a} nach jeder Zeile? Die Zeilen werden nacheinander ausgeführt.
+\begin{javacode}[Ausschnitt]{Nacheinander}
+int a = 10;
+a += 5;
+a -= 3;
+a *= 2;
+a /= 5;
+a %= 3;
+\end{javacode}
+
+\aufgabe{Noch mehr Inkrement}
+\begin{tcbraster}[raster columns=3, raster equal height=rows, raster column skip=3mm, raster row skip=1mm]
+\begin{javacode}[Ausschnitt]{a)}
+int a = 1;
+int b = a++ + a;
+\end{javacode}
+\begin{javacode}[Ausschnitt]{b)}
+int a = 1;
+int b = a + a++;
+\end{javacode}
+\begin{javacode}[Ausschnitt]{c)}
+int x = 8;
+int y = x-- / 2;
+\end{javacode}
+\begin{javacode}[Ausschnitt]{d)}
+int x = 3;
+x = x++ * 2;
+\end{javacode}
+\begin{javacode}[Ausschnitt]{e)}
+int m = 5, n = 5;
+boolean g = m++ == ++n;
+\end{javacode}
+\begin{javacode}[Ausschnitt]{f)}
+int i = 2;
+int j = i++ + i++ + i++;
+\end{javacode}
+\end{tcbraster}
+
+\aufgabe{Bedingungsoperator auswerten}
+Gegeben seien \code{int x = 7; int y = 3;} Welchen Wert liefern die Ausdrücke?
+\begin{multicols}{2}
+\begin{enumerate}[label=\alph*)]
+\item \code{x > y ? x : y}
+\item \code{x \% 2 == 0 ? x / 2 : 3 * x + 1}
+\item \code{x < 5 ? "klein" : x < 10 ? "mittel" : "gross"}
+\item \code{(x > y ? x : y) - (x < y ? x : y)}
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Bedingungen formulieren}
+Schreiben Sie die Aussagen als booleschen Ausdruck in Java.
+\begin{enumerate}[label=\alph*)]
+\item \code{x} liegt zwischen 1 und 10 (einschließlich).
+\item Das Zeichen \code{c} ist ein Großbuchstabe.
+\item \code{a} und \code{b} haben dasselbe Vorzeichen (beide positiv oder beide negativ).
+\item Genau eine der beiden Zahlen \code{a} und \code{b} ist 0.
+\item \code{n} ist durch 3 oder durch 5 teilbar, aber nicht durch beide.
+\end{enumerate}
+
+\aufgabe[\K]{Programmverständnis III}
+Gegeben seien die Variablenbelegungen \code{int x = 1; int y = 3; int z = 2;}
+
+Welchen Wert haben die Variablen nach der Ausführung der einzelnen alternativen Zeilen? \textbf{Der Ausgangswert bei jeder Zeile sei die oben angegebene Belegung.}
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|L{6.5cm}|C{1.5cm}|C{1.5cm}|C{1.5cm}|}
+\hline
+ & \textbf{x} & \textbf{y} & \textbf{z} \\ \hline
+\code{x += ++y;} & & & \\ \hline
+\code{y = x++ * z--;} & & & \\ \hline
+\code{z = (y > x) ? y - x : x - y;} & & & \\ \hline
+\code{x = y-- - --y;} & & & \\ \hline
+\end{tabular}
+\end{center}

@@ -1,0 +1,336 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Java: Methoden}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Große Probleme löst man, indem man sie in kleinere Teilprobleme zerlegt. Ein \textbf{Unterprogramm} ist ein Anweisungsblock, der einen Namen besitzt und über \textbf{Parameter} mit Werten versorgt wird. In Java heißen Unterprogramme \textbf{Methoden}. Sie machen Programme übersichtlicher, vermeiden doppelten Code und lassen sich wiederverwenden. Beim Entwurf geht man meist \emph{top-down} vor: Zuerst schreibt man das Hauptprogramm mit Aufrufen noch nicht vorhandener Methoden und füllt diese danach aus.
+
+Eine Methode mit Rückgabewert (\textbf{Funktion}) liefert ihr Ergebnis mit \code{return} zurück und kann überall stehen, wo ein Wert erwartet wird. Eine Methode ohne Rückgabewert (\textbf{Prozedur}) hat den Rückgabetyp \code{void}; sie bewirkt etwas, z.\,B. eine Ausgabe.
+
+\begin{merke}
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{Aufbau:} \ \code{static Rückgabetyp name(Typ1 parameter1, Typ2 parameter2) \{ Rumpf \}}
+\item \textbf{Formale Parameter} sind die Platzhalter in der Definition, \textbf{aktuelle Parameter} die Werte beim Aufruf. Anzahl und Typen müssen zusammenpassen.
+\item \textbf{Signatur} = Name der Methode und Typen der Parameter. Der Rückgabetyp gehört \emph{nicht} dazu.
+\item \textbf{Überladen:} Mehrere Methoden dürfen denselben Namen tragen, wenn sie sich in den Parametertypen oder der Parameteranzahl unterscheiden. Java wählt beim Aufruf die am besten passende aus.
+\item \textbf{Parameterübergabe ist in Java immer call-by-value:} Der Wert wird in den formalen Parameter \emph{kopiert}. Änderungen am Parameter wirken nicht nach außen. Bei Arrays und Objekten wird die \emph{Referenz} kopiert; über sie kann die Methode den Inhalt des Arrays verändern.
+\item \textbf{Lokale Variablen} gelten nur in dem Block, in dem sie deklariert sind. Variablen, die mit \code{static} außerhalb der Methoden deklariert werden, sind in allen Methoden der Klasse sichtbar (\enquote{globale} Variablen).
+\item Bei jedem Aufruf wird für Parameter und lokale Variablen ein neuer Bereich auf dem \textbf{Aufrufstapel} (Stack) angelegt und am Ende wieder entfernt (LIFO: Last In, First Out).
+\end{itemize}
+\end{merke}
+
+\beispiele
+\beispiel{Funktion und Prozedur}
+\begin{javacode}{Methoden.java}
+public class Methoden {
+	// Funktion: liefert einen Wert zurück
+	static int maximum(int a, int b) {          // a und b sind formale Parameter
+		if (a > b) {
+			return a;
+		}
+		return b;
+	}
+
+	// Prozedur: kein Rückgabewert
+	static void ausgabe(int wert) {
+		System.out.println("Das Maximum ist " + wert);
+	}
+
+	public static void main(String[] args) {
+		int x = 30, y = 42;
+		int m = maximum(x, y);                  // x und y sind aktuelle Parameter
+		ausgabe(m);                             // Das Maximum ist 42
+		ausgabe(maximum(7, 3));                 // Das Maximum ist 7
+	}
+}
+\end{javacode}
+
+\beispiel{Call-by-value}
+\begin{javacode}{ParamTest.java}
+public class ParamTest {
+	static void aendere(int n) {
+		n = 4711;                   // ändert nur die Kopie
+	}
+
+	static void aendere(int[] f) {  // überladen: gleicher Name, anderer Parametertyp
+		f[0] = 4711;                // ändert das Array, auf das die kopierte Referenz zeigt
+	}
+
+	public static void main(String[] args) {
+		int zahl = 10;
+		int[] feld = {10, 20};
+		aendere(zahl);
+		aendere(feld);
+		System.out.println(zahl);       // 10
+		System.out.println(feld[0]);    // 4711
+	}
+}
+\end{javacode}
+
+\beispiel{Überladen}
+\begin{javacode}[Ausschnitt]{Überladen}
+static double flaeche(double radius) { return Math.PI * radius * radius; }     // Kreis
+static double flaeche(double a, double b) { return a * b; }                    // Rechteck
+static int flaeche(int a, int b) { return a * b; }                             // Rechteck (ganzzahlig)
+
+// NICHT erlaubt, weil sich nur der Rückgabetyp unterscheidet:
+// static float flaeche(double radius) { ... }
+\end{javacode}
+Der Aufruf \code{flaeche(2, 3)} wählt die \code{int}-Variante, \code{flaeche(2.0, 3)} die \code{double}-Variante. Ein bekanntes Beispiel für Überladen ist \code{System.out.println}, das es für Texte, Zahlen und ohne Parameter gibt.
+
+\beispiel{Arrays als Parameter und Rückgabewert}
+\begin{javacode}[Ausschnitt]{Array-Methoden}
+static double summe(double[] z) {
+	double erg = 0;
+	for (int i = 0; i < z.length; i++) {
+		erg += z[i];
+	}
+	return erg;
+}
+
+static int[] quadrate(int n) {          // erzeugt ein neues Array und gibt es zurück
+	int[] erg = new int[n];
+	for (int i = 0; i < n; i++) {
+		erg[i] = (i + 1) * (i + 1);
+	}
+	return erg;
+}
+\end{javacode}
+
+\beispiel{Gültigkeit von Variablen}
+\begin{javacode}{Gueltigkeit.java}
+public class Gueltigkeit {
+	static int zaehler = 0;                 // "global": in allen Methoden sichtbar
+
+	static void zaehle() {
+		int j = 10;                         // lokal: existiert nur während des Aufrufs
+		zaehler++;
+		System.out.println("j=" + j);
+	}
+
+	public static void main(String[] args) {
+		int j = 20;                         // eine andere Variable als das j in zaehle()
+		zaehle();                           // j=10
+		zaehle();                           // j=10
+		System.out.println("j=" + j + " zaehler=" + zaehler);       // j=20 zaehler=2
+	}
+}
+\end{javacode}
+
+\aufgaben
+\aufgabe[\K]{Begriffe}
+\begin{enumerate}[label=\alph*)]
+\item Was versteht man unter \enquote{Überladen} bei der Programmierung? Skizzieren Sie ein kleines Beispiel.
+\item Erklären Sie den Unterschied zwischen formalen und aktuellen Parametern.
+\item Was bedeutet call-by-value? Warum kann eine Methode trotzdem den Inhalt eines übergebenen Arrays verändern?
+\end{enumerate}
+
+\aufgabe{Was wird ausgegeben?}
+\begin{javacode}{Test.java}
+public class Test {
+	static void f(int a, int[] b, int[] c) {
+		a = a * 2;
+		b[0] = b[0] * 2;
+		c = new int[] { 100, 200 };
+		c[1] = a;
+	}
+
+	public static void main(String[] args) {
+		int x = 5;
+		int[] y = { 1, 2 };
+		int[] z = { 3, 4 };
+		f(x, y, z);
+		System.out.println(x + " " + y[0] + " " + y[1] + " " + z[0] + " " + z[1]);
+	}
+}
+\end{javacode}
+
+\aufgabe{Überladen}
+\begin{enumerate}[label=\alph*)]
+\item Welche der folgenden Methoden dürfen gemeinsam in einer Klasse stehen? Begründen Sie.
+\begin{javacode}[Ausschnitt]{Kandidaten}
+static int berechne(int n) { ... }
+static int berechne(int n, int m) { ... }
+static double berechne(double n) { ... }
+static double berechne(int zahl) { ... }
+static void berechne(String s) { ... }
+\end{javacode}
+\item In einer Klasse gibt es \code{druckeWert(long l)} und \code{druckeWert(double d)}. Welche Methode wird beim Aufruf \code{druckeWert(5)} gewählt und warum?
+\end{enumerate}
+
+\aufgabe{Methoden schreiben}
+Implementieren Sie die folgenden Methoden und testen Sie sie in einer \code{main}-Methode mit sinnvollen Werten.
+\begin{javacode}[Ausschnitt]{Signaturen}
+public static boolean istGerade(int n)
+public static boolean istPrim(int n)
+public static boolean schaltjahr(int jahr)
+public static int maximum(int[] f)
+public static double mittelwert(double[] z)
+public static boolean enthaelt(int[] f, int wert)         // kommt wert im Array vor?
+public static int[] ohneDoppelte(int anzahl, int max)     // anzahl verschiedene Zufallszahlen von 1 bis max
+\end{javacode}
+\begin{hinweis}
+\textbf{Hinweis:} Verwenden Sie in \code{ohneDoppelte} Ihre Methode \code{enthaelt}: Ziehen Sie so lange eine neue Zufallszahl, bis eine gefunden wurde, die noch nicht im Array vorkommt. Mit \code{ohneDoppelte(6, 49)} erhalten Sie eine Lottoziehung.
+\end{hinweis}
+
+\aufgabe[\K]{Zahldarstellung mit Arrays}
+In dem folgenden Programm werden Zahlen in verschiedenen Zahlensystemen als Ziffern-Arrays gespeichert, geprüft, umgewandelt und ausgegeben.
+\begin{javacode}[Ausschnitt]{Hauptprogramm}
+public static void main(String[] args) {
+	int[] dual = {1, 1, 0, 1};      // 8 + 4 + 1 = 13
+	int[] fuenf = {2, 0, 4, 3};     // 2*125 + 4*5 + 3 = 273
+	System.out.println("Dualzahl: " + toString(dual));
+	System.out.println("Gueltig zur Basis 5: " + istGueltig(fuenf, 5));
+	System.out.println("Gueltig zur Basis 4: " + istGueltig(fuenf, 4));
+	System.out.println("Wert: " + toInt(fuenf, 5));
+	System.out.println("Um 1 erhoeht: " + toString(plusEins(dual)));
+}
+\end{javacode}
+\begin{konsole}
+Dualzahl: 1101
+Gueltig zur Basis 5: true
+Gueltig zur Basis 4: false
+Wert: 273
+Um 1 erhoeht: 1110
+\end{konsole}
+\begin{enumerate}[label=\alph*)]
+\item Geben Sie die Implementierung der Methode \code{toString} an, die ein Array in einen entsprechenden String für die Ausgabe aufbereitet.
+\item Geben Sie die Implementierung der Methode \code{istGueltig} an. Sie prüft, ob alle Ziffern des Arrays im Zahlensystem mit der übergebenen Basis erlaubt sind.
+\item Geben Sie die Implementierung der Methode \code{toInt} an. Sie berechnet den Dezimalwert einer Zahl in einem beliebigen Zahlensystem.
+\item Geben Sie die Implementierung der Methode \code{plusEins} an, die eine \emph{neue} Dualzahl gleicher Länge erzeugt, deren Wert um 1 größer ist. Ein Übertrag über die vorderste Stelle hinaus darf verloren gehen.
+\end{enumerate}
+
+\aufgabe[\K]{Eine Zahlenfolge}
+Eine Folge von Zahlen sei folgendermaßen aufgebaut: Die Startzahl ist beliebig. Ist die aktuelle Zahl durch 3 teilbar, wird sie durch 3 geteilt, um die nächste Zahl zu erhalten. Andernfalls wird 1 addiert. Bei Erreichen von 1 endet die Folge.
+
+Beispiel: \code{10 11 12 4 5 6 2 3 1}
+\begin{javacode}[Ausschnitt]{Testprogramm}
+public static void main(String[] args) {
+	int startzahl = 10;
+	int[] folge = . . .
+	berechneFolge(folge, startzahl);
+	printFolge(folge);
+}
+\end{javacode}
+\begin{enumerate}[label=\alph*)]
+\item Legen Sie die benötigte Variable \code{folge} geeignet an. Sie soll für 50 Werte ausreichen.
+\item Geben Sie die Implementierung der Methode \code{printFolge} an, die die Werte der Folge in der Form \code{10 -> 11 -> 12 -> 4 -> 5 -> 6 -> 2 -> 3 -> 1} ausgibt. Beachten Sie, dass am Ende kein Pfeil ausgegeben wird und dass nicht benutzte Elemente des Arrays den Wert 0 haben.
+\item Geben Sie eine Implementierung der Methode \code{berechneFolge} an, die die Folge \emph{iterativ} ermittelt.
+\end{enumerate}
+(Die rekursive Variante folgt in Aufgabe~\ref{auf:folgerek}.)
+
+\aufgabe{Würfelspiel}
+\begin{enumerate}[label=\alph*)]
+\item Schreiben Sie eine Methode \code{wuerfle()}, die eine Zufallszahl von 1 bis 6 zurückgibt.
+\item Schreiben Sie eine Methode \code{int[] wuerfleMehrfach(int n)}, die $n$ Würfe in einem Array zurückgibt.
+\item Schreiben Sie eine Methode \code{void ausgabe(int[] wuerfe)}, die die Würfe in der Form \code{3 - 1 - 6 - 6 - 2} ausgibt.
+\item Schreiben Sie eine Methode \code{int[][] spiel(int spieler, int runden)}, die für jeden Spieler eine Zeile mit seinen Würfen enthält. Verwenden Sie dazu \code{wuerfleMehrfach}. Geben Sie anschließend aus, welcher Spieler die höchste Augensumme hat.
+\end{enumerate}
+
+\aufgabe{Datum mit Aufzählungstyp}
+Legen Sie das \code{enum Datumsformat} mit den Werten \code{DE}, \code{US} und \code{ISO} an und implementieren Sie die folgende Methode. Für den 2.12.2026 soll sie \code{2. Dezember 2026} (DE), \code{Dezember 2, 2026} (US) bzw. \code{2026-12-02} (ISO) ausgeben.
+\begin{javacode}[Ausschnitt]{Signatur}
+public static void datumsausgabe(int tag, int monat, int jahr, Datumsformat format)
+\end{javacode}
+\begin{hinweis}
+\textbf{Hinweis:} Die Monatsnamen lassen sich bequem in einem \code{String}-Array ablegen. Lagern Sie die führende Null des ISO-Formats in eine eigene Hilfsmethode aus.
+\end{hinweis}
+
+\aufgabe[\S]{Sichtbar oder nicht?}
+Welche Zeilen des folgenden Programms führen zu einem Übersetzungsfehler? Was gibt das Programm aus, nachdem diese Zeilen entfernt wurden?
+\begin{javacode}{Sichtbar.java}
+public class Sichtbar {
+	static int a = 1;
+
+	static void tuWas(int b) {
+		int c = a + b;
+		a = c;
+		System.out.println(d);
+	}
+
+	public static void main(String[] args) {
+		int d = 5;
+		{
+			int e = d * 2;
+			tuWas(e);
+		}
+		tuWas(a);
+		System.out.println(a + " " + d);
+		System.out.println(c + e);
+	}
+}
+\end{javacode}
+
+\ueben
+\aufgabe{Signaturen angeben}
+Geben Sie nur den Methodenkopf an (ohne Rumpf).
+\begin{enumerate}[label=\alph*)]
+\item eine Methode, die prüft, ob eine ganze Zahl positiv ist
+\item eine Methode, die den Durchschnitt dreier Kommazahlen berechnet
+\item eine Methode, die ein \code{int}-Array auf der Konsole ausgibt
+\item eine Methode, die ein neues Array mit $n$ Zufallszahlen liefert
+\item eine Methode, die in einem \code{String}-Array nach einem Namen sucht und dessen Position liefert
+\end{enumerate}
+
+\aufgabe{Was wird ausgegeben?}
+\begin{javacode}{Aufrufe.java}
+public class Aufrufe {
+	static int plus(int a, int b) { return a + b; }
+	static double plus(double a, double b) { return a + b; }
+	static String plus(String a, String b) { return a + b; }
+
+	static int doppelt(int x) {
+		x = x * 2;
+		return x;
+	}
+
+	public static void main(String[] args) {
+		int x = 4;
+		System.out.println(plus(1, 2));
+		System.out.println(plus(1, 2.0));
+		System.out.println(plus("1", "2"));
+		System.out.println(doppelt(x) + " " + x);
+		System.out.println(doppelt(doppelt(x)));
+		x = doppelt(x);
+		System.out.println(x);
+	}
+}
+\end{javacode}
+
+\aufgabe{Fehler finden}
+Jede der folgenden Methoden enthält einen Fehler, den der Compiler meldet. Finden und korrigieren Sie ihn.
+\begin{tcbraster}[raster columns=3, raster equal height=rows, raster column skip=3mm]
+\begin{javacode}[Ausschnitt]{a)}
+static int quadrat(int x) {
+	int q = x * x;
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{b)}
+static void hallo(String name) {
+	return "Hallo " + name;
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{c)}
+static int halb(int x) {
+	return x / 2.0;
+}
+\end{javacode}
+\end{tcbraster}
+
+\aufgabe{Methodensammlung}
+Implementieren und testen Sie die folgenden Methoden.
+\begin{javacode}[Ausschnitt]{Signaturen}
+public static int betrag(int x)
+public static boolean istTeiler(int t, int n)
+public static long fakultaet(int n)
+public static int ggT(int a, int b)
+public static int summe(int[] f)
+public static int zaehle(int[] f, int wert)             // wie oft kommt wert vor?
+public static int minimumIndex(int[] f)                 // Position des kleinsten Elements
+public static boolean istSortiert(int[] f)
+public static void tausche(int[] f, int i, int j)       // vertauscht f[i] und f[j]
+public static int[] umgedreht(int[] f)                  // neues Array in umgekehrter Reihenfolge
+\end{javacode}
+
+\aufgabe{Top-down entwerfen}
+Ein Programm soll $n$ Noten einlesen, den Durchschnitt, die beste und die schlechteste Note bestimmen und alles ausgeben. Schreiben Sie zuerst nur die \code{main}-Methode mit Aufrufen geeigneter Methoden und die Methodenköpfe. Implementieren Sie die Methoden erst danach.

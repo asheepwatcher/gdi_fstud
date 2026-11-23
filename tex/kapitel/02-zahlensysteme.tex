@@ -1,0 +1,165 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Zahlensysteme}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Unser Dezimalsystem ist ein \textbf{Stellenwertsystem} zur Basis 10: Jede Stelle ist zehnmal so viel wert wie die Stelle rechts daneben. Dasselbe Prinzip funktioniert mit jeder anderen Basis $b$. Der Rechner arbeitet mit der Basis 2 (\textbf{Dualsystem}), weil sich zwei Zustände technisch am einfachsten unterscheiden lassen. Weil Dualzahlen schnell lang und unübersichtlich werden, schreibt man sie gern kompakter im \textbf{Oktalsystem} (Basis 8) oder im \textbf{Hexadezimalsystem} (Basis 16, Ziffern 0 bis 9 und A bis F für 10 bis 15). Oktal- und Hexadezimalsystem sind \enquote{Zwischensysteme} zwischen Maschine und Mensch.
+
+\begin{merke}
+\begin{itemize}[itemsep=0.1em]
+\item Ein System zur Basis $b$ hat die Ziffern $0$ bis $b-1$. Der Wert einer Zahl ist die Summe aus Ziffer mal Stellenwert:
+$\;(z_n \ldots z_1 z_0)_b = z_n \cdot b^n + \ldots + z_1 \cdot b^1 + z_0 \cdot b^0$.
+\item \textbf{Basis $b$ $\to$ dezimal:} Ziffern mit ihren Stellenwerten multiplizieren und addieren.
+\item \textbf{Dezimal $\to$ Basis $b$:} mit der Divisionsmethode oder der Subtraktionsmethode.
+\item \textbf{Dual $\leftrightarrow$ oktal/hex:} ohne Rechnen, denn $8 = 2^3$ und $16 = 2^4$. Drei Bits ergeben eine Oktalziffer, vier Bits eine Hexziffer. Gruppiert wird immer \textbf{von rechts}.
+\item Mit $n$ Bit lassen sich die natürlichen Zahlen von $0$ bis $2^n - 1$ darstellen.
+\end{itemize}
+\end{merke}
+
+\beispiele
+\beispiel{Von einer beliebigen Basis ins Dezimalsystem}
+\[
+1011\,0110_2 = 128 + 32 + 16 + 4 + 2 = 182_{10}
+\qquad
+245_7 = 2 \cdot 49 + 4 \cdot 7 + 5 \cdot 1 = 131_{10}
+\]
+\[
+\mathrm{3C}_{16} = 3 \cdot 16 + 12 \cdot 1 = 60_{10}
+\]
+
+\beispiel{Divisionsmethode}
+Man teilt die Zahl immer wieder ganzzahlig durch die Basis und notiert den Rest, bis das Ergebnis 0 ist. Die Reste, \textbf{von unten nach oben} gelesen, ergeben die Zahl im Zielsystem.
+
+\noindent\begin{minipage}[t]{0.48\linewidth}
+$77_{10}$ ins Dualsystem:
+\[
+\begin{array}{r@{\;:\;2\;=\;}r@{\quad\text{Rest }}c}
+77 & 38 & \mathbf{1} \\
+38 & 19 & \mathbf{0} \\
+19 & 9 & \mathbf{1} \\
+9 & 4 & \mathbf{1} \\
+4 & 2 & \mathbf{0} \\
+2 & 1 & \mathbf{0} \\
+1 & 0 & \mathbf{1}
+\end{array}
+\]
+Ergebnis: $77_{10} = 100\,1101_2$, als 8-Bit-Zahl $0100\,1101_2$.
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\linewidth}
+$500_{10}$ ins System zur Basis 13:
+\[
+\begin{array}{r@{\;:\;13\;=\;}r@{\quad\text{Rest }}l}
+500 & 38 & \mathbf{6} \\
+38 & 2 & \mathbf{12} = \mathrm{C} \\
+2 & 0 & \mathbf{2}
+\end{array}
+\]
+Ergebnis: $500_{10} = \mathrm{2C6}_{13}$.
+
+\smallskip
+Probe: $2 \cdot 169 + 12 \cdot 13 + 6 = 500$.
+\end{minipage}
+
+\beispiel{Subtraktionsmethode}
+Man geht die Stellenwerte von groß nach klein durch und prüft jeweils, ob der Stellenwert noch in den Rest \enquote{hineinpasst}. Wenn ja, notiert man eine 1 und zieht ihn ab, sonst notiert man eine 0. Die Ziffern liest man \textbf{von oben nach unten}.
+\[
+\begin{array}{r@{\;-\;}c@{\;\cdot\;}r@{\;=\;}r}
+100 & \mathbf{1} & 64 & 36 \\
+36 & \mathbf{1} & 32 & 4 \\
+4 & \mathbf{0} & 16 & 4 \\
+4 & \mathbf{0} & 8 & 4 \\
+4 & \mathbf{1} & 4 & 0 \\
+0 & \mathbf{0} & 2 & 0 \\
+0 & \mathbf{0} & 1 & 0
+\end{array}
+\qquad\Longrightarrow\qquad 100_{10} = 110\,0100_2 = 0110\,0100_2 \text{ (8 Bit)}
+\]
+
+\beispiel{Dual, oktal und hexadezimal ohne Rechnen}
+\[
+110\,1011\,1001_2
+\;=\; \underbrace{0110}_{6}\;\underbrace{1011}_{\mathrm{B}}\;\underbrace{1001}_{9} = \mathrm{6B9}_{16}
+\qquad\text{und}\qquad
+\underbrace{011}_{3}\;\underbrace{010}_{2}\;\underbrace{111}_{7}\;\underbrace{001}_{1} = 3271_8
+\]
+In der Gegenrichtung ersetzt man jede Ziffer durch ihre drei bzw. vier Bits: $\mathrm{A7}_{16} = 1010\,0111_2$. Von oktal nach hex (oder umgekehrt) geht man über die Dualzahl.
+
+\aufgaben
+\aufgabe{Fremde Basen}
+Wandeln Sie in das Dezimalsystem um.
+\begin{multicols}{4}
+\begin{enumerate}[label=\alph*)]
+\item $2102_3$
+\item $666_7$
+\item $\mathrm{1A3}_{12}$
+\item $\mathrm{BEEF}_{16}$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Dezimal nach dual}
+Wandeln Sie die Zahlen $53_{10}$, $90_{10}$, $201_{10}$ und $324_{10}$ in Dualzahlen um. Verwenden Sie für jede Zahl \emph{beide} Verfahren (Divisionsmethode und Subtraktionsmethode) und machen Sie die Probe.
+
+\aufgabe{Dezimal in beliebige Basen}
+\begin{enumerate}[label=\alph*)]
+\item Wandeln Sie $250_{10}$ in eine Zahl zur Basis 7 um.
+\item Wandeln Sie $667_{10}$ in eine Zahl zur Basis 13 um (Ziffern 0 bis 9, A, B, C).
+\item Wandeln Sie $1000_{10}$ in eine Hexadezimalzahl um.
+\end{enumerate}
+
+\aufgabe{Umwandeln ohne Rechnen}
+\begin{enumerate}[label=\alph*)]
+\item Wandeln Sie $1\,0010\,0111\,1010\,1101_2$ in das Oktal- und in das Hexadezimalsystem um.
+\item Wandeln Sie $\mathrm{FA4}_{16}$ und $666_{16}$ in Dualzahlen um.
+\item Wandeln Sie $\mathrm{EF9}_{16}$ in eine Oktalzahl und $7254_8$ in eine Hexadezimalzahl um.
+\end{enumerate}
+
+\aufgabe[\K]{Zahlendarstellungen}
+\begin{enumerate}[label=\alph*)]
+\item Gegeben sei die Dualzahl $101\,1101_2$ (vorzeichenlos). Wie sieht die dezimale und die oktale Darstellung der Zahl aus? Geben Sie jeweils die Schritte zur Berechnung an.
+\item Wie sieht die Darstellung der Zahl $45_{10}$ als 8-Bit-Dualzahl aus? Verwenden Sie die Divisionsmethode und stellen Sie die Zwischenschritte genau dar.
+\item Wie sieht die Darstellung der Zahl $57_{10}$ als 8-Bit-Dualzahl aus? Verwenden Sie die Subtraktionsmethode und stellen Sie die Zwischenschritte genau dar.
+\end{enumerate}
+
+\aufgabe[\S]{Um die Ecke gedacht}
+\begin{enumerate}[label=\alph*)]
+\item In welchem Zahlensystem stimmt die Rechnung $24_b + 33_b = 112_b$? Begründen Sie Ihre Antwort.
+\item Woran erkennt man bei einer Dualzahl sofort, ob sie gerade ist? Woran erkennt man, ob sie durch 4 teilbar ist?
+\item Wie viele Stellen hat die Zahl $1\,000\,000_{10}$ im Dualsystem? Versuchen Sie, die Antwort ohne vollständige Umwandlung zu finden.
+\end{enumerate}
+
+\ueben
+\aufgabe{Ins Dezimalsystem}
+\begin{multicols}{3}
+\begin{enumerate}[label=\alph*)]
+\item $10\,1010_2$
+\item $1111\,1111_2$
+\item $777_8$
+\item $\mathrm{1F4}_{16}$
+\item $1000_3$
+\item $44_5$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Aus dem Dezimalsystem}
+Wandeln Sie die Zahlen 25, 64, 127, 255 und 1000 jeweils in das Dual-, das Oktal- und das Hexadezimalsystem um. Tipp: Wandeln Sie nur einmal ins Dualsystem um und gruppieren Sie dann.
+
+\aufgabe{Tabelle ergänzen}
+In jeder Zeile ist eine Darstellung vorgegeben. Ergänzen Sie die übrigen.
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|C{2.5cm}|C{3.5cm}|C{2.5cm}|C{2.5cm}|}
+\hline
+\textbf{dezimal} & \textbf{dual} & \textbf{oktal} & \textbf{hexadezimal} \\ \hline
+45 & & & \\ \hline
+ & $1101\,0110$ & & \\ \hline
+ & & 157 & \\ \hline
+ & & & C8 \\ \hline
+\end{tabular}
+\end{center}
+
+\aufgabe{Andere Basen}
+\begin{enumerate}[label=\alph*)]
+\item Wandeln Sie $100_{10}$ in Zahlen zur Basis 3, zur Basis 5 und zur Basis 12 um.
+\item Wandeln Sie $2026_{10}$ in eine Hexadezimalzahl um.
+\item Welches ist die größte Zahl, die sich mit vier Stellen im Dual-, im Oktal- und im Hexadezimalsystem darstellen lässt? Geben Sie sie jeweils dezimal an.
+\end{enumerate}

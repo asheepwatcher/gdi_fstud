@@ -1,0 +1,134 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Codierung von Texten}\label{sec:zeichen}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Text wird zeichenweise codiert: Jedem Zeichen wird eine Zahl und damit eine Bitfolge zugeordnet. Welche Zahl zu welchem Zeichen gehört, legt eine \textbf{Codierung} fest. Schreibt ein Programm einen Text mit einer Codierung und liest ein anderes ihn mit einer anderen, entsteht \enquote{Zeichensalat}.
+
+\begin{merke}
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{ASCII:} 7 Bit, 128 Zeichen, keine Umlaute. Buchstaben und Ziffern sind in ihrer natürlichen Reihenfolge angeordnet: \code{A} $= 41_{16} = 65$, \ \code{a} $= 61_{16} = 97$, \ \code{0} $= 30_{16} = 48$.
+\item \textbf{ISO 8859:} 8 Bit, 256 Zeichen, die ersten 128 wie ASCII. Es gibt 15 Varianten für verschiedene Sprachräume (ISO 8859-1 = Latin-1 für Westeuropa). Umlaute: \code{ä} $= \mathrm{E4}$, \code{ö} $= \mathrm{F6}$, \code{ü} $= \mathrm{FC}$, \code{ß} $= \mathrm{DF}$.
+\item \textbf{Unicode} enthält (fast) alle Zeichen der Welt. Gespeichert wird es unter anderem als
+	\begin{itemize}[itemsep=0em]
+	\item \textbf{UTF-8:} variable Länge, 1 bis 4 Byte pro Zeichen; die ersten 128 Zeichen wie ASCII (1 Byte), Umlaute brauchen 2 Byte.
+	\item \textbf{UTF-16:} 2 Byte für die gebräuchlichsten Zeichen (sonst 4). Java verwendet intern UTF-16, ein \code{char} ist deshalb 2 Byte groß.
+	\end{itemize}
+\end{itemize}
+\end{merke}
+
+\beispiele
+\beispiel{Rechnen im ASCII-Code}
+Weil die Buchstaben der Reihe nach angeordnet sind, kann man Codes ausrechnen: \code{E} ist der fünfte Buchstabe, also $41_{16} + 4 = 45_{16}$. Der zugehörige Kleinbuchstabe liegt immer $20_{16} = 32$ höher: \code{e} $= 65_{16}$. Dual betrachtet unterscheiden sich \code{E} $= 0100\,0101$ und \code{e} $= 0110\,0101$ nur in einem einzigen Bit. Den Zahlenwert eines Ziffernzeichens erhält man, indem man den Code von \code{0} abzieht:
+\begin{javacode}[Ausschnitt]{Rechnen mit Zeichen}
+char gross = 'E';
+char klein = (char) (gross + 32);     // 'e'
+int wert = '7' - '0';                 // 7
+\end{javacode}
+
+\beispiel{Bytes zählen}
+Wie viele Byte belegt das Wort \textbf{Käse}?
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Codierung} & \textbf{Byte} & \textbf{Begründung} \\
+\midrule
+ASCII & -- & nicht darstellbar, ASCII kennt kein \code{ä} \\
+ISO 8859-1 & 4 & jedes Zeichen 1 Byte: \code{4B E4 73 65} \\
+UTF-8 & 5 & \code{ä} braucht 2 Byte, der Rest je 1 Byte: \code{4B C3 A4 73 65} \\
+UTF-16 & 8 & jedes Zeichen 2 Byte \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\beispiel{Zeichensalat}
+Das Wort \textbf{für} wird in UTF-8 gespeichert. In der Datei stehen die vier Bytes \code{66 C3 BC 72}. Öffnet man die Datei mit einem Programm, das ISO 8859-1 erwartet, wird jedes Byte als ein eigenes Zeichen gedeutet: \code{C3} ist dort \code{Ã} und \code{BC} ist \code{¼}. Angezeigt wird \textbf{fÃ¼r}.
+
+\begin{hinweis}
+\textbf{So entsteht ein UTF-8-Zeichen mit 2 oder 3 Byte:} Die Bits der Unicode-Nummer werden von rechts in die mit \code{x} markierten Stellen eingetragen.
+
+\smallskip
+\begin{tabular}{@{}ll@{}}
+bis U+007F & \code{0xxxxxxx} \\
+bis U+07FF & \code{110xxxxx 10xxxxxx} \\
+bis U+FFFF & \code{1110xxxx 10xxxxxx 10xxxxxx}
+\end{tabular}
+
+\smallskip
+Beispiel: \code{ü} hat die Nummer U+00FC $= 1111\,1100_2$. Auf 11 Bit aufgefüllt: \code{00011\,111100}. Eingetragen: \code{110\textbf{00011} 10\textbf{111100}} $= \mathrm{C3\ BC}$.
+\end{hinweis}
+
+\aufgaben
+\aufgabe{Geheime Nachricht}
+Die folgende Nachricht wurde mit dem ASCII-Code codiert. Wie lautet sie?
+\begin{center}
+\code{01001010 \ 01100001 \ 01110110 \ 01100001 \ 00100001}
+\end{center}
+\begin{hinweis}
+\textbf{Hinweis:} Das Ausrufezeichen hat den Code $21_{16}$. Alle anderen Zeichen können Sie mit den Angaben aus dem Merkkasten selbst bestimmen.
+\end{hinweis}
+
+\aufgabe{Ohne Tabelle}
+Beantworten Sie die folgenden Fragen nur mit den drei Angaben \code{A} $= 41_{16}$, \code{a} $= 61_{16}$ und \code{0} $= 30_{16}$.
+\begin{enumerate}[label=\alph*)]
+\item Welchen Code (hexadezimal) haben die Zeichen \code{G}, \code{z} und \code{5}?
+\item Wie kann ein Programm einen Kleinbuchstaben in den zugehörigen Großbuchstaben umwandeln?
+\item Wie kann ein Programm prüfen, ob ein Zeichen \code{c} eine Ziffer ist?
+\end{enumerate}
+
+\aufgabe{Bytes zählen}
+\begin{enumerate}[label=\alph*)]
+\item Wie viele verschiedene Zeichen lassen sich mit 7 Bit, mit 8 Bit und mit 16 Bit codieren? Ordnen Sie jeder dieser Bitbreiten eine Codierung zu.
+\item Wie viele Byte benötigen die Wörter \textbf{Hello}, \textbf{Fuß} und \textbf{Übungsblätter} jeweils in ASCII, in ISO~8859-1, in UTF-8 und in UTF-16? Begründen Sie.
+\end{enumerate}
+
+\aufgabe[\K]{Codierungen vergleichen}
+\begin{enumerate}[label=\alph*)]
+\item Nennen Sie mindestens zwei verschiedene Codierungen für Texte und erläutern Sie kurz die Unterschiede.
+\item Füllen Sie die Tabelle aus.
+\end{enumerate}
+\begin{center}
+\renewcommand{\arraystretch}{2.2}
+\begin{tabular}{|l|p{6cm}|p{6cm}|}
+\hline
+& \textbf{Vorteile} & \textbf{Nachteile} \\ \hline
+ISO 8859 & & \\ \hline
+UTF-16 & & \\ \hline
+UTF-8 & & \\ \hline
+\end{tabular}
+\end{center}
+
+\aufgabe{Zeichensalat}
+\begin{enumerate}[label=\alph*)]
+\item Eine Kundendatei zeigt den Namen \textbf{MÃ¼ller} an. Erklären Sie, was passiert ist, und geben Sie die Bytes an, die in der Datei stehen.
+\item Eine Datei enthält das Wort \textbf{Tür} in ISO~8859-1 (Bytes \code{54 FC 72}). Sie wird mit einem Programm geöffnet, das UTF-8 erwartet. Warum kann das Programm das mittlere Byte nicht sinnvoll deuten?
+\end{enumerate}
+
+\aufgabe[\S]{UTF-8 von Hand}
+\begin{enumerate}[label=\alph*)]
+\item Das Zeichen \code{ß} hat die Unicode-Nummer U+00DF. Codieren Sie es in UTF-8 (hexadezimal).
+\item Das Eurozeichen hat die Unicode-Nummer U+20AC. Codieren Sie es in UTF-8.
+\item In einer UTF-8-Datei findet sich die Bytefolge \code{C3 96 6C}. Welches Wort steht dort? (Die Unicode-Nummern der Umlaute stimmen mit ihren Codes in ISO~8859-1 überein, \code{Ö} $= \mathrm{D6}$.)
+\end{enumerate}
+
+\ueben
+\aufgabe{ASCII-Codes bestimmen}
+Geben Sie den ASCII-Code der Zeichen \code{J}, \code{m} und \code{9} jeweils hexadezimal und dual an. Verwenden Sie nur die Angaben aus dem Merkkasten.
+
+\aufgabe{Decodieren}
+Die folgenden Bytefolgen (hexadezimal) sind ASCII-Texte. Wie lauten sie?
+\begin{multicols}{2}
+\begin{enumerate}[label=\alph*)]
+\item \code{47 44 49}
+\item \code{48 61 6C 6C 6F}
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Codieren}
+Codieren Sie Ihren Vornamen in ASCII (hexadezimal). Falls er Umlaute enthält: Geben Sie zusätzlich die Bytes in ISO~8859-1 und in UTF-8 an.
+
+\aufgabe{Bytes zählen}
+Wie viele Byte benötigen die Wörter \textbf{Straße}, \textbf{Öl}, \textbf{Mädchen} und \textbf{Cafe} jeweils in ISO~8859-1, in UTF-8 und in UTF-16?
+
+\aufgabe{UTF-8 lesen}
+In einer UTF-8-Datei steht die Bytefolge \code{48 C3 B6 72 65 6E}. Aus wie vielen Zeichen besteht der Text, und wie lautet er? Woran erkennt man an den Bytes, wo ein Zeichen aus mehreren Bytes beginnt?

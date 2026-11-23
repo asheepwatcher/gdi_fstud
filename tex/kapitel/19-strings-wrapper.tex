@@ -1,0 +1,194 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Strings und Wrapper-Klassen}\label{sec:strings}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Zeichenketten sind in Java Objekte der Klasse \code{String}, auch wenn die Sprache das etwas verschleiert: Man kann sie ohne \code{new} anlegen und mit \code{+} verketten. Spätestens beim Vergleichen muss man aber wissen, dass eine \code{String}-Variable nur eine \textbf{Referenz} enthält. Außerdem sind Strings \textbf{unveränderlich} (immutable): Keine Methode ändert den String selbst, alle liefern einen \emph{neuen} String zurück.
+
+Die primitiven Datentypen (\code{int}, \code{double}, \ldots) sind keine Objekte. Wo Objekte verlangt werden, \enquote{verpackt} man die Werte in \textbf{Wrapper-Klassen}. Diese Klassen bieten außerdem nützliche Konstanten und Methoden zum Umwandeln zwischen Zahlen und Texten.
+
+\begin{merke}
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{Strings vergleichen:} immer mit \code{s1.equals(s2)}. Der Operator \code{==} prüft nur, ob beide Variablen auf \emph{dasselbe} Objekt zeigen.
+\item \textbf{Wichtige Methoden} (die Zählung der Positionen beginnt bei 0):
+
+\smallskip
+\begin{tabular}{@{}ll@{}}
+\code{length()} & Anzahl der Zeichen \\
+\code{charAt(i)} & das Zeichen an Position \code{i} \\
+\code{indexOf(t)} & Position des ersten Auftretens von \code{t}, sonst $-1$ \\
+\code{substring(von, bis)} & Teilstring von Position \code{von} bis \code{bis - 1} \\
+\code{equals(t)} & inhaltlicher Vergleich \\
+\code{endsWith(t)} & endet der String mit \code{t}? \\
+\code{replace(alt, neu)} & neuer String, in dem alle Zeichen \code{alt} durch \code{neu} ersetzt sind \\
+\code{toCharArray()} & die Zeichen als \code{char}-Array
+\end{tabular}
+\item \textbf{Wrapper-Klassen:} \code{Boolean}, \code{Character}, \code{Byte}, \code{Short}, \code{Integer}, \code{Long}, \code{Float}, \code{Double}.
+\item \textbf{Autoboxing:} Java wandelt bei Bedarf automatisch um: \code{Integer obj = 42;} (einpacken) und \code{int i = obj;} (auspacken).
+\item \textbf{Umwandeln:} \code{Integer.parseInt("123")} liefert die Zahl 123, \code{Integer.toString(123)} den Text \code{"123"}.
+\item \textbf{Konstanten:} z.\,B. \code{Integer.MAX\_VALUE} ($2\,147\,483\,647$) und \code{Integer.MIN\_VALUE}.
+\end{itemize}
+\end{merke}
+
+\beispiele
+\beispiel{Gleich und doch nicht dasselbe}
+\begin{javacode}[Ausschnitt]{Vergleich}
+String s1 = "Harry Hurtig";
+String s2 = "Harry ";
+s2 += "Hurtig";                         // erzeugt ein neues String-Objekt
+System.out.println(s1 == s2);           // false: zwei verschiedene Objekte
+System.out.println(s1.equals(s2));      // true:  gleicher Inhalt
+\end{javacode}
+
+\beispiel{String-Methoden}
+\begin{javacode}[Ausschnitt]{Methoden}
+String s = "Informatik";
+System.out.println(s.length());             // 10
+System.out.println(s.charAt(0));            // I
+System.out.println(s.indexOf("form"));      // 2
+System.out.println(s.substring(2, 6));      // form   (Positionen 2 bis 5)
+System.out.println(s.endsWith("tik"));      // true
+System.out.println(s.replace('i', 'y'));    // Informatyk
+System.out.println(s);                      // Informatik  (s selbst bleibt unverändert)
+\end{javacode}
+
+\beispiel{Einen String Zeichen für Zeichen durchlaufen}
+\begin{javacode}[Ausschnitt]{Vokale zählen}
+static int zaehleVokale(String s) {
+	int anzahl = 0;
+	for (int i = 0; i < s.length(); i++) {
+		char c = s.charAt(i);
+		if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') {
+			anzahl++;
+		}
+	}
+	return anzahl;
+}
+\end{javacode}
+
+\beispiel{Wrapper-Klassen}
+\begin{javacode}[Ausschnitt]{Wrapper}
+Integer obj = 42;                               // Autoboxing
+int i = obj + 1;                                // Autounboxing, i ist 43
+
+System.out.println("12" + 3);                   // 123  (Textverkettung)
+System.out.println(Integer.parseInt("12") + 3); // 15   (Rechnung)
+
+Integer a = 1000, b = 1000;
+System.out.println(a == b);                     // false: Vergleich der Referenzen
+System.out.println(a.equals(b));                // true:  Vergleich der Werte
+\end{javacode}
+
+\aufgaben
+\aufgabe{String-Methoden}
+Gegeben sei \code{String s = "Grundlagen";} Was liefern die folgenden Ausdrücke?
+\begin{multicols}{2}
+\begin{enumerate}[label=\alph*)]
+\item \code{s.length()}
+\item \code{s.charAt(4)}
+\item \code{s.indexOf("la")}
+\item \code{s.indexOf("x")}
+\item \code{s.substring(0, 5)}
+\item \code{s.substring(5, s.length())}
+\item \code{s.endsWith("gen")}
+\item \code{s.replace('n', 'm')}
+\item \code{s.charAt(s.length() - 1)}
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Vergleichen}
+Was gibt der folgende Ausschnitt aus? Begründen Sie jede Zeile.
+\begin{javacode}[Ausschnitt]{Vergleiche}
+String a = "Hallo";
+String b = new String("Hallo");
+String c = b;
+System.out.println(a == b);
+System.out.println(b == c);
+System.out.println(a.equals(b));
+String d = a.replace('H', 'h');
+System.out.println(a);
+System.out.println(d.equals("hallo"));
+\end{javacode}
+
+\aufgabe{Unveränderlich}
+Ernst möchte aus einem Text alle Leerzeichen durch Unterstriche ersetzen und wundert sich über die Ausgabe. Erklären Sie das Ergebnis und korrigieren Sie das Programm.
+\begin{javacode}[Ausschnitt]{Ernsts Versuch}
+String text = "Grundlagen der Informatik";
+text.replace(' ', '_');
+System.out.println(text);
+\end{javacode}
+
+\aufgabe{Methoden für Strings}
+Implementieren Sie die folgenden Methoden. Verwenden Sie dabei \code{length()} und \code{charAt()}.
+\begin{javacode}[Ausschnitt]{Signaturen}
+public static int zaehleZeichen(String s, char c)       // wie oft kommt c in s vor?
+public static String umdrehen(String s)                 // "Java" wird zu "avaJ"
+public static boolean istPalindrom(String s)            // "anna" liefert true
+public static int zaehleWoerter(String s)               // Wörter sind durch ein Leerzeichen getrennt
+\end{javacode}
+
+\aufgabe{Wrapper-Klassen}
+\begin{enumerate}[label=\alph*)]
+\item Was gibt der folgende Ausschnitt aus?
+\begin{javacode}[Ausschnitt]{Umwandlungen}
+String s = "5";
+int n = 5;
+Integer w = 5;
+System.out.println(s + n);
+System.out.println(Integer.parseInt(s) + n);
+System.out.println(w == n);
+System.out.println(w.equals(n));
+System.out.println(Integer.toString(n) + n);
+\end{javacode}
+\item Schreiben Sie ein Programm, das zwei Zahlen als Text einliest (\code{sc.next()}), sie in \code{int}-Werte umwandelt und ihre Summe ausgibt. Was passiert bei der Eingabe \code{zwölf}?
+\item Wozu braucht man Wrapper-Klassen überhaupt? Nennen Sie zwei Verwendungszwecke.
+\end{enumerate}
+
+\aufgabe[\S]{Caesar-Verschlüsselung}
+Bei der Caesar-Verschlüsselung wird jeder Buchstabe um eine feste Anzahl von Stellen im Alphabet verschoben; nach \code{z} geht es bei \code{a} weiter. Mit der Verschiebung 3 wird aus \code{hallo} das Wort \code{kdoor}. Schreiben Sie eine Methode \code{String caesar(String text, int verschiebung)} für Texte aus Kleinbuchstaben. Wie lässt sich mit derselben Methode wieder entschlüsseln?
+\begin{hinweis}
+\textbf{Hinweis:} Mit Zeichen kann man rechnen (Kapitel~\ref{sec:zeichen}): \code{c - 'a'} liefert die Position eines Kleinbuchstabens im Alphabet (0 bis 25), und \code{(char) ('a' + p)} macht aus einer Position wieder einen Buchstaben.
+\end{hinweis}
+
+\ueben
+\aufgabe{Noch mehr Methoden}
+Gegeben sei \code{String s = "Programmieren";} Was liefern die Ausdrücke?
+\begin{multicols}{2}
+\begin{enumerate}[label=\alph*)]
+\item \code{s.length()}
+\item \code{s.charAt(3)}
+\item \code{s.indexOf("mm")}
+\item \code{s.substring(3, 7)}
+\item \code{s.replace('r', 'l')}
+\item \code{s.substring(0, 3) + s.length()}
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Gleich oder nicht?}
+Was gibt der Ausschnitt aus?
+\begin{javacode}[Ausschnitt]{Vergleiche}
+String a = "Java";
+String b = "Ja";
+String c = b + "va";
+String d = a;
+System.out.println(a == c);
+System.out.println(a.equals(c));
+System.out.println(a == d);
+System.out.println(a.equals("java"));
+\end{javacode}
+
+\aufgabe{String-Methoden schreiben}
+\begin{javacode}[Ausschnitt]{Signaturen}
+public static boolean nurZiffern(String s)          // "4711" liefert true, "47a1" false
+public static int zaehleGrossbuchstaben(String s)
+public static String ohneVokale(String s)           // "Informatik" wird zu "nfrmtk"
+public static String initialen(String vorname, String nachname)    // "Claire", "Grube" wird zu "C. G."
+public static int dualZuInt(String dual)            // "1011" liefert 11
+\end{javacode}
+
+\aufgabe{Umwandeln}
+\begin{enumerate}[label=\alph*)]
+\item Was liefern \code{Integer.parseInt("42") + 1}, \code{"42" + 1} und \code{Integer.toString(42).length()}?
+\item Schreiben Sie ein Programm, das eine Zahl als Text einliest und ihre Quersumme berechnet, ohne den Text in eine Zahl umzuwandeln.
+\item Welchen Wert hat \code{Integer.MAX\_VALUE + 1}? Erklären Sie das Ergebnis mit Kapitel 3.
+\end{enumerate}

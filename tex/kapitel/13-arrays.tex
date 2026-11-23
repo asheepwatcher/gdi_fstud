@@ -1,0 +1,267 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Java: Arrays und Aufzählungen}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Bisher enthielt jede Variable genau einen Wert. Ein \textbf{Array} (Feld) fasst viele gleichartige Werte unter einem Namen zusammen; auf die einzelnen Elemente greift man über einen \textbf{Index} zu. Arrays sind in Java \textbf{Objekte}: Die Array-Variable liegt auf dem Stack und enthält nur eine \textbf{Referenz} (Adresse) auf das eigentliche Array, das mit \code{new} im Heap angelegt wird. Das hat eine wichtige Folge: Weist man eine Array-Variable einer anderen zu, wird nicht das Array kopiert, sondern nur die Referenz.
+
+Ein \textbf{Aufzählungstyp} (\code{enum}) ist ein Datentyp, der als Werte nur eine feste Menge benannter Konstanten zulässt.
+
+\begin{merke}
+\begin{itemize}[itemsep=0.1em]
+\item Anlegen: \code{int[] f = new int[5];} \ oder mit Werten: \ \code{int[] f = \{10, 4, 7, -1, 8\};}
+\item Der Index läuft von \code{0} bis \code{f.length - 1}. Ein Zugriff außerhalb löst zur Laufzeit eine \code{ArrayIndexOutOfBoundsException} aus.
+\item Die Länge steht in \code{f.length} und lässt sich nach dem Anlegen nicht mehr ändern.
+\item Mit \code{new} angelegte Arrays sind vorbelegt: Zahlen mit \code{0}, \code{boolean} mit \code{false}, Referenzen (z.\,B. \code{String}) mit \code{null}.
+\item Durchlaufen: mit Index \code{for (int i = 0; i < f.length; i++)} (Lesen und Ändern) oder mit der For-each-Schleife \code{for (int wert : f)} (nur Lesen).
+\item \textbf{Mehrdimensional:} \code{int[][] m = new int[2][3];} ist ein Array aus 2 Arrays mit je 3 Elementen. \code{m.length} ist 2, \code{m[0].length} ist 3. Die Zeilen dürfen verschieden lang sein.
+\item \textbf{Enum:} \code{enum AmpelFarbe \{ ROT, GELB, GRUEN \}}, Verwendung: \code{AmpelFarbe a = AmpelFarbe.ROT;}
+\end{itemize}
+\end{merke}
+
+\beispiele
+\beispiel{Summe und Maximum}
+\begin{javacode}[Ausschnitt]{Durchlaufen}
+int[] werte = {10, 4, 7, -1, 8};
+
+int summe = 0;
+for (int w : werte) {               // For-each: nur lesen
+	summe += w;
+}
+
+int max = werte[0];
+for (int i = 1; i < werte.length; i++) {
+	if (werte[i] > max) {
+		max = werte[i];
+	}
+}
+System.out.println(summe + " " + max);      // 28 10
+\end{javacode}
+
+\beispiel{Referenzen: zwei Namen für dasselbe Array}
+\noindent\begin{minipage}[c]{0.5\linewidth}
+\begin{javacode}[Ausschnitt]{Referenz}
+int[] a = {1, 2, 3};
+int[] b = a;          // kopiert nur die Referenz
+b[0] = 99;
+System.out.println(a[0]);     // 99
+\end{javacode}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.45\linewidth}
+\centering
+\begin{tikzpicture}[syntax, font=\small\ttfamily]
+	\node[draw=diagramm, semithick, minimum width=9mm, minimum height=6mm, label=left:a] (a) at (0,0.5) {};
+	\node[draw=diagramm, semithick, minimum width=9mm, minimum height=6mm, label=left:b] (b) at (0,-0.5) {};
+	\foreach \x/\v in {0/99, 1/2, 2/3}
+		\node[flaeche, minimum width=9mm, minimum height=6mm] (f\x) at (2.6+\x*0.9,0) {\v};
+	\fill[diagramm] (a.center) circle (1.5pt);
+	\fill[diagramm] (b.center) circle (1.5pt);
+	\draw[linie, ->] (a.center) -- (f0.west);
+	\draw[linie, ->] (b.center) -- (f0.west);
+	\node[font=\footnotesize\rmfamily] at (0,-1.2) {Stack};
+	\node[font=\footnotesize\rmfamily] at (3.5,-1.2) {Heap};
+\end{tikzpicture}
+\end{minipage}
+
+\smallskip
+Eine echte Kopie braucht ein neues Array, in das die Werte einzeln übertragen werden:
+\begin{javacode}[Ausschnitt]{Kopie}
+int[] c = new int[a.length];
+for (int i = 0; i < a.length; i++) {
+	c[i] = a[i];
+}
+\end{javacode}
+Aus demselben Grund vergleicht \code{a == b} nicht die Inhalte, sondern nur, ob beide auf \emph{dasselbe} Array zeigen.
+
+\beispiel{Zweidimensionales Array}
+\begin{javacode}[Ausschnitt]{Matrix}
+int[][] m = { {1, 2, 3}, {4, 5, 6} };       // 2 Zeilen, 3 Spalten
+System.out.println(m[1][2]);                // 6 (Zeile 1, Spalte 2)
+
+for (int i = 0; i < m.length; i++) {        // alle Zeilen
+	int zeilensumme = 0;
+	for (int j = 0; j < m[i].length; j++) { // alle Spalten der Zeile i
+		zeilensumme += m[i][j];
+	}
+	System.out.println("Zeile " + i + ": " + zeilensumme);      // 6 und 15
+}
+\end{javacode}
+
+\beispiel{Zählen mit einem Hilfsarray}
+Ein Würfel wird 600-mal geworfen. Ein Array merkt sich, wie oft jede Augenzahl gefallen ist. Die Augenzahl dient dabei direkt als Index.
+\begin{javacode}[Ausschnitt]{Würfelstatistik}
+int[] anzahl = new int[7];                  // Index 1 bis 6 wird benutzt, Index 0 bleibt leer
+for (int i = 0; i < 600; i++) {
+	int wurf = (int) (Math.random() * 6) + 1;   // Zufallszahl von 1 bis 6
+	anzahl[wurf]++;
+}
+for (int augen = 1; augen <= 6; augen++) {
+	System.out.println(augen + ": " + anzahl[augen]);
+}
+\end{javacode}
+\code{Math.random()} liefert einen zufälligen \code{double}-Wert $x$ mit $0 \leq x < 1$.
+
+\beispiel{Aufzählungstyp mit switch}
+\begin{javacode}{EnumTest.java}
+public class EnumTest {
+	enum AmpelFarbe { ROT, GELB, GRUEN }
+
+	public static void main(String[] args) {
+		AmpelFarbe ampel = AmpelFarbe.GELB;
+		switch (ampel) {
+			case ROT:   System.out.println("Stehen bleiben"); break;
+			case GELB:  System.out.println("Achtung"); break;
+			case GRUEN: System.out.println("Gehen"); break;
+		}
+	}
+}
+\end{javacode}
+
+\aufgaben
+\aufgabe{Arrays füllen}
+\begin{enumerate}[label=\alph*)]
+\item Deklarieren Sie ein \code{int}-Array mit 200 Elementen und füllen Sie es mit den ersten 200 ungeraden Zahlen (1, 3, 5, \ldots).
+\item Deklarieren Sie ein \code{int}-Array mit 50 Elementen und füllen Sie es mit den ersten 50 Quadratzahlen in absteigender Reihenfolge (2500, 2401, \ldots, 1).
+\item Füllen Sie ein Array mit den ersten 30 Fibonacci-Zahlen (0, 1, 1, 2, 3, 5, 8, \ldots). Jede Zahl ist die Summe ihrer beiden Vorgänger.
+\end{enumerate}
+
+\aufgabe{Lässt sich das ausführen?}
+Lassen sich die folgenden Ausschnitte ausführen? Falls nein: Tritt der Fehler beim Übersetzen oder zur Laufzeit auf? Falls ja: Was wird ausgegeben?
+\begin{tcbraster}[raster columns=2, raster equal height=rows, raster column skip=3mm, raster row skip=1mm]
+\begin{javacode}[Ausschnitt]{a)}
+int[] f = new int[3];
+System.out.println(f[1]);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{b)}
+int[] f = {1, 2, 3};
+System.out.println(f[3]);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{c)}
+int[] f;
+f[0] = 1;
+System.out.println(f[0]);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{d)}
+String[] s = new String[2];
+System.out.println(s[0]);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{e)}
+int[] f = {4, 5, 6};
+f[f.length - 1] = f[0];
+System.out.println(f[2] + f.length);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{f)}
+int[][] m = new int[2][];
+m[0] = new int[3];
+m[1] = new int[4];
+System.out.println(m.length + m[1].length);
+\end{javacode}
+\end{tcbraster}
+
+\aufgabe[\K]{Programmverständnis}
+Wie lautet die Ausgabe des folgenden Programmausschnitts? Erläutern Sie Ihre Antwort kurz, am besten mit einer Skizze von Stack und Heap.
+\begin{javacode}[Ausschnitt]{Referenzen}
+int[] a = { 5, 6 };
+int[] b = { 7, 8, 9 };
+int[] c = a;
+
+a = b;
+a[2] = 1;
+c[0] += b[2];
+
+for (int i = 0; i < c.length; i++) {
+	System.out.println("a[" + i + "]=" + a[i] + " b[" + i + "]=" + b[i] + " c[" + i + "]=" + c[i]);
+}
+\end{javacode}
+
+\aufgabe{Programme mit Arrays}
+\begin{enumerate}[label=\alph*)]
+\item Bestimmen Sie in einem \code{double}-Array das Minimum und die Position, an der es steht.
+\item Berechnen Sie den Mittelwert der Elemente und zählen Sie, wie viele Elemente über dem Mittelwert liegen.
+\item Drehen Sie die Reihenfolge der Elemente eines Arrays um, ohne ein zweites Array zu verwenden.
+\item Prüfen Sie, ob ein Array aufsteigend sortiert ist.
+\end{enumerate}
+
+\aufgabe{Zweidimensionale Arrays}
+\begin{enumerate}[label=\alph*)]
+\item Legen Sie ein Array \code{int[][] einmaleins = new int[10][10]} an und füllen Sie es so, dass \code{einmaleins[i][j]} das Produkt $(i+1) \cdot (j+1)$ enthält. Geben Sie es zeilenweise aus.
+\item Berechnen Sie für eine quadratische Matrix die Summe der Hauptdiagonalen.
+\item Ein Notenspiegel speichert für 4 Studierende je 3 Noten in einem \code{double[4][3]}. Geben Sie für jede Person den Durchschnitt aus und anschließend den Durchschnitt jeder der 3 Prüfungen.
+\end{enumerate}
+
+\aufgabe{Aufzählungen}
+Legen Sie einen Aufzählungstyp \code{Wochentag} mit den Werten \code{MO} bis \code{SO} an. Schreiben Sie ein Programm, das für eine Variable vom Typ \code{Wochentag} mit einer \code{switch}-Anweisung ausgibt, ob es sich um einen Werktag oder um das Wochenende handelt. Welchen Vorteil hat der Aufzählungstyp gegenüber einer Codierung der Tage durch die Zahlen 1 bis 7?
+
+\aufgabe[\S]{Pascalsches Dreieck}
+Im pascalschen Dreieck stehen in der $i$-ten Zeile genau $i$ Werte. Am Rand steht jeweils eine 1, jeder andere Wert ist die Summe der beiden darüber liegenden Werte. Legen Sie ein \emph{ungleichmäßiges} Array \code{int[][] pascal = new int[n][]} an, berechnen Sie die ersten $n$ Zeilen und geben Sie sie aus.
+\begin{konsole}
+1
+1 1
+1 2 1
+1 3 3 1
+1 4 6 4 1
+\end{konsole}
+
+\ueben
+\aufgabe{Arrays anlegen}
+Schreiben Sie jeweils die Anweisung zum Anlegen des Arrays.
+\begin{enumerate}[label=\alph*)]
+\item ein Array mit den Namen der zwölf Monate
+\item ein Array für 100 Messwerte (Kommazahlen)
+\item ein Spielfeld aus $3 \times 3$ Zeichen
+\item ein Array, das für die Zahlen 0 bis 99 speichert, ob sie Primzahlen sind
+\end{enumerate}
+
+\aufgabe{Was wird ausgegeben?}
+\begin{tcbraster}[raster columns=2, raster equal height=rows, raster column skip=3mm, raster row skip=1mm]
+\begin{javacode}[Ausschnitt]{a)}
+int[] f = {3, 1, 4, 1, 5};
+int s = 0;
+for (int i = 0; i < f.length; i += 2) {
+	s += f[i];
+}
+System.out.println(s);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{b)}
+int[] f = {3, 1, 4, 1, 5};
+for (int i = 1; i < f.length; i++) {
+	f[i] = f[i] + f[i - 1];
+}
+System.out.println(f[4]);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{c)}
+int[] f = {1, 2, 3};
+for (int w : f) {
+	w = w * 2;
+}
+System.out.println(f[0] + f[1] + f[2]);
+\end{javacode}
+\begin{javacode}[Ausschnitt]{d)}
+int[] a = {1, 2};
+int[] b = {1, 2};
+int[] c = a;
+System.out.println(a == b);
+System.out.println(a == c);
+\end{javacode}
+\end{tcbraster}
+
+\aufgabe{Programme mit eindimensionalen Arrays}
+\begin{enumerate}[label=\alph*)]
+\item Zählen Sie, wie viele Elemente eines \code{int}-Arrays positiv sind.
+\item Bestimmen Sie das zweitgrößte Element.
+\item Verschieben Sie alle Elemente um eine Position nach links; das erste Element wandert ans Ende.
+\item Addieren Sie zwei gleich lange Arrays elementweise in ein drittes Array.
+\item Prüfen Sie, ob zwei Arrays denselben Inhalt haben.
+\item Erzeugen Sie eine Kopie eines Arrays in umgekehrter Reihenfolge.
+\end{enumerate}
+
+\aufgabe{Programme mit zweidimensionalen Arrays}
+\begin{enumerate}[label=\alph*)]
+\item Erzeugen Sie eine $n \times n$-Matrix, die auf der Hauptdiagonalen Einsen und sonst Nullen enthält.
+\item Bestimmen Sie für eine Matrix das Maximum jeder Zeile und das Maximum jeder Spalte.
+\item Erzeugen Sie zu einer Matrix mit $m$ Zeilen und $n$ Spalten die \emph{transponierte} Matrix mit $n$ Zeilen und $m$ Spalten (Zeilen und Spalten sind vertauscht).
+\item Ein Tic-Tac-Toe-Feld ist als \code{char[3][3]} gespeichert. Prüfen Sie, ob in einer Zeile dreimal dasselbe Zeichen (\code{'X'} oder \code{'O'}) steht.
+\end{enumerate}
+
+\aufgabe{Himmelsrichtungen}
+Legen Sie den Aufzählungstyp \code{Richtung} mit den Werten \code{NORD}, \code{OST}, \code{SUED} und \code{WEST} an. Schreiben Sie ein Programm, das zu einer Richtung mit \code{switch} die Richtung bestimmt, die sich nach einer Vierteldrehung nach rechts ergibt.

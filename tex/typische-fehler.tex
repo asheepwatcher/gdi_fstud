@@ -1,0 +1,510 @@
+% Typische Fehler zu jedem Kapitel des Kompaktskripts
+\documentclass[11pt,a4paper,DIV14,headsepline]{scrartcl}
+\input{praeambel}
+\ihead{GDI -- Typische Fehler}
+\definecolor{fehlerrot}{RGB}{190,45,45}
+\definecolor{richtiggruen}{RGB}{30,130,76}
+
+% Kapitelüberschrift mit derselben Nummer wie im Skript
+\newcommand{\kap}[2]{\needspace{9\baselineskip}\setcounter{section}{\numexpr#1-1\relax}\section{#2}}
+
+% Ein Fehler: \fehler{Titel}{falsch}{richtig}{Erklärung}
+\newcommand{\fehler}[4]{%
+	\begin{tcolorbox}[enhanced, unbreakable, sharp corners, boxrule=0pt, colback=codeHintergrund,
+		borderline west={2pt}{0pt}{diagramm}, left=3mm, right=2mm, top=1.5mm, bottom=1.5mm,
+		before skip=2.5mm, after skip=2.5mm]
+	\textbf{#1}\par\smallskip
+	\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.47\linewidth}@{\hspace{0.04\linewidth}}>{\raggedright\arraybackslash}p{0.47\linewidth}@{}}
+	\textcolor{fehlerrot}{\textbf{$\times$ \ falsch}} & \textcolor{richtiggruen}{\textbf{\checkmark\ \ richtig}} \\[0.5mm]
+	#2 & #3
+	\end{tabular}\par\smallskip
+	{\small #4}
+	\end{tcolorbox}}
+
+\begin{document}
+
+\makeatletter
+\begin{center}
+{\@titlehead}\\[5mm]
+{\LARGE\bfseries Typische Fehler}\\[2mm]
+{\large zu jedem Kapitel des Kompaktskripts}
+\end{center}
+\makeatother
+
+\begin{hinweis}
+Diese Sammlung zeigt Fehler, die beim Lernen dieses Stoffs häufig passieren. Jeder Eintrag stellt eine falsche und eine richtige Lösung gegenüber und erklärt, woran es liegt. Die Kapitelnummern stimmen mit dem Skript überein. Am meisten bringt die Sammlung, wenn Sie vor dem Lesen der Erklärung selbst überlegen, was an der linken Spalte falsch ist.
+\end{hinweis}
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{1}{Information, Bits und Bytes}
+
+\fehler{Bits für eine Anzahl von Zuständen abrunden}
+{1000 Zustände: $2^9 = 512$, also 9 Bit}
+{$2^9 = 512 < 1000 \leq 1024 = 2^{10}$, also 10 Bit}
+{Gesucht ist das kleinste $n$ mit $2^n \geq$ Anzahl. Mit 9 Bit lassen sich nur 512 Zustände unterscheiden.}
+
+\fehler{Kilobyte dezimal rechnen}
+{1 KB $= 1000$ Byte, \ 1 MB $= 1\,000\,000$ Byte}
+{1 KB $= 2^{10} = 1024$ Byte, \ 1 MB $= 2^{20}$ Byte}
+{In der Vorlesung und in den Klausuren werden Speichergrößen als Zweierpotenzen gerechnet.}
+
+\fehler{Byte und Bit verwechseln}
+{8 MB $= 2^3 \cdot 2^{20} = 2^{23}$ Bit}
+{8 MB $= 2^{23}$ Byte $= 2^{23} \cdot 2^3 = 2^{26}$ Bit}
+{Ein Byte hat 8 Bit. Bei der Umrechnung in Bit kommt der Faktor $2^3$ hinzu.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{2}{Zahlensysteme}
+
+\fehler{Reste der Divisionsmethode in falscher Richtung lesen}
+{$6 : 2 = 3$ Rest 0, \ $3 : 2 = 1$ Rest 1, \ $1 : 2 = 0$ Rest 1 \ $\Rightarrow$ \ $011_2$}
+{Reste von unten nach oben: \ $110_2 = 6$}
+{Der erste Rest ist die \emph{letzte} Stelle (Stellenwert $2^0$). Eine Probe deckt den Fehler sofort auf: $011_2 = 3$.}
+
+\fehler{Von links gruppieren}
+{$1\,0110_2$: \ $101\ 10 = 52_8$}
+{von rechts: \ $010\ 110 = 26_8$}
+{Gruppiert wird immer von rechts, links wird mit Nullen aufgefüllt. Probe: $1\,0110_2 = 22 = 2 \cdot 8 + 6$.}
+
+\fehler{Hexadezimalziffern als zwei Stellen behandeln}
+{$\mathrm{1C}_{16} = 1 \cdot 16 + 1 \cdot 16 + \ldots$ \ oder \ $12 = 1\,0010_2$ für C}
+{$\mathrm{C} = 12 = 1100_2$, \ $\mathrm{1C}_{16} = 1 \cdot 16 + 12 = 28$}
+{A bis F sind \emph{eine} Ziffer mit den Werten 10 bis 15. Jede Hexziffer entspricht genau vier Bits.}
+
+\fehler{Feste Breite vergessen}
+{\enquote{41 als 8-Bit-Dualzahl}: \ $10\,1001$}
+{$0010\,1001$}
+{Ist eine Breite verlangt, wird links mit Nullen aufgefüllt. Für das Zweierkomplement ist das unbedingt nötig.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{3}{Rechnen mit Dualzahlen und Zweierkomplement}
+
+\fehler{Die 1 vergessen}
+{$-12$: \ $0000\,1100 \to 1111\,0011$}
+{$1111\,0011 + 1 = 1111\,0100$}
+{Nur Umdrehen ergibt das \emph{Einer}komplement. Für das Zweierkomplement wird danach 1 addiert.}
+
+\fehler{Vor dem Umdrehen nicht auffüllen}
+{$-5$ mit 8 Bit: \ $101 \to 010 + 1 = 011$}
+{$0000\,0101 \to 1111\,1010 + 1 = 1111\,1011$}
+{Zuerst auf die volle Breite auffüllen, dann umdrehen. Die führenden Nullen werden dabei zu Einsen.}
+
+\fehler{Den Übertrag über die Breite mitschreiben}
+{$0010\,0000 + 1110\,0000 = 1\,0000\,0000$}
+{$0000\,0000$ \ (der Übertrag in die 9. Stelle fällt weg)}
+{Mit 8 Bit gibt es keine 9. Stelle. Das Ergebnis $32 + (-32) = 0$ stimmt erst ohne den Übertrag.}
+
+\fehler{Ein negatives Ergebnis wie eine positive Zahl lesen}
+{$1110\,0010 = 128 + 64 + 32 + 2 = 226$}
+{Vorderstes Bit 1: negativ. Umdrehen und $+1$: \ $0001\,1110 = 30$, \ also $-30$}
+{Im Zweierkomplement entscheidet das vorderste Bit über das Vorzeichen. Den Betrag erhält man mit demselben Verfahren wie beim Negieren.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{4}{Dualzahlen mit Nachkommastellen und Gleitkommazahlen}
+
+\fehler{Stellenwerte hinter dem Komma dezimal lesen}
+{$0{,}1_2 = 0{,}1$ \ oder \ $0{,}11_2 = 0{,}11$}
+{$0{,}1_2 = 0{,}5$, \ $0{,}11_2 = 0{,}5 + 0{,}25 = 0{,}75$}
+{Rechts vom Komma halbiert sich der Stellenwert: $\frac12$, $\frac14$, $\frac18$, \ldots}
+
+\fehler{Den Nachkommateil durch 2 teilen}
+{$0{,}75 : 2 = 0{,}375 \ldots$}
+{$0{,}75 \cdot 2 = 1{,}5 \to 1$; \ $0{,}5 \cdot 2 = 1{,}0 \to 1$; \ also $0{,}11_2$}
+{Für den Nachkommateil wird \emph{multipliziert}. Die Ziffern liest man von oben nach unten, also anders herum als bei der Divisionsmethode.}
+
+\fehler{Gleitkommazahlen mit == vergleichen}
+{\code{if (0.1 + 0.2 == 0.3)}}
+{\code{if (Math.abs(0.1 + 0.2 - 0.3) < 1e-9)}}
+{$0{,}1$ und $0{,}2$ sind im Dualsystem periodisch und werden gerundet gespeichert. Die Summe ist \code{0.30000000000000004}.}
+
+\fehler{Bias falsch anwenden}
+{$5{,}75 = 1{,}0111 \cdot 2^2$: gespeicherter Exponent $2$ \ oder \ $127 - 2$}
+{gespeicherter Exponent $2 + 127 = 129 = 1000\,0001_2$}
+{Der Bias wird zum Exponenten \emph{addiert}, damit auch negative Exponenten ohne Vorzeichen gespeichert werden können.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{5}{Codierung von Texten}
+
+\fehler{Hexadezimalen Abstand dezimal rechnen}
+{\code{a} $=$ \code{A} $+ 20 = 65 + 20 = 85$}
+{\code{a} $=$ \code{A} $+ 20_{16} = 65 + 32 = 97$}
+{Der Abstand zwischen Groß- und Kleinbuchstaben ist $20_{16} = 32$. In Java: \code{(char) (c + 32)}.}
+
+\fehler{Ziffernzeichen als Zahl verwenden}
+{\code{int w = '7';} \quad $\Rightarrow$ \ \code{w} ist 55}
+{\code{int w = '7' - '0';} \quad $\Rightarrow$ \ \code{w} ist 7}
+{Ein \code{char} ist eine Zahl, nämlich sein Code. \code{'7'} hat den Code 55; den Ziffernwert erhält man durch Abziehen von \code{'0'}.}
+
+\fehler{UTF-8 und UTF-16 verwechseln}
+{\enquote{In UTF-8 braucht jedes Zeichen 2 Byte.}}
+{UTF-8: 1 Byte für ASCII, 2 Byte für Umlaute, bis zu 4 Byte. UTF-16: in der Regel 2 Byte.}
+{\textbf{Käse} belegt in UTF-8 5 Byte, in UTF-16 8 Byte.}
+
+\fehler{Zeichen und Text verwechseln}
+{\code{char c = "a";}}
+{\code{char c = 'a';} \quad \code{String s = "a";}}
+{Einfache Anführungszeichen für ein \code{char}, doppelte für einen \code{String}.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{6}{Boolesche Algebra}
+
+\fehler{De Morgan nur halb anwenden}
+{$\neg(a \wedge b) = \neg a \wedge \neg b$}
+{$\neg(a \wedge b) = \neg a \vee \neg b$}
+{Beim Hineinziehen der Negation wird aus $\wedge$ ein $\vee$ und umgekehrt. In Java: \code{!(x > 0 \&\& y > 0)} ist \code{x <= 0 || y <= 0}.}
+
+\fehler{Unvollständige Wahrheitstafel}
+{bei drei Variablen 6 Zeilen}
+{$2^3 = 8$ Zeilen}
+{Systematisch zählen wie im Dualsystem: 000, 001, 010, \ldots, 111. Dann fehlt keine Belegung.}
+
+\fehler{XOR wie OR behandeln}
+{$1 \oplus 1 = 1$}
+{$1 \oplus 1 = 0$}
+{XOR (entweder oder) ist nur wahr, wenn \emph{genau eine} Seite wahr ist.}
+
+\fehler{Mit einem Beispiel die Gleichwertigkeit beweisen}
+{\enquote{Für $a = 1$, $b = 1$ sind beide Ausdrücke 1, also gleichwertig.}}
+{Alle Belegungen prüfen (Wahrheitstafel) oder mit den Gesetzen umformen.}
+{Ein Gegenbeispiel genügt, um Gleichwertigkeit zu widerlegen, aber ein Beispiel beweist sie nicht.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{7}{Aufbau eines Rechners und Betriebssystem}
+
+\fehler{Getrennte Speicher}
+{\enquote{Beim Von-Neumann-Rechner liegen Programme und Daten in getrennten Speichern.}}
+{Programme \emph{und} Daten liegen im selben Speicher.}
+{Genau das ist die zentrale Idee: Der Rechner ist nicht fest verdrahtet, sondern führt jedes geladene Programm aus.}
+
+\fehler{Rechenwerk und Steuerwerk verwechseln}
+{\enquote{Das Steuerwerk addiert die Zahlen.}}
+{Das Rechenwerk (ALU) rechnet, das Steuerwerk interpretiert die Befehle und steuert ihre Abfolge.}
+{Beide bilden zusammen die CPU.}
+
+\fehler{Arbeitsspeicher und Festplatte verwechseln}
+{\enquote{Der Arbeitsspeicher behält seinen Inhalt nach dem Ausschalten.}}
+{Der Arbeitsspeicher ist flüchtig, Festplatte und SSD sind nicht flüchtig.}
+{Deshalb muss alles, was erhalten bleiben soll, in Dateien gespeichert werden.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{8}{Algorithmen und Programmiersprachen}
+
+\fehler{Determiniert und deterministisch verwechseln}
+{\enquote{Deterministisch heißt: gleiche Eingabe, gleiches Ergebnis.}}
+{Das ist \emph{determiniert}. Deterministisch heißt: Der nächste Schritt ist immer eindeutig festgelegt.}
+{Jeder deterministische Algorithmus ist determiniert, aber nicht umgekehrt: Ein Algorithmus kann zufällig vorgehen und trotzdem immer dasselbe Ergebnis liefern.}
+
+\fehler{Compiler und Interpreter vertauschen}
+{\enquote{Der Compiler übersetzt das Programm während der Ausführung.}}
+{Der Compiler übersetzt \emph{vor} der Ausführung, der Interpreter \emph{zur Laufzeit}.}
+{Java ist eine Mischform: \code{javac} übersetzt in Byte-Code, die JVM führt ihn aus.}
+
+\fehler{Schreibtischtest ohne Startzeile}
+{Die Tabelle beginnt mit den Werten nach dem ersten Durchlauf.}
+{Erste Zeile: die Werte \emph{vor} der Schleife, danach eine Zeile pro Durchlauf.}
+{Ohne Startzeile fehlt der Vergleich, und Fehler bei der Initialisierung fallen nicht auf.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{9}{Formale Sprachen und Grammatiken}
+
+\fehler{Wiederholung und Option verwechseln}
+{\code{\{a\}}: mindestens einmal \quad \code{[a]}: beliebig oft}
+{\code{\{a\}}: nullmal oder öfter \quad \code{[a]}: nullmal oder einmal}
+{Deshalb erzeugt \code{\{a\} b} auch das Wort \code{b}, aber \code{[a] b} nie \code{aab}.}
+
+\fehler{Gekoppelte Anzahlen getrennt erzeugen}
+{$a^n b^n$: \ $\{(S, aS), (S, Sb), (S, ab)\}$}
+{$a^n b^n$: \ $\{(S, aSb), (S, ab)\}$}
+{Die linke Grammatik erzeugt auch $aaab$. Wenn zwei Anzahlen zusammenhängen, müssen beide Zeichen \emph{in derselben Regel} entstehen.}
+
+\fehler{Den Fall $n = 0$ falsch behandeln}
+{$L = \{a^n b \mid n \in \mathbb{N}_0\}$: \ $\{(S, aS), (S, ab)\}$}
+{$\{(S, aS), (S, b)\}$}
+{Für $n = 0$ besteht das Wort nur aus $b$. Bei $\mathbb{N}$ beginnt die Zählung bei 1, bei $\mathbb{N}_0$ bei 0. Immer das kürzeste Wort prüfen.}
+
+\fehler{Terminal- und Nichtterminalsymbole vermischen}
+{$N = \{S, a, b\}$, \ $T = \{a, b\}$}
+{$N = \{S\}$, \ $T = \{a, b\}$}
+{Ein Zeichen ist entweder Terminal oder Nichtterminal: $N \cap T = \emptyset$.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{10}{Java: Variablen, Datentypen, Ein- und Ausgabe}
+
+\fehler{Ganzzahldivision übersehen}
+{\code{double mittel = (a + b) / 2;} \ mit \code{int a = 3, b = 4} ergibt \code{3.0}}
+{\code{double mittel = (a + b) / 2.0;} \ ergibt \code{3.5}}
+{Sind beide Operanden ganzzahlig, wird ganzzahlig geteilt. Die Umwandlung in \code{double} passiert erst danach.}
+
+\fehler{Zahlen im Text addieren wollen}
+{\code{"Summe: " + a + b} \ mit $a = 3$, $b = 4$ ergibt \code{Summe: 34}}
+{\code{"Summe: " + (a + b)} \ ergibt \code{Summe: 7}}
+{\code{+} wird von links ausgewertet. Sobald links ein String steht, wird angehängt statt addiert.}
+
+\fehler{Variable vor der ersten Zuweisung lesen}
+{\code{int summe;} \newline \code{summe += 5;}}
+{\code{int summe = 0;} \newline \code{summe += 5;}}
+{Lokale Variablen haben keinen Standardwert. Der Compiler meldet \emph{variable might not have been initialized}.}
+
+\fehler{Kommazahl ohne Cast in einen kleineren Typ}
+{\code{int i = 3.7;} \quad \code{float f = 1.5;}}
+{\code{int i = (int) 3.7;} \ (ergibt 3) \quad \code{float f = 1.5f;}}
+{Von groß nach klein geht es nur mit Cast. \code{1.5} ist ein \code{double}-Literal. Der Cast schneidet ab, er rundet nicht.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{11}{Java: Ausdrücke und Operatoren}
+
+\fehler{Präfix und Postfix verwechseln}
+{\code{int n = 5; int m = n++;} \ $\Rightarrow$ \ \code{m} ist 6}
+{\code{m} ist 5, \code{n} ist 6}
+{\code{n++} liefert den \emph{alten} Wert und erhöht danach. \code{++n} erhöht zuerst.}
+
+\fehler{Zähler mit sich selbst erhöhen}
+{\code{zaehler = zaehler++;}}
+{\code{zaehler++;} \ oder \ \code{zaehler = zaehler + 1;}}
+{\code{zaehler++} liefert den alten Wert, die Zuweisung überschreibt die Erhöhung wieder. Der Zähler bleibt gleich.}
+
+\fehler{Tabellenaufgaben: Werte weiterreichen}
+{Bei \enquote{alternativen Zeilen} mit den Ergebnissen der vorigen Zeile weiterrechnen}
+{Jede Zeile startet wieder mit der vorgegebenen Belegung.}
+{Die Aufgabenstellung sagt: \enquote{Der Ausgangswert bei jeder Zeile sei die oben angegebene Belegung.}}
+
+\fehler{Bei \code{op=} den Nebeneffekt falsch zuordnen}
+{\code{int y = 3; y *= ++y;} \ $\Rightarrow$ \ $4 \cdot 4 = 16$}
+{$3 \cdot 4 = 12$}
+{Bei \code{a op= b} wird zuerst der alte Wert von \code{a} gemerkt, dann \code{b} ausgewertet.}
+
+\fehler{\code{=} statt \code{==}}
+{\code{if (x = 5)}}
+{\code{if (x == 5)}}
+{\code{=} ist eine Zuweisung. In Java meldet der Compiler hier einen Fehler, weil eine Bedingung vom Typ \code{boolean} sein muss.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{12}{Java: Kontrollstrukturen}
+
+\fehler{\code{break} im \code{switch} vergessen}
+{\code{case 1: System.out.println("eins");} \newline \code{case 2: System.out.println("zwei");}}
+{\code{case 1: System.out.println("eins"); break;}}
+{Ohne \code{break} läuft die Ausführung in den nächsten \code{case} weiter. Für \code{1} würden beide Zeilen ausgegeben.}
+
+\fehler{Semikolon hinter dem Schleifenkopf}
+{\code{for (int i = 0; i < 5; i++);} \newline \code{\{ System.out.println("x"); \}}}
+{\code{for (int i = 0; i < 5; i++) \{} \newline \code{\ \ System.out.println("x");} \newline \code{\}}}
+{Das Semikolon ist ein leerer Schleifenrumpf. Die Schleife läuft fünfmal ohne Wirkung, der Block danach wird nur einmal ausgeführt.}
+
+\fehler{Einen Durchlauf zu viel oder zu wenig}
+{\code{for (int i = 1; i < 10; i++)} \ für die Zahlen 1 bis 10}
+{\code{for (int i = 1; i <= 10; i++)}}
+{Immer den ersten und den letzten Durchlauf prüfen: Welchen Wert hat \code{i} dort?}
+
+\fehler{Schleifenvariable nicht verändern}
+{\code{int i = 0;} \newline \code{while (i < 10) \{ summe += i; \}}}
+{\code{while (i < 10) \{ summe += i; i++; \}}}
+{Ändert sich die Bedingung nie, entsteht eine Endlosschleife.}
+
+\fehler{Das \code{else} dem falschen \code{if} zuordnen}
+{Einrückung zeigt: \code{else} gehört zum äußeren \code{if}}
+{Ohne Klammern gehört \code{else} zum \emph{nächstgelegenen} \code{if}.}
+{Die Einrückung hat für den Compiler keine Bedeutung. Klammern setzen schafft Klarheit.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{13}{Java: Arrays und Aufzählungen}
+
+\fehler{Bis \code{length} laufen}
+{\code{for (int i = 0; i <= f.length; i++)}}
+{\code{for (int i = 0; i < f.length; i++)}}
+{Der letzte Index ist \code{f.length - 1}. Der Zugriff auf \code{f[f.length]} löst eine \code{ArrayIndexOutOfBoundsException} aus.}
+
+\fehler{Mit Index 1 beginnen}
+{\code{f[1]} ist das erste Element}
+{\code{f[0]} ist das erste Element}
+{Bei 5 Elementen laufen die Indizes von 0 bis 4.}
+
+\fehler{Glauben, \code{b = a} kopiere das Array}
+{\code{int[] b = a; b[0] = 99;} \ $\Rightarrow$ \ \code{a[0]} unverändert}
+{\code{a[0]} ist jetzt auch 99. Kopie: \code{new int[a.length]} und Werte einzeln übertragen.}
+{Array-Variablen enthalten nur eine Referenz. Nach \code{b = a} zeigen beide auf dasselbe Array.}
+
+\fehler{Mit For-each verändern wollen}
+{\code{for (int w : f) \{ w = w * 2; \}}}
+{\code{for (int i = 0; i < f.length; i++) \{ f[i] *= 2; \}}}
+{\code{w} ist eine Kopie des Elements. Änderungen an \code{w} wirken nicht auf das Array.}
+
+\fehler{\code{length} und \code{length()} verwechseln}
+{\code{f.length()} \quad \code{s.length}}
+{Array: \code{f.length} \quad String: \code{s.length()}}
+{Bei Arrays ist \code{length} ein Attribut, bei Strings eine Methode.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{14}{Java: Methoden}
+
+\fehler{Rückgabewert nicht verwenden}
+{\code{verdopple(x);} \newline \code{System.out.println(x);}}
+{\code{x = verdopple(x);}}
+{Eine Methode kann \code{x} nicht verändern, weil sie nur eine Kopie erhält. Das Ergebnis muss man selbst speichern.}
+
+\fehler{\code{return} vergessen oder in \code{void} verwenden}
+{\code{static int quadrat(int x) \{ int q = x * x; \}}}
+{\code{static int quadrat(int x) \{ return x * x; \}}}
+{Eine Methode mit Rückgabetyp muss auf jedem Weg einen Wert zurückgeben. Eine \code{void}-Methode darf keinen zurückgeben.}
+
+\fehler{Nur über den Rückgabetyp überladen}
+{\code{static int f(int n)} \ und \ \code{static double f(int n)}}
+{Die Parameter müssen sich unterscheiden: \code{f(int n)} und \code{f(double n)}}
+{Der Rückgabetyp gehört nicht zur Signatur. Der Compiler könnte die Aufrufe nicht unterscheiden.}
+
+\fehler{Lokale Variablen außerhalb ihres Blocks verwenden}
+{\code{for (int i = 0; i < n; i++) \{ \ldots \}} \newline \code{System.out.println(i);}}
+{\code{int i;} \newline \code{for (i = 0; i < n; i++) \{ \ldots \}}}
+{Eine Variable gilt nur in dem Block, in dem sie deklariert ist. Das \code{i} aus dem Schleifenkopf existiert danach nicht mehr.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{15}{Rekursion}
+
+\fehler{Basisfall fehlt oder wird übersprungen}
+{\code{if (n == 0) return 0;} \newline \code{return n + f(n - 2);} \ (für ungerade \code{n})}
+{\code{if (n <= 0) return 0;}}
+{Bei ungeradem \code{n} wird 0 nie genau getroffen. Das Programm bricht mit \code{StackOverflowError} ab.}
+
+\fehler{Das Ergebnis des rekursiven Aufrufs verwerfen}
+{\code{if (n > 0) \{ summe(n - 1); \}} \newline \code{return n;}}
+{\code{if (n > 0) \{ return n + summe(n - 1); \}} \newline \code{return 0;}}
+{Der rekursive Aufruf liefert einen Wert. Wird er nicht verwendet, ist er umsonst.}
+
+\fehler{Postdekrement im Aufruf}
+{\code{return f(n--);}}
+{\code{return f(n - 1);}}
+{\code{n--} übergibt den \emph{alten} Wert. Die Methode ruft sich mit demselben Wert auf und endet nie.}
+
+\fehler{Ausgabereihenfolge falsch einschätzen}
+{\code{f(n - 1); System.out.print(n);} gibt bei \code{f(3)} \enquote{321} aus}
+{\enquote{123}}
+{Die Ausgabe steht \emph{nach} dem Aufruf. Sie passiert erst, wenn alle inneren Aufrufe zurückgekehrt sind.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{16}{Algorithmenentwurf und Komplexität}
+
+\fehler{Konstanten und kleine Summanden stehen lassen}
+{$O(3n^2 + 7n)$}
+{$O(n^2)$}
+{Konstante Faktoren und schwächer wachsende Summanden entfallen.}
+
+\fehler{Geschachtelte Schleifen addieren}
+{\code{for i < n \{ for j < n \{ \ldots \} \}}: \ $O(n + n) = O(n)$}
+{$O(n \cdot n) = O(n^2)$}
+{Geschachtelt wird multipliziert, nacheinander wird addiert.}
+
+\fehler{Halbieren als lineares Wachstum einordnen}
+{\code{while (n > 1) n = n / 2;} \ $\Rightarrow$ \ $O(n/2) = O(n)$}
+{$O(\log n)$}
+{Bei $n = 1\,000\,000$ läuft die Schleife nur etwa 20-mal.}
+
+\fehler{Die O-Klasse als Laufzeit für jedes $n$ lesen}
+{\enquote{$O(n)$ ist immer schneller als $O(2^n)$.}}
+{\enquote{Ab einem bestimmten $n$ ist $O(n)$ schneller.}}
+{Für kleine $n$ kann ein Algorithmus mit höherer Klasse schneller sein, z.\,B. $1000n$ gegen $2^n$ bei $n = 10$.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{17}{Objektorientierung I: Klassen und Objekte}
+
+\fehler{Parameter verdeckt das Attribut}
+{\code{public Konto(double saldo) \{} \newline \code{\ \ saldo = saldo;} \newline \code{\}}}
+{\code{\ \ this.saldo = saldo;}}
+{Ohne \code{this} weist sich der Parameter selbst zu. Das Attribut bleibt 0.}
+
+\fehler{Konstruktor mit Rückgabetyp}
+{\code{public void Konto() \{ \ldots \}}}
+{\code{public Konto() \{ \ldots \}}}
+{Mit \code{void} ist es eine gewöhnliche Methode, die zufällig wie die Klasse heißt. Bei \code{new} wird sie nicht aufgerufen.}
+
+\fehler{Zähler ohne \code{static}}
+{\code{private int naechsteNr = 1;} \newline \code{nr = naechsteNr++;}}
+{\code{private static int naechsteNr = 1;}}
+{Ohne \code{static} hat jedes Objekt seinen eigenen Zähler. Alle Objekte bekommen dann die Nummer 1.}
+
+\fehler{Unveränderliches Attribut mit \code{set}-Methode}
+{\enquote{darf nach der Erzeugung nicht mehr verändert werden} $\Rightarrow$ \code{setPreis(\ldots)}}
+{Wert im Konstruktor setzen, nur eine \code{get}-Methode anbieten (oder \code{final})}
+{In Modellierungsaufgaben ist genau diese Unterscheidung Teil der Bewertung.}
+
+\fehler{Ein Array aus Objekten ist schon gefüllt}
+{\code{Konto[] k = new Konto[10];} \newline \code{k[0].einzahlen(5);}}
+{\code{k[0] = new Konto(0);} \newline \code{k[0].einzahlen(5);}}
+{\code{new Konto[10]} legt nur 10 leere Referenzen (\code{null}) an. Der Aufruf führt zu einer \code{NullPointerException}.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{18}{Objektorientierung II: Vererbung, Polymorphie, Interfaces}
+
+\fehler{\code{super(\ldots)} nicht an erster Stelle}
+{\code{public Hund(String n) \{} \newline \code{\ \ this.rasse = "?";} \newline \code{\ \ super(n);} \newline \code{\}}}
+{\code{\ \ super(n);} \newline \code{\ \ this.rasse = "?";}}
+{Der Konstruktor der Oberklasse muss als erste Anweisung aufgerufen werden.}
+
+\fehler{Eine abstrakte Klasse instanziieren}
+{\code{Figur f = new Figur("x");}}
+{\code{Figur f = new Kreis(1.0);}}
+{Von einer abstrakten Klasse gibt es keine Objekte. Eine Variable dieses Typs darf aber auf ein Objekt einer Unterklasse zeigen.}
+
+\fehler{Überschreiben mit anderer Signatur}
+{in \code{Kreis}: \ \code{public double getFlaeche(int genauigkeit)}}
+{\code{@Override public double getFlaeche()}}
+{Mit anderen Parametern wird die Methode \emph{überladen}, nicht überschrieben. \code{@Override} lässt den Compiler das prüfen.}
+
+\fehler{Auf private Attribute der Oberklasse zugreifen}
+{in \code{Girokonto}: \ \code{saldo -= betrag;} \ (\code{saldo} ist in \code{Konto} \code{private})}
+{Methode der Oberklasse verwenden: \code{super.auszahlen(betrag);} \ oder Attribut \code{protected}}
+{\code{private} ist nur in der eigenen Klasse sichtbar, auch nicht in Unterklassen.}
+
+\fehler{Den Vererbungspfeil umdrehen}
+{UML: Pfeil von \code{Figur} zu \code{Kreis}}
+{Pfeil mit hohler Spitze von \code{Kreis} zu \code{Figur}}
+{Die Spitze zeigt immer auf die Oberklasse: \enquote{Kreis ist eine Figur.}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{19}{Strings und Wrapper-Klassen}
+
+\fehler{Strings mit \code{==} vergleichen}
+{\code{if (eingabe == "ja")}}
+{\code{if (eingabe.equals("ja"))}}
+{\code{==} prüft nur, ob beide Variablen auf dasselbe Objekt zeigen. Ein eingelesener Text ist ein anderes Objekt.}
+
+\fehler{Das Ergebnis einer String-Methode verwerfen}
+{\code{s.replace(' ', '\_');} \newline \code{System.out.println(s);}}
+{\code{s = s.replace(' ', '\_');}}
+{Strings sind unveränderlich. Jede Methode liefert einen \emph{neuen} String.}
+
+\fehler{\code{substring} mit eingeschlossenem Ende}
+{\code{"Informatik".substring(2, 6)} ist \code{"forma"}}
+{\code{"form"}}
+{Das Zeichen an der Endposition gehört nicht mehr dazu: Positionen 2 bis 5.}
+
+\fehler{Bis \code{length()} lesen}
+{\code{s.charAt(s.length())}}
+{\code{s.charAt(s.length() - 1)} \ (letztes Zeichen)}
+{Wie bei Arrays beginnen die Positionen bei 0.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\kap{20}{Etwas theoretische Informatik}
+
+\fehler{Stern als \enquote{mindestens einmal} lesen}
+{$a^*$ enthält das leere Wort nicht.}
+{$a^*$ enthält $\varepsilon$, $a$, $aa$, \ldots}
+{Der Stern erlaubt auch keine Wiederholung. Für \enquote{mindestens einmal} schreibt man $aa^*$.}
+
+\fehler{Akzeptanz nach einem Präfix entscheiden}
+{\enquote{Der Automat war unterwegs in einem akzeptierenden Zustand, also wird das Wort akzeptiert.}}
+{Nur der Zustand \emph{nach dem letzten Zeichen} zählt.}
+{Ein Wort wird erst nach dem vollständigen Lesen beurteilt.}
+
+\fehler{Das Halteproblem für eine Frage der Rechenleistung halten}
+{\enquote{Mit schnelleren Rechnern könnte man das Halteproblem lösen.}}
+{Es gibt grundsätzlich keinen Algorithmus dafür.}
+{Das folgt aus einem Widerspruchsbeweis, nicht aus fehlender Rechenzeit.}
+
+\fehler{Partielle Korrektheit mit Terminierung verwechseln}
+{\enquote{Partiell korrekt heißt: Das Programm hält immer an.}}
+{Partiell korrekt: \emph{falls} es anhält, stimmt das Ergebnis. Total korrekt: zusätzlich hält es immer an.}
+{Eine Schleife, die für manche Eingaben nie endet, kann trotzdem partiell korrekt sein.}
+
+\end{document}

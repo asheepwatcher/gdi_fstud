@@ -1,0 +1,11 @@
+% Erzeugt ein einzelnes Kapitel als eigenes PDF. Wird von bauen.sh aufgerufen;
+% \kapitelnr und \kapiteldatei werden dort gesetzt.
+\documentclass[11pt,a4paper,DIV14,headsepline]{scrartcl}
+\usepackage{xr-hyper}
+\input{praeambel}
+\externaldocument{Skript}   % Verweise auf andere Kapitel aus dem Gesamtskript
+
+\begin{document}
+\setcounter{section}{\numexpr\kapitelnr-1\relax}
+\input{kapitel/\kapiteldatei}
+\end{document}

@@ -1,0 +1,33 @@
+\thispagestyle{empty}
+\makeatletter
+\begin{center}
+{\@titlehead}\\[3.5cm]
+{\Huge\bfseries Grundlagen der Informatik}\\[6mm]
+{\LARGE Kompaktskript}\\[4mm]
+{\large Erklärungen, Beispiele und Aufgaben\\zu Vorlesung, Übungen und Klausur}\\[2cm]
+\begin{tikzpicture}[syntax]
+	\node[knoten] (a) at (0,0) {\itshape g};
+	\node[knoten] (b) at (2,0) {\itshape d};
+	\node[knoten] (c) at (4,0) {\itshape i};
+	\draw[linie, ->] (-1.5,0) -- (a);
+	\draw[linie, ->] (a) -- (b);
+	\draw[linie, ->] (b) -- (c);
+	\draw[linie, ->] (c) -- (5.5,0);
+	\draw[linie, ->] (c.south) -- (4,-1) -- (0,-1) -- (a.south);
+\end{tikzpicture}
+\end{center}
+\makeatother
+\vfill
+
+\begin{merke}[So ist das Skript aufgebaut]
+Jedes Kapitel besteht aus drei Teilen:
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{Worum geht es?} Das Thema in wenigen Sätzen, das Wichtigste steht im Merkkasten.
+\item \textbf{Beispiele} zeigen das Vorgehen Schritt für Schritt.
+\item \textbf{Aufgaben} zum Selbstrechnen. Sie orientieren sich an den Übungsblättern und an den Probeklausuren.
+\end{itemize}
+Aufgaben mit der Markierung \K\ entsprechen in Art und Umfang einer Klausuraufgabe. Aufgaben mit \S\ gehen etwas über den Standard hinaus und sind für alle gedacht, die schon Vorkenntnisse mitbringen.
+\end{merke}
+\newpage
+\tableofcontents
+\newpage

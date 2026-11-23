@@ -1,0 +1,295 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Formale Sprachen und Grammatiken}\label{sec:grammatiken}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Natürliche Sprache ist ungenau und mehrdeutig (\enquote{Rasen ist gefährlich!}). Eine Programmiersprache muss dagegen eindeutig festlegen, welche Texte gültige Programme sind (\textbf{Syntax}) und was sie bedeuten (\textbf{Semantik}). Die Syntax beschreibt man mit einer \textbf{Grammatik}: einer Menge von Ersetzungsregeln, mit denen sich aus einem Startsymbol alle gültigen Wörter der Sprache erzeugen lassen. Für dieselbe Sache gibt es drei gleich mächtige Schreibweisen: die formale Grammatik nach Chomsky, die \textbf{EBNF} und das \textbf{Syntaxdiagramm}.
+
+\begin{merke}[Grundbegriffe]
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{Alphabet} $A$: endliche Menge von Symbolen. \ \textbf{Wort}: endliche Folge von Symbolen aus $A$. \\
+$\varepsilon$ ist das leere Wort, $A^*$ die Menge aller Wörter über $A$. Eine \textbf{Sprache} ist eine Teilmenge $L \subseteq A^*$.
+\item \textbf{Grammatik} $G = (N, T, P, S)$ mit
+	\begin{itemize}[itemsep=0em]
+	\item $N$: Nichtterminalsymbole (werden noch ersetzt), \ $T$: Terminalsymbole (bleiben stehen), $N \cap T = \emptyset$
+	\item $P$: Produktionen (Regeln) der Form $(p, q)$, gelesen \enquote{ersetze $p$ durch $q$}
+	\item $S \in N$: Startsymbol
+	\end{itemize}
+\item $L(G)$ ist die Menge aller Wörter, die nur aus Terminalsymbolen bestehen und sich aus $S$ ableiten lassen.
+\end{itemize}
+\end{merke}
+
+\begin{merke}[EBNF]
+\begin{tabular}{@{}ll@{\qquad}ll@{}}
+\code{"a"} & Terminalsymbol & \code{[ A ]} & Option: A darf einmal oder gar nicht vorkommen \\
+\code{A B} & Folge: erst A, dann B & \code{\{ A \}} & Wiederholung: A beliebig oft, auch nullmal \\
+\code{A | B} & Alternative: A oder B & \code{( A )} & Gruppierung
+\end{tabular}
+\end{merke}
+
+\begin{merke}[Chomsky-Hierarchie]
+Je höher der Typ, desto stärker sind die Regeln eingeschränkt und desto einfacher lässt sich prüfen, ob ein Wort zur Sprache gehört.
+
+\smallskip
+\begin{tabular}{@{}lL{3.3cm}L{9.2cm}@{}}
+\textbf{Typ 0} & allgemein & beliebige Regeln \\
+\textbf{Typ 1} & kontextsensitiv & Regeln verkürzen nicht: $|p| \leq |q|$. Auf der linken Seite dürfen neben dem Nichtterminal weitere Zeichen (der \enquote{Kontext}) stehen. \\
+\textbf{Typ 2} & kontextfrei & links steht genau ein Nichtterminal \\
+\textbf{Typ 3} & regulär & zusätzlich: rechts steht höchstens ein Nichtterminal, und zwar immer am Ende (rechtslinear) oder immer am Anfang (linkslinear)
+\end{tabular}
+
+\smallskip
+Programmiersprachen sind in der Regel vom Typ 2 oder Typ 3. EBNF und Syntaxdiagramme beschreiben genau die kontextfreien Sprachen.
+\end{merke}
+
+\beispiele
+\beispiel{Wörter ableiten und die Sprache erkennen}
+Gegeben sei $G$ mit $N = \{S, A\}$, $T = \{x, y\}$ und $P = \{(S, xA),\ (A, yS),\ (A, y)\}$. Man beginnt beim Startsymbol und wendet Regeln an, bis kein Nichtterminal mehr übrig ist:
+\[
+S \to xA \to xy
+\qquad\qquad
+S \to xA \to xyS \to xyxA \to xyxy
+\]
+An den Beispielen erkennt man: $L(G) = \{\, w \mid w = (xy)^n,\ n \in \mathbb{N} \,\}$. Links steht immer genau ein Nichtterminal, rechts steht das Nichtterminal immer am Ende: Die Grammatik ist vom Typ 3.
+
+\beispiel{Zu einer Sprache die Grammatik finden}
+Gesucht ist $P$ für $L = \{\, w \mid w = a^n b^{2n},\ n \in \mathbb{N} \,\}$, also $abb$, $aabbbb$, \ldots
+
+Die Anzahl der $a$ und $b$ hängt zusammen. Solche Wörter baut man \enquote{von außen nach innen} auf: Jede Anwendung der Regel erzeugt vorne ein $a$ und hinten zwei $b$.
+\[
+P = \{(S, aSbb),\ (S, abb)\}
+\qquad\text{z.\,B.}\quad S \to aSbb \to aabbbb
+\]
+Soll auch $n = 0$ erlaubt sein ($n \in \mathbb{N}_0$), muss das leere Wort erzeugt werden können: $P = \{(S, aSbb),\ (S, \varepsilon)\}$.
+
+Steht vor oder hinter dem wiederholten Teil noch ein fester Teil, lagert man die Wiederholung in ein eigenes Nichtterminal aus. Für $L = \{\, w \mid w = c\,a^n b^n\,d,\ n \in \mathbb{N} \,\}$:
+\[
+N = \{S, B\}, \qquad P = \{(S, cBd),\ (B, aBb),\ (B, ab)\}
+\]
+
+\beispiel{EBNF prüfen}
+Können die Wörter mit den EBNF-Ausdrücken erzeugt werden?
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|l|C{2.6cm}|C{2.6cm}|C{2.6cm}|}
+\hline
+ & \code{\{a\} b} & \code{a [b] \{a\}} & \code{\{ab | b\}} \\ \hline
+\code{ab} & ja & ja & ja \\ \hline
+\code{aab} & ja & nein & nein \\ \hline
+\code{bab} & nein & nein & ja \\ \hline
+$\varepsilon$ & nein & nein & ja \\ \hline
+\end{tabular}
+\end{center}
+Zur Begründung zerlegt man das Wort passend zum Ausdruck. \code{aab} passt zu \code{\{a\} b}: zweimal \code{a}, dann \code{b}. Zu \code{a [b] \{a\}} passt es nicht, denn nach dem optionalen \code{b} dürfen nur noch \code{a} folgen. In \code{\{ab | b\}} muss auf jedes \code{a} direkt ein \code{b} folgen. Das leere Wort entsteht, wenn eine Wiederholung nullmal durchlaufen wird; das geht nur, wenn der Ausdruck kein Pflichtzeichen enthält.
+
+\beispiel{Vom Syntaxdiagramm zu Grammatik und EBNF}
+Ein Wort entsteht, indem man das Diagramm links betritt, den Pfeilen folgt, die Symbole der durchlaufenen Kreise notiert und das Diagramm rechts verlässt. (Kreise stehen für Terminalsymbole, Rechtecke für Nichtterminale.)
+
+\noindent\begin{minipage}[c]{0.42\linewidth}
+\begin{tikzpicture}[syntax]
+	\node[knoten] (a) at (0,0) {\itshape a};
+	\node[knoten] (b) at (1.7,0) {\itshape b};
+	\node[knoten] (c) at (3.4,0) {\itshape c};
+	\draw[linie, ->] (-1.1,0) -- (a);
+	\draw[linie, ->] (a) -- (b);
+	\draw[linie, ->] (b) -- (c);
+	\draw[linie, ->] (c) -- (4.6,0);
+	\draw[linie, ->] (c.south) -- (3.4,-0.9) -- (1.7,-0.9) -- (b.south);
+\end{tikzpicture}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.55\linewidth}
+Mögliche Wörter: $abc$, $abcbc$, $abcbcbc$, \ldots
+
+\smallskip
+\textbf{EBNF:} \quad \code{"a" "b" "c" \{ "b" "c" \}}
+
+\smallskip
+\textbf{Grammatik:} \ $N = \{S, B\}$, \ $T = \{a, b, c\}$, \ Startsymbol $S$, \\
+$P = \{(S, aB),\ (B, bcB),\ (B, bc)\}$
+\end{minipage}
+
+\aufgaben
+\aufgabe{Sprache bestimmen}
+Bestimmen Sie jeweils (mithilfe von Beispielableitungen) die Sprache $L(G)$ und geben Sie den Chomsky-Typ der Grammatik an. Es gilt $T = \{a, b\}$.
+\begin{enumerate}[label=\alph*)]
+\item $N = \{S\}$, \ $P = \{(S, b),\ (S, aSa)\}$
+\item $N = \{S, B\}$, \ $P = \{(S, aB),\ (B, bS),\ (B, b)\}$
+\item $N = \{S, B\}$, \ $P = \{(S, aaS),\ (S, B),\ (B, bB),\ (B, b)\}$
+\end{enumerate}
+
+\aufgabe{Grammatik bestimmen}
+Sei $G_i = (N, T, P_i, S)$ mit $T = \{a, b, c, x\}$. Bestimmen Sie $N$ und $P_i$ möglichst minimal so, dass gilt:
+\begin{enumerate}[label=\alph*)]
+\item $L(G_1) = \{\, w \mid w = a^{n} b^{3n},\ n \in \mathbb{N} \,\}$
+\item $L(G_2) = \{\, w \mid w = (ba)^{n} b,\ n \in \mathbb{N}_0 \,\}$
+\item $L(G_3) = \{\, w \mid w = a^{n} (cb)^{2n} xx,\ n \in \mathbb{N} \,\}$
+\item $L(G_4) = \{\, w \mid w = (ccc)^{n} b^3 x^n,\ n \in \mathbb{N}_0 \,\}$
+\end{enumerate}
+
+\aufgabe[\K]{Grammatik bestimmen}
+Gegeben sei die Grammatik $G = (N, T, P, S)$ mit $T = \{a, b, c\}$. Bestimmen Sie $N$ und $P$ möglichst minimal so, dass die folgende Sprache erzeugt wird:
+\[
+L(G) = \{\, w \mid w = a\,b^{3n} c^{n},\ n \in \mathbb{N}_0 \,\}
+\]
+
+\aufgabe[\K]{EBNF prüfen}
+Überprüfen Sie, ob die folgenden Wörter mit den vorgegebenen EBNF-Ausdrücken erzeugt werden können, und tragen Sie \emph{ja} oder \emph{nein} ein. (Leerzeichen dienen nur der Lesbarkeit.)
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|l|C{2.8cm}|C{2.8cm}|C{2.8cm}|}
+\hline
+ & \code{\{a | ba\}} & \code{a \{b\} [a]} & \code{\{a [b]\} b} \\ \hline
+\code{ab} & & & \\ \hline
+\code{aba} & & & \\ \hline
+\code{baab} & & & \\ \hline
+\code{abb} & & & \\ \hline
+$\varepsilon$ & & & \\ \hline
+\end{tabular}
+\end{center}
+
+\aufgabe{EBNF mit mehreren Regeln}
+Gegeben seien die folgenden Regeln in EBNF:
+\begin{ebnf}
+	Ziffer & \q{0} | \q{1} | \ldots\ | \q{9} \\
+	Buchstabe & \q{a} | \q{b} | \ldots\ | \q{z} \\[2mm]
+	Start & Kennung | Preis \\
+	Kennung & Buchstabe \{ Buchstabe \} \q{-} Ziffer Ziffer [ Ziffer ] \\
+	Preis & Ziffer \{ Ziffer \} [ \q{,} Ziffer Ziffer ] \q{€}
+\end{ebnf}
+Lassen sich die folgenden Wörter darstellen? Begründen Sie Ihre Antwort.
+\begin{multicols}{5}
+\begin{enumerate}[label=\alph*)]
+\item \code{abc-12}
+\item \code{x-1234}
+\item \code{12,5€}
+\item \code{7€}
+\item \code{-12}
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{EBNF entwerfen}
+Definieren Sie jeweils eine Menge von EBNF-Regeln.
+\begin{enumerate}[label=\alph*)]
+\item ganze Zahlen mit optionalem Minuszeichen und ohne führende Nullen (\code{0}, \code{-7}, \code{120}, aber nicht \code{007})
+\item gerade Dualzahlen ohne führende Nullen; die kleinste Zahl ist 2 (\code{10}, \code{100}, \code{110}, \ldots)
+\item gültige Kalendertage der Form \textbf{TT.MM.} von \code{01.01.} bis \code{31.12.} (Die unterschiedliche Länge der Monate dürfen Sie ignorieren.)
+\end{enumerate}
+
+\aufgabe[\K]{Syntaxdiagramm}
+Das folgende Syntaxdiagramm beschreibt eine Sprache $L$.
+\begin{center}
+\begin{tikzpicture}[syntax]
+	\node[knoten] (x1) at (0,0) {0};
+	\node[knoten] (x2) at (2.2,0) {1};
+	\node[knoten] (x4) at (4.4,0) {1};
+	\node[knoten] (x3) at (2.2,-1.8) {0};
+	\draw[linie, ->] (-1.3,0) -- (x1);
+	\draw[linie, ->] (x1) -- (x2);
+	\draw[linie, ->] (x2) -- (x4);
+	\draw[linie, ->] (x4) -- (5.7,0);
+	\draw[linie, ->] (x2) to[bend right=35] (x3);
+	\draw[linie, ->] (x3) to[bend right=35] (x2);
+	\draw[linie, ->] (x3) to[out=240, in=300, looseness=7] (x3);
+\end{tikzpicture}
+\end{center}
+\begin{enumerate}[label=\alph*)]
+\item Geben Sie drei Wörter der Sprache an.
+\item Geben Sie zu dieser Sprache eine Grammatik $G = (N, T, P, S)$ an. Definieren Sie $N$, $T$, $P$ und $S$.
+\item Geben Sie zu der Sprache auch einen EBNF-Ausdruck an.
+\end{enumerate}
+
+\aufgabe{Syntaxdiagramm zeichnen}
+Zeichnen Sie zu den folgenden EBNF-Ausdrücken jeweils ein Syntaxdiagramm.
+\begin{multicols}{3}
+\begin{enumerate}[label=\alph*)]
+\item \code{"a" \{ "b" | "c" \} "d"}
+\item \code{[ "-" ] "1" \{ "0" \}}
+\item \code{"x" \{ "y" "x" \} [ "z" ]}
+\end{enumerate}
+\end{multicols}
+
+\aufgabe[\K]{Chomsky-Hierarchie}
+\begin{enumerate}[label=\alph*)]
+\item Was versteht man unter einer kontextsensitiven Grammatik? Worin unterscheidet sie sich von einer kontextfreien Grammatik?
+\item Ordnen Sie die folgenden Produktionsmengen dem höchstmöglichen Chomsky-Typ zu. \\
+$P_1 = \{(S, aSb),\ (S, ab)\}$ \qquad $P_2 = \{(S, aS),\ (S, b)\}$ \\
+$P_3 = \{(S, aSBc),\ (S, abc),\ (cB, Bc),\ (bB, bb)\}$ \qquad $P_4 = \{(S, aSb),\ (aSb, a)\}$
+\end{enumerate}
+
+\aufgabe[\S]{Mehr als kontextfrei}
+Die Produktionen $P_3$ aus der vorigen Aufgabe erzeugen die Sprache $\{\, a^n b^n c^n \mid n \in \mathbb{N} \,\}$, die sich mit keiner kontextfreien Grammatik beschreiben lässt. Leiten Sie mit $P_3$ das Wort $aabbcc$ ab und geben Sie bei jedem Schritt die verwendete Regel an.
+
+\ueben
+\aufgabe{Ableiten}
+\begin{enumerate}[label=\alph*)]
+\item Gegeben sei $P = \{(S, aSb),\ (S, ab)\}$. Leiten Sie das Wort $aaabbb$ ab.
+\item Gegeben sei $P = \{(S, AB),\ (A, aA),\ (A, a),\ (B, bB),\ (B, b)\}$. Leiten Sie die Wörter $aab$ und $abbb$ ab und beschreiben Sie die Sprache.
+\end{enumerate}
+
+\aufgabe{Gehört das Wort zur Sprache?}
+Gegeben sei $L = \{\, w \mid w = a^{n} b^{2n} c,\ n \in \mathbb{N}_0 \,\}$. Welche der folgenden Wörter gehören zu $L$?
+\begin{multicols}{5}
+\begin{enumerate}[label=\alph*)]
+\item \code{c}
+\item \code{abbc}
+\item \code{aabbc}
+\item \code{aabbbbc}
+\item \code{abb}
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Grammatiken finden}
+Geben Sie jeweils $N$ und $P$ an ($T$ ergibt sich aus der Sprache).
+\begin{enumerate}[label=\alph*)]
+\item $L_1 = \{\, a^n b^n \mid n \in \mathbb{N} \,\}$
+\item $L_2 = \{\, a^n b^m \mid n, m \in \mathbb{N} \,\}$
+\item $L_3 = \{\, (ab)^n c^n \mid n \in \mathbb{N}_0 \,\}$
+\item $L_4 = \{\, x\,a^{2n}\,y \mid n \in \mathbb{N}_0 \,\}$
+\item $L_5 = \{\, a^n\,b\,a^n \mid n \in \mathbb{N}_0 \,\}$
+\end{enumerate}
+
+\aufgabe{EBNF prüfen}
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|l|C{2.8cm}|C{2.8cm}|C{2.8cm}|}
+\hline
+ & \code{[a] \{b\}} & \code{\{a b\} a} & \code{(a | b) \{a\} [b]} \\ \hline
+\code{a} & & & \\ \hline
+\code{abb} & & & \\ \hline
+\code{aba} & & & \\ \hline
+\code{baab} & & & \\ \hline
+$\varepsilon$ & & & \\ \hline
+\end{tabular}
+\end{center}
+
+\aufgabe{EBNF schreiben}
+Definieren Sie jeweils EBNF-Regeln.
+\begin{enumerate}[label=\alph*)]
+\item eine deutsche Postleitzahl (genau fünf Ziffern)
+\item eine Dezimalzahl mit Komma und mindestens einer Stelle davor und danach (\code{3,14}, \code{0,5})
+\item ein vereinfachtes Kfz-Kennzeichen: ein bis drei Großbuchstaben, ein Bindestrich, ein bis zwei Großbuchstaben, ein Leerzeichen und eine Zahl mit ein bis vier Ziffern, die nicht mit 0 beginnt
+\end{enumerate}
+
+\aufgabe{Vom Diagramm zur EBNF}
+Geben Sie zu dem Syntaxdiagramm drei Wörter der Sprache, einen EBNF-Ausdruck und eine Grammatik an.
+\begin{center}
+\begin{tikzpicture}[syntax]
+	\node[knoten] (a) at (0,0) {\itshape a};
+	\node[knoten] (b) at (0,-1.5) {\itshape b};
+	\draw[linie, ->] (-1.4,0) -- (a);
+	\draw[linie, ->] (a) -- (1.6,0);
+	\draw[linie, ->] (a) to[bend left=40] (b);
+	\draw[linie, ->] (b) to[bend left=40] (a);
+\end{tikzpicture}
+\end{center}
+
+\aufgabe{Chomsky-Typ bestimmen}
+Geben Sie zu jeder Produktionsmenge den höchstmöglichen Typ an.
+\begin{multicols}{2}
+\begin{enumerate}[label=\alph*)]
+\item $\{(S, aS),\ (S, a)\}$
+\item $\{(S, aSa),\ (S, bSb),\ (S, c)\}$
+\item $\{(S, Sa),\ (S, b)\}$
+\item $\{(S, aAb),\ (aA, aaA),\ (A, b)\}$
+\end{enumerate}
+\end{multicols}

@@ -1,0 +1,246 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Algorithmenentwurf und Komplexität}\label{sec:komplexitaet}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Der Entwurf eines Algorithmus ist eine kreative Tätigkeit, die sich nicht automatisieren lässt. Es gibt aber bewährte Vorgehensweisen: die \textbf{schrittweise Verfeinerung} (die Aufgabe in immer kleinere Teilaufgaben zerlegen), die \textbf{Rekursion} und Algorithmenmuster wie das \textbf{Backtracking} (systematisches Ausprobieren mit Zurücknehmen von Fehlentscheidungen).
+
+Ein Algorithmus muss korrekt sein. Wünschenswert ist außerdem, dass er mit wenig Aufwand auskommt. Die \textbf{Komplexität} beschreibt, wie der Aufwand (Rechenschritte oder Speicherplatz) mit der \textbf{Problemgröße} $n$ wächst. Entscheidend ist nicht die Laufzeit für ein bestimmtes $n$, denn die hängt auch von Rechner und Compiler ab, sondern das \emph{Wachstumsverhalten}: Was passiert, wenn sich $n$ verdoppelt? Meist betrachtet man dabei den ungünstigsten Fall (\emph{worst case}), daneben den günstigsten (\emph{best case}) und den durchschnittlichen Fall (\emph{average case}).
+
+\begin{merke}[O-Notation]
+$f(n) \in O(g(n))$ bedeutet: $f$ wächst höchstens so stark wie $g$. Genauer: Es gibt eine Konstante $c > 0$ und ein $n_0$, sodass für alle $n \geq n_0$ gilt: $f(n) \leq c \cdot g(n)$.
+
+\smallskip
+\begin{tabular}{@{}lll@{}}
+$O(1)$ & konstant & Zugriff auf ein Array-Element \\
+$O(\log n)$ & logarithmisch & Problemgröße wird in jedem Schritt halbiert \\
+$O(n)$ & linear & eine Schleife über alle Elemente, sequentielle Suche \\
+$O(n \log n)$ & & gute Sortierverfahren \\
+$O(n^2)$ & quadratisch & zwei geschachtelte Schleifen \\
+$O(n^k)$ & polynomial & $k$ geschachtelte Schleifen \\
+$O(2^n)$ & exponentiell & Türme von Hanoi, Ausprobieren aller Kombinationen
+\end{tabular}
+
+\smallskip
+\textbf{Rechenregeln:} Konstante Faktoren entfallen, und es zählt nur der am stärksten wachsende Summand: $O(26n^2 + 2727n + 753) = O(n^2)$. Die Basis des Logarithmus spielt keine Rolle.
+
+\smallskip
+\textbf{Faustregeln zum Abschätzen:}
+\begin{itemize}[itemsep=0.1em]
+\item Schleife: Anzahl der Durchläufe mal Aufwand des Rumpfs.
+\item Geschachtelte Schleifen: Die Durchlaufzahlen werden multipliziert.
+\item Anweisungen nacheinander: Die Aufwände werden addiert, es zählt der größte.
+\item Verzweigung: Aufwand der Bedingung plus Aufwand der teuersten Alternative.
+\item Rekursion: Anzahl der Aufrufe mal Aufwand eines Aufrufs.
+\end{itemize}
+\end{merke}
+
+\beispiele
+\beispiel{Aufwand ablesen}
+\begin{tcbraster}[raster columns=3, raster equal height, raster column skip=3mm]
+\begin{javacode}[Ausschnitt]{O(n)}
+for (int i = 0; i < n; i++) {
+	summe += f[i];
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{O(n²)}
+for (int i = 0; i < n; i++) {
+	for (int j = 0; j < n; j++) {
+		k++;
+	}
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{O(log n)}
+int i = n;
+while (i > 1) {
+	i = i / 2;
+	k++;
+}
+\end{javacode}
+\end{tcbraster}
+Im dritten Ausschnitt wird $i$ bei jedem Durchlauf halbiert. Für $n = 1024$ läuft die Schleife nur 10-mal, für $n = 1\,000\,000$ etwa 20-mal.
+
+\beispiel{Sequentielle Suche}
+Gesucht wird der Wert $b$ in einem unsortierten Array mit $n$ Elementen, indem man die Elemente der Reihe nach vergleicht. Im besten Fall steht $b$ ganz vorne (1 Vergleich), im schlechtesten Fall ganz hinten oder gar nicht im Array ($n$ Vergleiche), im Durchschnitt braucht man etwa $\frac{n+1}{2}$ Vergleiche. Der Aufwand ist $O(n)$.
+
+\beispiel{Warum das Wachstum wichtiger ist als die Konstante}
+Ein Rechner schafft $10^6$ Operationen pro Sekunde. Algorithmus 1 benötigt $1000 \cdot n^2$ Operationen, Algorithmus 2 benötigt $2^n$ Operationen.
+\begin{center}
+\begin{tabular}{@{}rll@{}}
+\toprule
+$\boldsymbol{n}$ & \textbf{Algorithmus 1:} $1000 \cdot n^2$ & \textbf{Algorithmus 2:} $2^n$ \\
+\midrule
+10 & $10^5$ Operationen, 0,1 s & $\approx 10^3$ Operationen, 0,001 s \\
+100 & $10^7$ Operationen, 10 s & $\approx 10^{30}$ Operationen, $10^{24}$ s \\
+1000 & $10^9$ Operationen, ca. 17 min & $\approx 10^{300}$ Operationen, $10^{294}$ s \\
+\bottomrule
+\end{tabular}
+\end{center}
+Für $n = 10$ ist der exponentielle Algorithmus 100-mal \emph{schneller}. Schon für $n = 100$ würde er aber millionenfach länger rechnen, als das Universum alt ist ($\approx 4 \cdot 10^{17}$ s). Bei kleinen $n$ kann also der Algorithmus mit der höheren Komplexitätsklasse der bessere sein, ab einem bestimmten $n$ ist er immer der schlechtere.
+
+\beispiel{Was bringt ein schnellerer Rechner?}
+Ein Algorithmus mit Aufwand $2^n$ schafft in der verfügbaren Zeit $n$ Elemente. Wegen $2^{n+1} = 2 \cdot 2^n$ erlaubt ein doppelt so schneller Rechner nur \emph{ein einziges} Element mehr. Bei einem Algorithmus mit Aufwand $n^2$ schafft ein viermal so schneller Rechner immerhin doppelt so viele Elemente, denn $(2n)^2 = 4n^2$.
+
+\beispiel{Backtracking: das Vier-Damen-Problem}
+Auf einem $4 \times 4$-Schachbrett sollen vier Damen so aufgestellt werden, dass keine eine andere schlagen kann (keine zwei in derselben Zeile, Spalte oder Diagonale). Die Strategie:
+\begin{itemize}[itemsep=0.1em]
+\item Setze in der aktuellen Zeile die Dame auf die erste Spalte, die keinen Konflikt erzeugt.
+\item Gehe zur nächsten Zeile und verfahre dort genauso.
+\item Gibt es in einer Zeile keine konfliktfreie Spalte, gehe eine Zeile \textbf{zurück}, nimm die dortige Entscheidung zurück und probiere die nächste Spalte.
+\end{itemize}
+\begin{javacode}[Ausschnitt]{Backtracking}
+static int[] dame = new int[4];             // dame[z] = Spalte der Dame in Zeile z
+
+static boolean istSicher(int zeile, int spalte) {
+	for (int z = 0; z < zeile; z++) {       // alle bereits gesetzten Damen prüfen
+		if (dame[z] == spalte || Math.abs(dame[z] - spalte) == zeile - z) {
+			return false;                   // gleiche Spalte oder gleiche Diagonale
+		}
+	}
+	return true;
+}
+
+static boolean setze(int zeile) {
+	if (zeile == 4) {
+		return true;                        // alle Damen stehen: Lösung gefunden
+	}
+	for (int spalte = 0; spalte < 4; spalte++) {
+		if (istSicher(zeile, spalte)) {
+			dame[zeile] = spalte;           // Entscheidung treffen
+			if (setze(zeile + 1)) {
+				return true;
+			}                               // sonst: nächste Spalte probieren
+		}
+	}
+	return false;                           // Sackgasse: zurück zur vorigen Zeile
+}
+\end{javacode}
+Der Aufruf \code{setze(0)} findet die Lösung \code{dame = \{1, 3, 0, 2\}}.
+
+\aufgaben
+\aufgabe{Komplexitätsklassen ordnen}
+Geben Sie zu jedem Ausdruck die einfachste Form an und sortieren Sie die Klassen dann aufsteigend. \\[1mm]
+$O(5n^3)$, \quad $O(100 \cdot \log_2 n)$, \quad $O(2^n + n^5)$, \quad $O(n \cdot \log_2 n + n)$, \quad $O(42)$, \quad $O(0{,}5\,n^2 + 1000\,n)$, \quad $O(2727\,n)$
+
+\aufgabe{Aufwand bestimmen}
+Bestimmen Sie für jeden Ausschnitt die Komplexitätsklasse in Abhängigkeit von $n$. Begründen Sie kurz.
+\begin{tcbraster}[raster columns=2, raster equal height=rows, raster column skip=3mm, raster row skip=1mm]
+\begin{javacode}[Ausschnitt]{a)}
+for (int i = 0; i < n; i++) {
+	a[i] = 0;
+}
+for (int i = 0; i < n; i++) {
+	for (int j = 0; j < n; j++) {
+		k++;
+	}
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{b)}
+for (int i = 0; i < n; i++) {
+	for (int j = 0; j < i; j++) {
+		k++;
+	}
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{c)}
+for (int i = 1; i < n; i = i * 2) {
+	k++;
+}
+\end{javacode}
+\begin{javacode}[Ausschnitt]{d)}
+for (int i = 0; i < n; i++) {
+	for (int j = 0; j < 10; j++) {
+		k++;
+	}
+}
+\end{javacode}
+\end{tcbraster}
+\begin{enumerate}[label=\alph*), start=5]
+\item die rekursive Methode \code{fak(n)} aus Kapitel 15
+\item die Methode \code{bewege} (Türme von Hanoi) für $n$ Scheiben
+\end{enumerate}
+
+\aufgabe{Zwei Algorithmen im Vergleich}
+\begin{enumerate}[label=\alph*)]
+\item Zur Lösung eines Problems stehen zwei Algorithmen zur Auswahl: Algorithmus 1 hat den Aufwand $2 \cdot n^2$, Algorithmus 2 den Aufwand $500 \cdot n$. Bestimmen Sie die Laufzeit für $n = 10$, $n = 100$ und $n = 1000$ auf einer Maschine, die 1000 Operationen pro Sekunde ausführt. Ab welchem $n$ ist Algorithmus 2 schneller? Welchen würden Sie verwenden?
+\item Beantworten Sie dieselben Fragen für die Aufwände $0{,}1 \cdot n^2$ und $200 \cdot \log_2 n$ mit $n = 16$, $n = 256$ und $n = 1024$ auf einer Maschine mit 100 Operationen pro Sekunde.
+\end{enumerate}
+
+\aufgabe[\K]{Wachstum}
+\begin{enumerate}[label=\alph*)]
+\item Ein Bekannter behauptet: \enquote{Ein Algorithmus mit asymptotisch linearem Zeitaufwand ist immer schneller als einer mit exponentiellem Aufwand.} Stimmt das? Begründen Sie Ihre Antwort.
+\item Ein Rechnersystem schafft in der zur Verfügung stehenden Zeit die Verarbeitung von $n$ Elementen. Die Komplexität des benutzten Algorithmus liegt bei $2^n$. Um wie viel muss das Rechnersystem beschleunigt werden, wenn 5 Elemente mehr verarbeitet werden sollen?
+\item Wie viele Elemente mehr schafft ein Algorithmus mit Aufwand $2^n$, wenn der Rechner 1000-mal so schnell ist? Wie sieht es bei einem Algorithmus mit Aufwand $n^2$ aus, wenn der Rechner 100-mal so schnell ist?
+\end{enumerate}
+
+\aufgabe{Suchen}
+\begin{enumerate}[label=\alph*)]
+\item Implementieren Sie die sequentielle Suche als Methode \code{int suche(int[] a, int b)}. Sie liefert den Index des ersten Vorkommens von \code{b} oder $-1$, falls \code{b} nicht vorkommt.
+\item Wie viele Vergleiche benötigt Ihre Methode bei $n = 1000$ Elementen im besten, im schlechtesten und im durchschnittlichen Fall (bei erfolgreicher Suche)?
+\item[\S\ c)] In einem \emph{sortierten} Array kann man geschickter suchen: Man vergleicht mit dem mittleren Element und sucht nur in der passenden Hälfte weiter. Wie viele Vergleiche braucht man höchstens bei 1000 Elementen und bei 1\,000\,000 Elementen? Welche Komplexitätsklasse ergibt sich?
+\end{enumerate}
+
+\aufgabe[\K]{Sudoku}
+Ein Sudoku ist ein Zahlenrätsel, bei dem in jeder Zeile, jeder Spalte und jedem der neun $3 \times 3$-Quadrate die Ziffern 1 bis 9 genau einmal vorkommen müssen. Einige Felder sind vorgegeben.
+\begin{enumerate}[label=\alph*)]
+\item Um Lösungen mit einem Programm zu finden, wird ein geeigneter Algorithmus gesucht. Welche Strategie könnte man hier einsetzen? Skizzieren Sie grob einen geeigneten Algorithmus.
+\item Geben Sie eine Aufwandsabschätzung für den Best-Case-Fall dieses Algorithmus in Abhängigkeit von $n$ (Anzahl der Ziffern pro Zeile bzw. Spalte) an.
+\item Für die Implementierung wird die folgende Datenstruktur eingesetzt; nicht belegte Felder haben den Wert 0.
+\begin{javacode}[Ausschnitt]{Datenstruktur}
+private static int[][] sudoku = new int[9][9];      // sudoku[zeile][spalte]
+\end{javacode}
+Geben Sie eine Implementierung der Methode \code{spalteOk} an, die prüft, ob die Werte in einer Spalte den Regeln entsprechen, d.\,h. ob keine der Ziffern 1 bis 9 doppelt vorkommt. Benötigte Hilfsstrukturen können Sie beliebig anlegen.
+\begin{javacode}[Ausschnitt]{Signatur}
+private static boolean spalteOk(int spalte)
+\end{javacode}
+\item[\S\ d)] Implementieren Sie auch die Methode \code{quadratOk(int zeile, int spalte)}, die das $3 \times 3$-Quadrat prüft, in dem das angegebene Feld liegt.
+\end{enumerate}
+
+\aufgabe[\S]{Backtracking ausprobieren}
+\begin{enumerate}[label=\alph*)]
+\item Vollziehen Sie das Vier-Damen-Beispiel von Hand nach: An welchen Stellen muss der Algorithmus eine Entscheidung zurücknehmen, bevor er die Lösung findet?
+\item Verallgemeinern Sie das Programm auf $n$ Damen und lassen Sie es zählen, wie oft \code{istSicher} aufgerufen wird. Probieren Sie $n = 4$, $8$ und $12$.
+\end{enumerate}
+
+\ueben
+\aufgabe{Vereinfachen}
+Geben Sie jeweils die einfachste Form an.
+\begin{multicols}{3}
+\begin{enumerate}[label=\alph*)]
+\item $O(3n + 7)$
+\item $O(n^2 + n^3)$
+\item $O(5)$
+\item $O(n + \log_2 n)$
+\item $O(2n \cdot 3n)$
+\item $O(2^n + n^{100})$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Wachstum in Zahlen}
+Füllen Sie die Tabelle mit (gerundeten) Werten aus. Verwenden Sie $2^{10} \approx 10^3$.
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|C{1.6cm}|C{2.2cm}|C{2.2cm}|C{2.4cm}|C{2.2cm}|C{2.2cm}|}
+\hline
+$n$ & $\log_2 n$ & $n$ & $n \cdot \log_2 n$ & $n^2$ & $2^n$ \\ \hline
+10 & & & & & \\ \hline
+100 & & & & & \\ \hline
+1000 & & & & & \\ \hline
+\end{tabular}
+\end{center}
+
+\aufgabe{Doppelte Problemgröße}
+Ein Programm braucht für $n = 1000$ Elemente eine Sekunde. Wie lange braucht es ungefähr für $n = 2000$ Elemente, wenn sein Aufwand $O(n)$, $O(n^2)$, $O(n^3)$ bzw. $O(\log n)$ beträgt? Was ändert sich bei $O(2^n)$ schon für $n = 1001$?
+
+\aufgabe{Aufwand von Methoden}
+Bestimmen Sie die Komplexitätsklasse im schlechtesten Fall. Gibt es einen günstigeren besten Fall?
+\begin{enumerate}[label=\alph*)]
+\item das Maximum eines Arrays mit $n$ Elementen bestimmen
+\item prüfen, ob ein Array mit $n$ Elementen aufsteigend sortiert ist
+\item prüfen, ob in einem Array mit $n$ Elementen ein Wert doppelt vorkommt (jedes Element mit jedem vergleichen)
+\item alle Elemente einer $n \times n$-Matrix addieren
+\item eine Zahl $n$ so oft halbieren, bis 1 erreicht ist
+\end{enumerate}
+
+\aufgabe{Noch einmal Sudoku}
+Implementieren Sie für die Datenstruktur aus der Sudoku-Aufgabe die Methode \code{zeileOk(int zeile)} und eine Methode \code{boolean istVoll()}, die prüft, ob kein Feld mehr den Wert 0 hat. Welche Komplexität haben die beiden Methoden in Abhängigkeit von der Seitenlänge $n$?

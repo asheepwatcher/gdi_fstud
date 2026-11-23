@@ -1,0 +1,18 @@
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.listing
+.einzeln/
+.DS_Store
+tex/Skript.pdf
+
+# Lösungen und Quellen mit Lösungen bleiben nur lokal
+pdf/tests/loesungen/
+pdf/aufgaben/loesungen/
+pdf/aufgabensammlung-loesung.pdf
+tex/tests/
+tex/aufgaben/

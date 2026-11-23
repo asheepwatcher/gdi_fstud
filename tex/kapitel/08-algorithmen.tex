@@ -1,0 +1,230 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Algorithmen und Programmiersprachen}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Ein \textbf{Algorithmus} ist eine detaillierte und eindeutige Vorschrift zur schrittweisen Lösung eines Problems. Er ist die \emph{konzeptionelle} Lösung. Ein \textbf{Programm} ist die auf einem Rechner ausführbare Lösung, also der Algorithmus in einer Programmiersprache. Vor dem Algorithmus steht die \textbf{Spezifikation}: Sie legt fest, welche Eingaben erlaubt sind (Vorbedingung) und was für die Ergebnisse gelten muss (Nachbedingung).
+
+Algorithmen lassen sich auf verschiedene Arten aufschreiben: in mathematischer Notation (oft rekursiv), umgangssprachlich, als \textbf{Flussdiagramm}, als Pseudocode oder direkt in einer Programmiersprache.
+
+Damit ein Rechner ein Programm ausführen kann, muss es in Maschinenbefehle umgesetzt werden. Dafür gibt es zwei Wege: Ein \textbf{Compiler} übersetzt das ganze Programm \emph{vor} der Ausführung in Maschinencode. Ein \textbf{Interpreter} analysiert das Programm \emph{zur Laufzeit} Anweisung für Anweisung und führt es direkt aus. Java ist eine Mischform: Der Compiler (\code{javac}) erzeugt plattformunabhängigen Byte-Code, den die virtuelle Maschine (JVM) interpretiert.
+
+\begin{merke}[Eigenschaften von Algorithmen]
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{terminierend:} bricht für jede zulässige Eingabe nach endlich vielen Schritten ab.
+\item \textbf{determiniert:} liefert bei gleichen Eingaben stets das gleiche Ergebnis.
+\item \textbf{deterministisch:} zu jedem Zeitpunkt ist der nächste Schritt eindeutig bestimmt.
+\item \textbf{partiell korrekt:} jedes berechnete Ergebnis entspricht der Spezifikation. \\
+\textbf{total korrekt:} partiell korrekt und terminierend.
+\item \textbf{effektiv:} erreicht das Ziel. \ \textbf{effizient:} erreicht es mit möglichst geringem Aufwand.
+\end{itemize}
+\end{merke}
+
+\begin{merke}[Compiler und Interpreter]
+\begin{tabular}{@{}L{7.2cm}L{7.2cm}@{}}
+\textbf{Compiler} & \textbf{Interpreter} \\
+übersetzt vor der Ausführung & übersetzt während der Ausführung \\
+Schleifen werden nur einmal übersetzt, das Programm läuft schnell & Anweisungen werden evtl. mehrfach übersetzt, das Programm läuft langsamer \\
+viele Fehler werden schon beim Übersetzen gefunden & Fehler zeigen sich erst zur Laufzeit \\
+Beispiele: C, C++, Pascal & Beispiele: Python, PHP, Basic
+\end{tabular}
+\end{merke}
+
+\beispiele
+\beispiel{Der euklidische Algorithmus in drei Darstellungen}
+Gesucht ist der größte gemeinsame Teiler zweier Zahlen $a \geq 0$ und $b \geq 0$.
+
+\smallskip
+\noindent\textbf{Mathematisch (rekursiv):}
+\[
+\mathit{ggT}(a, b) =
+\begin{cases}
+a & \text{falls } b = 0 \\
+\mathit{ggT}(b,\ a \bmod b) & \text{sonst}
+\end{cases}
+\]
+\noindent\begin{minipage}[t]{0.56\linewidth}
+\textbf{Als Flussdiagramm:}
+
+\medskip
+\begin{tikzpicture}
+	\node[startstop] (start) at (0,0) {Start};
+	\node[io] (in) at (0,-1.2) {Eingabe $a$, $b$};
+	\node[decision] (q) at (0,-2.7) {$b = 0$?};
+	\node[process] (p1) at (0,-4.3) {$r = a \bmod b$ \\ $a = b$ \\ $b = r$};
+	\node[io] (out) at (-3.6,-2.7) {Ausgabe $a$};
+	\node[startstop] (end) at (-3.6,-4.0) {Ende};
+	\draw[arrow] (start) -- (in);
+	\draw[arrow] (in) -- (q);
+	\draw[arrow] (q) -- node[lbl] {nein} (p1);
+	\draw[arrow] (p1.east) -- (2.3,-4.3) -- (2.3,-2.7) -- (q.east);
+	\draw[arrow] (q) -- node[lbl] {ja} (out);
+	\draw[arrow] (out) -- (end);
+\end{tikzpicture}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.4\linewidth}
+\textbf{Ablauf für $a = 960$, $b = 230$:}
+
+\medskip
+\begin{tabular}{l|r|r|r}
+\textbf{Durchlauf} & $\boldsymbol{r}$ & $\boldsymbol{a}$ & $\boldsymbol{b}$ \\ \hline
+Start & & 960 & 230 \\
+1. & 40 & 230 & 40 \\
+2. & 30 & 40 & 30 \\
+3. & 10 & 30 & 10 \\
+4. & 0 & 10 & 0
+\end{tabular}
+
+\medskip
+Ausgabe: 10
+
+\medskip
+Eine solche Tabelle heißt \emph{Schreibtischtest}. Mit ihr prüft man einen Algorithmus von Hand.
+\end{minipage}
+
+\beispiel{Determiniert und deterministisch}
+\begin{itemize}[itemsep=0.1em]
+\item \enquote{Wähle eine beliebige Zahl zwischen 1 und 5, addiere sie zur Eingabe und gib \textbf{42} aus.} Der Ablauf ist nicht eindeutig festgelegt (nicht deterministisch), das Ergebnis ist aber immer dasselbe (determiniert).
+\item \enquote{Wirf eine Münze. Bei Kopf gib die Eingabe aus, bei Zahl das Doppelte.} Dieser Algorithmus ist weder deterministisch noch determiniert.
+\end{itemize}
+
+\beispiel{Terminiert das?}
+Die Collatz-Folge (Ulam-Algorithmus) startet mit einer beliebigen Zahl $n$. Ist $n$ gerade, wird halbiert, sonst wird $3n + 1$ gebildet, bis 1 erreicht ist: $6, 3, 10, 5, 16, 8, 4, 2, 1$. Bis heute ist nicht bewiesen, dass dieses Verfahren für \emph{jede} Startzahl endet.
+
+\beispiel{Fehlerarten}
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{Syntaxfehler:} Verstoß gegen die Grammatik der Sprache, z.\,B. ein vergessenes Semikolon. Der Compiler meldet ihn.
+\item \textbf{Semantischer Fehler:} syntaktisch richtig, aber ohne gültige Bedeutung, z.\,B. \code{int i = 8.8;} (zur Übersetzungszeit erkennbar) oder ein Zugriff außerhalb eines Arrays (Laufzeitfehler).
+\item \textbf{Denkfehler:} Das Programm läuft, liefert aber nicht das gewünschte Ergebnis.
+\end{itemize}
+
+\aufgaben
+\aufgabe[\K]{Begriffe}
+\begin{enumerate}[label=\alph*)]
+\item Was versteht man unter einem Compiler? Worin unterscheidet er sich von einem Interpreter?
+\item Wann wird ein Algorithmus als determiniert bezeichnet? Geben Sie ein Beispiel für einen nicht determinierten Algorithmus.
+\item Erklären Sie den Unterschied zwischen partieller und totaler Korrektheit.
+\item Warum bezeichnet man Java als plattformunabhängig? Welche Rolle spielen dabei Byte-Code und JVM?
+\end{enumerate}
+
+\aufgabe{Schreibtischtest}
+Führen Sie den folgenden Algorithmus für die Eingabe $n = 4711$ aus. Notieren Sie die Werte von $n$ und $s$ zu Beginn und nach jedem Schleifendurchlauf in einer Tabelle. Was gibt der Algorithmus aus, und was berechnet er allgemein? (\emph{div} ist die ganzzahlige Division.)
+\begin{center}
+\begin{tikzpicture}
+	\node[startstop] (start) at (0,0) {Start};
+	\node[io] (in) at (3,0) {Eingabe $n$};
+	\node[process, minimum width=1.6cm] (init) at (6,0) {$s = 0$};
+	\node[decision] (q) at (9,0) {$n > 0$?};
+	\node[process] (p1) at (9,-1.8) {$s = s + n \bmod 10$ \\ $n = n \;\mathrm{div}\; 10$};
+	\node[io] (out) at (12.4,0) {Ausgabe $s$};
+	\node[startstop] (end) at (12.4,-1.8) {Ende};
+	\draw[arrow] (start) -- (in);
+	\draw[arrow] (in) -- (init);
+	\draw[arrow] (init) -- (q);
+	\draw[arrow] (q) -- node[lbl] {ja} (p1);
+	\draw[arrow] (p1.west) -- (6.6,-1.8) -- (6.6,-0.9) -- (7.5,-0.9) -- (q.south west);
+	\draw[arrow] (q) -- node[lbl] {nein} (out);
+	\draw[arrow] (out) -- (end);
+\end{tikzpicture}
+\end{center}
+
+\aufgabe{Flussdiagramme entwerfen}
+Entwerfen Sie jeweils einen Algorithmus als Flussdiagramm. Für die Ein- und Ausgabe dürfen Sie die Bausteine \emph{Eingabe} und \emph{Ausgabe} verwenden.
+\begin{enumerate}[label=\alph*)]
+\item Bestimmen Sie das Maximum dreier ganzer Zahlen $a$, $b$ und $c$.
+\item Bestimmen Sie, ob $n \in \mathbb{N}_0$ gerade ist. Verwenden Sie nur den Minusoperator und Vergleiche.
+\item Berechnen Sie den Quotienten und den Rest der ganzzahligen Division $x : y$ für $x \in \mathbb{N}_0$, $y \in \mathbb{N}$. Erlaubt sind nur Vergleichs-, Plus- und Minusoperator.
+\item Berechnen Sie die Potenz $x^y$ für $x, y \in \mathbb{N}_0$. Erlaubt sind Vergleiche, Plus, Minus und die Multiplikation.
+\end{enumerate}
+
+\aufgabe{Rekursive Spezifikation}
+Die Addition lässt sich allein mit dem Nachfolger ($+1$) und dem Vorgänger ($-1$) rekursiv definieren:
+\[
+\mathit{sum}(a, b) =
+\begin{cases}
+a & \text{falls } b = 0 \\
+\mathit{sum}(a,\ b - 1) + 1 & \text{falls } b > 0
+\end{cases}
+\]
+\begin{enumerate}[label=\alph*)]
+\item Werten Sie $\mathit{sum}(4, 3)$ Schritt für Schritt aus.
+\item Geben Sie in gleicher Weise eine rekursive Funktion $\mathit{multi}(x, y)$ an, die das Produkt zweier Zahlen aus $\mathbb{N}_0$ nur mit Addition und Subtraktion berechnet.
+\item Geben Sie eine rekursive Funktion $\mathit{rest}(a, b)$ für $a \bmod b$ an ($a \geq 0$, $b > 0$).
+\end{enumerate}
+
+\aufgabe{Eigenschaften prüfen}
+Der folgende Test soll feststellen, ob eine Zahl $z > 2$ eine Primzahl ist.
+\begin{enumerate}[itemsep=0.1em, label=(\arabic*)]
+\item Wähle ein beliebiges, noch nicht getestetes $n$ mit $1 < n < z$.
+\item Falls $n$ ein Teiler von $z$ ist: Ausgabe \enquote{Keine Primzahl}, gehe zu (5).
+\item Falls alle $n$ getestet sind: Ausgabe \enquote{Primzahl}, gehe zu (5).
+\item Gehe zu (1).
+\item Fertig.
+\end{enumerate}
+Ist der Algorithmus determiniert? Ist er deterministisch? Terminiert er? Ist er effizient? Begründen Sie jeweils kurz.
+
+\aufgabe{Fehler einordnen}
+Um welche Fehlerart handelt es sich jeweils (Syntaxfehler, semantischer Fehler zur Übersetzungszeit, Laufzeitfehler, Denkfehler)?
+\begin{enumerate}[label=\alph*)]
+\item \code{System.out.println("Hallo")} \quad (ohne Semikolon)
+\item \code{double mittel = (a + b) / 2;} \quad mit \code{int a = 3, b = 4}, erwartet wird 3.5
+\item \code{int[] f = new int[5]; f[5] = 1;}
+\item \code{int zahl; int zahl2 = zahl;}
+\end{enumerate}
+
+\aufgabe[\S]{Primzahlen bis $n$}
+Formulieren Sie einen Algorithmus als Flussdiagramm, der alle Primzahlen von 2 bis $n$ ausgibt. Erlaubt sind die Vergleichsoperatoren sowie $+$, $-$ und $\bmod$. Überlegen Sie anschließend: Bis zu welchem Teiler muss man höchstens prüfen?
+
+\ueben
+\aufgabe{Schreibtischtest ggT}
+Führen Sie den euklidischen Algorithmus aus dem ersten Beispiel für die Eingaben $(84, 36)$, $(17, 5)$ und $(100, 75)$ aus. Notieren Sie die Werte von $r$, $a$ und $b$ nach jedem Durchlauf.
+
+\aufgabe{Pseudocode lesen}
+Was gibt der folgende Algorithmus für die Eingaben $n = 40$ und $n = 1000$ aus? Was berechnet er allgemein?
+\begin{konsole}[Pseudocode]
+lies n
+z = 0
+solange n > 1
+    n = n div 2
+    z = z + 1
+ausgabe z
+\end{konsole}
+
+\aufgabe{Einfache Flussdiagramme}
+Entwerfen Sie jeweils ein Flussdiagramm.
+\begin{enumerate}[label=\alph*)]
+\item Ausgabe des Betrags einer ganzen Zahl
+\item Summe der Zahlen von 1 bis $n$
+\item Fakultät $n!$ für $n \in \mathbb{N}_0$
+\item Countdown von $n$ bis 1, danach die Ausgabe \enquote{Start}
+\item Anzahl der Ziffern einer natürlichen Zahl
+\end{enumerate}
+
+\aufgabe{Rekursive Definitionen auswerten}
+Werten Sie mit den Definitionen aus dem Kapitel Schritt für Schritt aus.
+\begin{multicols}{3}
+\begin{enumerate}[label=\alph*)]
+\item $\mathit{ggT}(48, 18)$
+\item $\mathit{sum}(2, 4)$
+\item $\mathit{ggT}(7, 0)$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Eigenschaften zuordnen}
+Welche der Eigenschaften \emph{terminierend}, \emph{determiniert} und \emph{deterministisch} treffen jeweils zu?
+\begin{enumerate}[label=\alph*)]
+\item \enquote{Lies $n$. Solange $n \neq 0$: verringere $n$ um 2. Gib \emph{fertig} aus.} (für $n \in \mathbb{N}_0$)
+\item \enquote{Würfle. Gib die Augenzahl aus.}
+\item \enquote{Lies eine Liste. Wähle zufällig zwei Elemente und vertausche sie, falls sie in der falschen Reihenfolge stehen. Wiederhole, bis die Liste sortiert ist. Gib die Liste aus.}
+\item der euklidische Algorithmus
+\end{enumerate}
+
+\aufgabe{Compiler oder Interpreter?}
+Ordnen Sie die Aussagen zu.
+\begin{enumerate}[label=\alph*)]
+\item Das Programm wird vor der Ausführung vollständig übersetzt.
+\item Ein Tippfehler in Zeile 500 fällt erst auf, wenn diese Zeile erreicht wird.
+\item Für jede Plattform wird ein eigenes ausführbares Programm erzeugt.
+\item Eine Schleife mit 1000 Durchläufen wird nur einmal übersetzt.
+\item Wie passt Java in dieses Schema?
+\end{enumerate}

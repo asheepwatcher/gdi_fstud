@@ -1,0 +1,11 @@
+% Erzeugt die Aufgabensammlung eines Kapitels. Wird von bauen.sh aufgerufen;
+% \aufgabendatei (und für die Lösungen \mitloesung) werden dort gesetzt.
+\documentclass[11pt,a4paper,DIV14,headsepline]{scrartcl}
+\input{praeambel}
+\input{aufgaben-makros}
+\ihead{GDI -- Aufgabensammlung\ifloesung\ (Lösungen)\fi}
+\ohead{}
+
+\begin{document}
+\input{aufgaben/\aufgabendatei}
+\end{document}

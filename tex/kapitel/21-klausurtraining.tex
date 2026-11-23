@@ -1,0 +1,201 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\needspace{12\baselineskip}
+\section{Klausurtraining}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Die folgende Übungsklausur ist in Aufbau, Umfang und Punkteverteilung den Probeklausuren nachempfunden. Bearbeiten Sie sie am besten am Stück und ohne Hilfsmittel.
+
+\begin{merke}[Hinweise]
+\begin{itemize}[itemsep=0.1em]
+\item Bearbeitungszeit: 2 Stunden. \ Gesamtpunktzahl: 120.
+\item Antworten Sie knapp und präzise. In der Regel reichen Stichworte.
+\item Wo nach einem Rechenweg gefragt ist, zählen die Zwischenschritte mit.
+\end{itemize}
+\end{merke}
+
+\newcommand{\klausuraufgabe}[2]{\par\bigskip\needspace{5\baselineskip}\noindent\textbf{\large #1} \textcolor{diagramm}{\textbf{(#2 Punkte)}}\par\nopagebreak\smallskip}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\klausuraufgabe{1) Begriffe / Grundlagen}{18}
+\begin{enumerate}[label=\alph*)]
+\item Was versteht man unter einem Algorithmus? Wann heißt ein Algorithmus terminierend?
+\item Was versteht man unter einer kontextfreien Grammatik?
+\item Auf einem USB-Stick steht die Angabe \enquote{2 Gigabyte}. Geben Sie das Speichervolumen als Zweierpotenz an.
+\item Ein Rechnersystem schafft in der zur Verfügung stehenden Zeit die Verarbeitung von $n$ Elementen. Die Komplexität des benutzten Algorithmus liegt bei $2^n$. Wie viele Elemente mehr können verarbeitet werden, wenn das Rechnersystem um den Faktor 64 beschleunigt wird?
+\item Was versteht man unter \enquote{Überschreiben} bei der objektorientierten Programmierung? Skizzieren Sie ein kleines Beispiel.
+\item Was ist ein Interface, und wozu wird es verwendet?
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\klausuraufgabe{2) Zahlendarstellungen}{12}
+\begin{enumerate}[label=\alph*)]
+\item Gegeben sei die folgende Dualzahl (mit der üblichen Interpretation als vorzeichenlose Zahl): $111\,0010_2$. Wie sieht die dezimale und die oktale Darstellung der Zahl aus? Geben Sie jeweils auch die Schritte zur Berechnung an.
+\item Wie sieht die binäre Darstellung der Zahl $83_{10}$ als 8-Bit-Dualzahl aus? Verwenden Sie die Divisionsmethode und stellen Sie die Zwischenschritte genau dar.
+\item Leiten Sie aus dem Ergebnis der Aufgabe b) die Darstellung der Zahl $-83_{10}$ im Zweierkomplement als 8-Bit-Dualzahl ab.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\klausuraufgabe{3) Grammatiken}{15}
+\begin{enumerate}[label=\alph*)]
+\item Überprüfen Sie, ob die folgenden Wörter mit den vorgegebenen EBNF-Ausdrücken erzeugt werden können, und tragen Sie \emph{ja} oder \emph{nein} ein. (Leerzeichen dienen nur der Lesbarkeit.)
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|l|C{2.8cm}|C{2.8cm}|C{2.8cm}|}
+\hline
+ & \code{\{a\} [b] a} & \code{\{ab\} \{b\}} & \code{a \{b | a\} b} \\ \hline
+\code{ab} & & & \\ \hline
+\code{aba} & & & \\ \hline
+\code{abb} & & & \\ \hline
+\code{a} & & & \\ \hline
+$\varepsilon$ & & & \\ \hline
+\end{tabular}
+\end{center}
+\item Gegeben sei die Grammatik $G = (N, T, P, S)$ mit $T = \{a, b\}$. Bestimmen Sie $N$ und $P$ möglichst minimal so, dass die folgende Sprache erzeugt wird:
+\[
+L(G) = \{\, w \mid w = a\,b^{n} a^{2n}\,b,\ n \in \mathbb{N}_0 \,\}
+\]
+\item Geben Sie zu dem folgenden Syntaxdiagramm einen EBNF-Ausdruck an.
+\begin{center}
+\begin{tikzpicture}[syntax]
+	\node[knoten] (x) at (0,0) {\itshape x};
+	\node[knoten] (y) at (2,0) {\itshape y};
+	\node[knoten] (z) at (4,0) {\itshape z};
+	\draw[linie, ->] (-1.2,0) -- (x);
+	\draw[linie, ->] (x) -- (y);
+	\draw[linie, ->] (y) -- (z);
+	\draw[linie, ->] (z) -- (5.3,0);
+	\draw[linie, ->] (y) to[out=120, in=60, looseness=6] (y);
+	\draw[linie, ->] (x.south) -- (0,-0.9) -- (4,-0.9) -- (z.south);
+\end{tikzpicture}
+\end{center}
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\klausuraufgabe{4) Programmverständnis}{20}
+\begin{enumerate}[label=\alph*)]
+\item Gegeben seien die Variablenbelegungen \code{int x = 5; int y = 2; int z = 4;} Welchen Wert haben die Variablen nach der Ausführung der einzelnen alternativen Zeilen? \textbf{Der Ausgangswert bei jeder Zeile sei die oben angegebene Belegung.}
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|L{6.5cm}|C{1.5cm}|C{1.5cm}|C{1.5cm}|}
+\hline
+ & \textbf{x} & \textbf{y} & \textbf{z} \\ \hline
+\code{x -= y++;} & & & \\ \hline
+\code{z = x-- + --x;} & & & \\ \hline
+\code{y *= (x > z) ? y : z;} & & & \\ \hline
+\code{z = (--y == 1) ? x++ : z++;} & & & \\ \hline
+\end{tabular}
+\end{center}
+\item Wie lautet die Ausgabe des folgenden Programmausschnitts? Erläutern Sie Ihre Antwort kurz.
+\begin{javacode}[Ausschnitt]{Ausschnitt b)}
+int[] a = { 1, 2, 3 };
+int[] b = a;
+int[] c = { 1, 2, 3 };
+b[0] = c[2]++;
+a[1] += b[0];
+System.out.println(a[0] + " " + a[1] + " " + c[2] + " " + (a == b) + " " + (a == c));
+\end{javacode}
+\item Wie lautet die Ausgabe des folgenden Programmausschnitts? Erläutern Sie Ihre Antwort kurz.
+\begin{javacode}[Ausschnitt]{Ausschnitt c)}
+int i = 7;
+double d = i / 2;
+System.out.println(d + " " + (0.1 + 0.2 == 0.3));
+\end{javacode}
+\item Welche Rückgabe liefert der Aufruf \code{f(6)}? Schreiben Sie Ihr Vorgehen bei der Auswertung schrittweise auf.
+\begin{javacode}[Ausschnitt]{Ausschnitt d)}
+public static int f(int n) {
+	return (n < 3) ? n : f(n - 1) + f(n - 3);
+}
+\end{javacode}
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\klausuraufgabe{5) Java: Arrays und Methoden}{20}
+In dem folgenden Programm werden die Noten einer Klausur (ganze Zahlen von 1 bis 5) ausgewertet.
+\begin{javacode}[Ausschnitt]{Hauptprogramm}
+public static void main(String[] args) {
+	int[] noten = { 2, 5, 1, 3, 2, 2, 4, 5 };
+	System.out.println("Noten: " + toString(noten));
+	System.out.println("Durchschnitt: " + durchschnitt(noten));
+	System.out.println("Bestanden: " + anzahlBestanden(noten));
+	int[] spiegel = notenspiegel(noten);
+	System.out.println("Notenspiegel: " + toString(spiegel));
+}
+\end{javacode}
+\begin{konsole}
+Noten: 2, 5, 1, 3, 2, 2, 4, 5
+Durchschnitt: 3.0
+Bestanden: 6
+Notenspiegel: 1, 3, 1, 1, 2
+\end{konsole}
+\begin{enumerate}[label=\alph*)]
+\item Geben Sie die Implementierung der Methode \code{toString} an, die ein Array für die Ausgabe aufbereitet. Beachten Sie, dass am Ende kein Komma ausgegeben wird.
+\item Geben Sie die Implementierung der Methode \code{durchschnitt} an.
+\item Geben Sie die Implementierung der Methode \code{anzahlBestanden} an. Bestanden ist die Klausur mit einer Note von 4 oder besser.
+\item Geben Sie die Implementierung der Methode \code{notenspiegel} an. Sie liefert ein neues Array mit 5 Elementen, das angibt, wie oft die Noten 1 bis 5 vergeben wurden.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\klausuraufgabe{6) Rekursion}{12}
+Gegeben sei die folgende Methode.
+\begin{javacode}[Ausschnitt]{tuWas}
+private static int tuWas(int a, int b) {
+	if (b == 0)
+		return 1;
+	return a * tuWas(a, b - 1);
+}
+\end{javacode}
+\begin{enumerate}[label=\alph*)]
+\item Was liefern die Aufrufe \code{tuWas(3, 4)} und \code{tuWas(5, 0)}? Was berechnet die Methode allgemein?
+\item Bestimmen Sie die Komplexität des Rechenaufwands in Abhängigkeit von $b$.
+\item Ersetzen Sie die Methode durch eine iterative Lösung (mit einer Schleife).
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\klausuraufgabe{7) Objektorientierung}{23}
+Ziel sei die Modellierung einer kleinen Mediathek. In der Mediathek gibt es \emph{Regale}, in denen jeweils maximal 40 Medien stehen.
+
+\emph{Medien} sind zunächst entweder \emph{Bücher}, für die die Seitenzahl festgehalten wird, oder \emph{Filme}, für die die Dauer in Minuten festgehalten wird. Später werden evtl. noch weitere Medienarten eingeführt.
+
+Jedes Medium verfügt über einen Titel und eine eindeutige Mediennummer, die von 5000 ab aufsteigend vergeben werden soll. Der Titel wird bei der Erzeugung festgelegt und darf danach nicht mehr verändert werden. Für jedes Medium kann außerdem der Name des aktuellen Ausleihers gespeichert werden. Dieser wird erst nach der Erzeugung des Mediums festgelegt.
+\begin{enumerate}[label=\alph*)]
+\item Modellieren Sie in einem UML-Klassendiagramm alle für die beschriebene Anwendung notwendigen Klassen und ihre Beziehungen zueinander. \textcolor{diagramm}{(10 Punkte)}
+\item Definieren Sie alle notwendigen Klassen in Java. Außer den Konstruktoren und den Methoden, die zum Aufbau der Daten erforderlich sind, brauchen keine Methodenimplementierungen angegeben zu werden. \textcolor{diagramm}{(13 Punkte)}
+\end{enumerate}
+
+\needspace{10\baselineskip}
+\teil{Kurzfragen zum Wiederholen}
+Die folgenden Fragen gehen quer durch alle Kapitel. Jede sollte sich in ein bis zwei Sätzen beantworten lassen.
+\begin{multicols}{2}
+\begin{enumerate}[itemsep=0.2em]
+\item Wie viele Zustände lassen sich mit 10 Bit darstellen?
+\item Wie viel ist 1 MB in Byte, als Zweierpotenz?
+\item Wie wandelt man eine Dualzahl ohne Rechnen in eine Hexadezimalzahl um?
+\item Wie bildet man das Zweierkomplement?
+\item Welchen Wertebereich haben 8 Bit im Zweierkomplement?
+\item Warum ist \code{0.1 + 0.2 == 0.3} in Java falsch?
+\item Worin unterscheiden sich ASCII und UTF-8?
+\item Was besagen die Gesetze von De Morgan?
+\item Welche vier Komponenten hat ein Von-Neumann-Rechner?
+\item Was unterscheidet determiniert von deterministisch?
+\item Was unterscheidet einen Compiler von einem Interpreter?
+\item Woraus besteht eine Grammatik $G$?
+\item Was bedeuten \code{[ ]} und \code{\{ \}} in der EBNF?
+\item Was ist eine kontextfreie Grammatik?
+\item Was liefert \code{7 / 2} in Java, was \code{7 \% 2}?
+\item Was ist der Unterschied zwischen \code{x++} und \code{++x}?
+\item Wann verwendet man \code{do}-\code{while} statt \code{while}?
+\item Was passiert bei \code{int[] b = a;}?
+\item Was bedeutet call-by-value?
+\item Was ist Überladen, was Überschreiben?
+\item Was braucht jede rekursive Methode?
+\item Was bedeutet $O(n^2)$?
+\item Was ist Backtracking?
+\item Wozu dient ein Konstruktor?
+\item Wie vergibt man eindeutige Nummern für Objekte?
+\item Was ist Polymorphie?
+\item Wozu dient eine abstrakte Klasse?
+\item Wie vergleicht man zwei Strings?
+\item Welcher Automat gehört zu den regulären Sprachen?
+\item Was besagt das Halteproblem?
+\end{enumerate}
+\end{multicols}

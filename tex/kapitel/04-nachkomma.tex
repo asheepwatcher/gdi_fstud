@@ -1,0 +1,148 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\needspace{12\baselineskip}
+\section{Dualzahlen mit Nachkommastellen und Gleitkommazahlen}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\worum
+Auch rechts vom Komma gilt das Stellenwertprinzip: Im Dualsystem \textbf{halbiert} sich der Stellenwert von Stelle zu Stelle ($\frac{1}{2}$, $\frac{1}{4}$, $\frac{1}{8}$, \ldots). Viele Zahlen, die im Dezimalsystem ganz harmlos aussehen (z.\,B. $0{,}1$ oder $0{,}2$), haben im Dualsystem unendlich viele Nachkommastellen. Der Rechner muss sie abschneiden und rechnet deshalb mit kleinen \textbf{Rundungsfehlern}.
+
+Gespeichert werden solche Zahlen als \textbf{Gleitkommazahlen} (floating point), ähnlich der wissenschaftlichen Schreibweise $8{,}3 \cdot 10^7$: ein Vorzeichen, eine Mantisse und ein Exponent zur Basis 2.
+
+\begin{merke}
+\begin{itemize}[itemsep=0.1em]
+\item \textbf{Dual $\to$ dezimal:} Stellenwerte $2^{-1} = 0{,}5$, \ $2^{-2} = 0{,}25$, \ $2^{-3} = 0{,}125$, \ $2^{-4} = 0{,}0625$ \ldots\ addieren.
+\item \textbf{Dezimal $\to$ dual:} Vor- und Nachkommateil getrennt umwandeln. Den Nachkommateil immer wieder \textbf{mit 2 multiplizieren}; die Ziffer vor dem Komma ist die nächste Dualziffer (Leserichtung von oben nach unten).
+\item \textbf{IEEE-Format:} Die Mantisse wird auf die Form $1{,}M$ normiert, die führende 1 wird nicht gespeichert. Zum Exponenten wird ein fester Wert (\emph{Bias}) addiert, damit er ohne Vorzeichen gespeichert werden kann.
+
+\smallskip
+\begin{tabular}{@{}llll@{}}
+\code{float} & 32 Bit: & 1 Bit Vorzeichen, 8 Bit Exponent (Bias 127), & 23 Bit Mantisse \\
+\code{double} & 64 Bit: & 1 Bit Vorzeichen, 11 Bit Exponent (Bias 1023), & 52 Bit Mantisse
+\end{tabular}
+\item Gleitkommazahlen nie mit \code{==} auf exakte Gleichheit prüfen.
+\end{itemize}
+\end{merke}
+
+\beispiele
+\beispiel{Dual nach dezimal}
+\[
+110{,}101_2 = 4 + 2 + 0{,}5 + 0{,}125 = 6{,}625_{10}
+\]
+
+\beispiel{Dezimal nach dual}
+Gesucht ist $13{,}6875_{10}$. Der Vorkommateil ist $13 = 1101_2$. Für den Nachkommateil:
+\[
+\begin{array}{r@{\;\cdot\;2\;=\;}l@{\quad\to\quad}c}
+0{,}6875 & \mathbf{1}{,}375 & \mathbf{1} \\
+0{,}375 & \mathbf{0}{,}75 & \mathbf{0} \\
+0{,}75 & \mathbf{1}{,}5 & \mathbf{1} \\
+0{,}5 & \mathbf{1}{,}0 & \mathbf{1}
+\end{array}
+\qquad\Longrightarrow\qquad 13{,}6875_{10} = 1101{,}1011_2
+\]
+
+\beispiel{Eine Zahl, die nicht aufgeht}
+Bei $0{,}2$ wiederholt sich die Rechnung nach vier Schritten: $0{,}2 \to 0{,}4 \to 0{,}8 \to 1{,}6 \to 1{,}2 \to 0{,}4 \to \ldots$\\
+Es entsteht der periodische Dualbruch $0{,}2_{10} = 0{,}0011\,0011\,0011\ldots_2$. Das hat Folgen in Java:
+\begin{javacode}[Ausschnitt]{Rundungsfehler}
+double d = 0.1 + 0.2;
+System.out.println(d);                            // 0.30000000000000004
+System.out.println(d == 0.3);                     // false
+System.out.println(Math.abs(d - 0.3) < 1e-9);     // true: Vergleich mit Toleranz
+\end{javacode}
+
+\beispiel{Eine Zahl im IEEE-Format (float)}
+Gesucht ist die Darstellung von $5{,}75$.
+\begin{enumerate}[itemsep=0.1em]
+\item Umwandeln: $5{,}75_{10} = 101{,}11_2$.
+\item Normieren: $101{,}11_2 = 1{,}0111_2 \cdot 2^2$. Die Mantisse (ohne die führende 1) ist $0111$, der Exponent 2.
+\item Bias addieren: $2 + 127 = 129 = 1000\,0001_2$.
+\item Zusammensetzen: Vorzeichen \code{0}, \ Exponent \code{10000001}, \ Mantisse \code{01110000000000000000000}.
+\end{enumerate}
+
+\aufgaben
+\aufgabe{Dual nach dezimal}
+\begin{multicols}{4}
+\begin{enumerate}[label=\alph*)]
+\item $1{,}1_2$
+\item $0{,}00111_2$
+\item $1011{,}0101_2$
+\item $101001{,}10001_2$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Dezimal nach dual}
+\begin{multicols}{4}
+\begin{enumerate}[label=\alph*)]
+\item $8{,}75_{10}$
+\item $199{,}375_{10}$
+\item $2{,}83984375_{10}$
+\item $52{,}58984375_{10}$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Endlich oder unendlich?}
+\begin{enumerate}[label=\alph*)]
+\item Wandeln Sie $0{,}1_{10}$ in eine Dualzahl um, bis Sie die Periode erkennen.
+\item Welche der Zahlen $0{,}5$; \ $0{,}3$; \ $0{,}375$; \ $0{,}8125$ und $0{,}7$ lassen sich im Dualsystem mit endlich vielen Stellen darstellen? Formulieren Sie eine Regel.
+\end{enumerate}
+
+\aufgabe[\K]{Programmverständnis}
+Wie lautet die Ausgabe des folgenden Programmausschnitts? Erläutern Sie Ihre Antwort kurz. Wie müsste der Vergleich aussehen, damit er das erwartete Ergebnis liefert?
+\begin{javacode}[Ausschnitt]{Vergleich}
+double a = 0.1;
+double b = a * 3;
+System.out.println(b == 0.3);
+\end{javacode}
+
+\aufgabe[\S]{IEEE-Format}
+\begin{enumerate}[label=\alph*)]
+\item Stellen Sie die Zahlen $-0{,}625$ und $20{,}5$ im IEEE-Format als \code{float} dar.
+\item Welche Dezimalzahl stellt das folgende \code{float}-Bitmuster dar?
+\begin{center}
+\code{0 \ 10000010 \ 01000000000000000000000}
+\end{center}
+\item Warum speichert man die führende 1 der Mantisse nicht mit ab?
+\end{enumerate}
+
+\ueben
+\aufgabe{Dual nach dezimal}
+\begin{multicols}{3}
+\begin{enumerate}[label=\alph*)]
+\item $0{,}1_2$
+\item $0{,}01_2$
+\item $0{,}11_2$
+\item $10{,}101_2$
+\item $111{,}111_2$
+\item $1000{,}0001_2$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Dezimal nach dual}
+\begin{multicols}{3}
+\begin{enumerate}[label=\alph*)]
+\item $0{,}5_{10}$
+\item $0{,}75_{10}$
+\item $3{,}125_{10}$
+\item $10{,}625_{10}$
+\item $25{,}25_{10}$
+\item $0{,}3_{10}$ (8 Nachkommastellen)
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Normieren}
+Bringen Sie die Dualzahlen auf die Form $1{,}M \cdot 2^E$ und geben Sie die Mantisse $M$, den Exponenten $E$ und den gespeicherten Exponenten (mit Bias 127) an.
+\begin{multicols}{3}
+\begin{enumerate}[label=\alph*)]
+\item $1101{,}01_2$
+\item $0{,}00101_2$
+\item $1{,}0_2$
+\end{enumerate}
+\end{multicols}
+
+\aufgabe{Vergleiche}
+Überlegen Sie zuerst, ob die Vergleiche \code{true} oder \code{false} liefern, und prüfen Sie dann am Rechner. Woran liegt es, dass der erste Vergleich zuverlässig funktioniert?
+\begin{javacode}[Ausschnitt]{Vergleiche}
+System.out.println(0.5 + 0.25 == 0.75);
+System.out.println(0.1 + 0.1 + 0.1 == 0.3);
+System.out.println(0.1 + 0.7 == 0.8);
+\end{javacode}
