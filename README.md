@@ -16,10 +16,10 @@ Lösungen sind in diesem Repository nicht enthalten; es gibt sie bei der Übungs
 |---|---|
 | [`pdf/`](pdf) | Alles zum Lesen und Drucken: [`Skript.pdf`](pdf/Skript.pdf) mit allen Kapiteln, in [`pdf/kapitel/`](pdf/kapitel) jedes Kapitel als eigenes PDF, die [Formelsammlung](pdf/formelsammlung.pdf), die [typischen Fehler](pdf/typische-fehler.pdf), in [`pdf/aufgaben/`](pdf/aufgaben) die Aufgabensammlung und in [`pdf/tests/`](pdf/tests) Einstufungstest und Selbsteinschätzungstests. |
 | [`tex/`](tex) | Die LaTeX-Quellen des Skripts: Hauptdatei [`Skript.tex`](tex/Skript.tex), die Kapitel in [`tex/kapitel/`](tex/kapitel), Formelsammlung und typische Fehler, die gemeinsame Präambel und die Stildateien in [`tex/stil/`](tex/stil). Mit `tex/bauen.sh` werden alle PDFs neu erzeugt. |
-| [`java/`](java) | Der Java-Code aus dem Skript als `.java`-Dateien: pro Kapitel ein Ordner, darin pro Beispiel bzw. Aufgabe ein Unterordner mit der Nummer aus dem Skript. Details stehen in [`java/README.md`](java/README.md). |
+| [`java/`](java) | Der Java-Code aus dem Skript als Eclipse-Projekt: in `java/src/` ein Paket pro Beispiel bzw. Aufgabe (z. B. `kapitel12.beispiel04`), absichtlich fehlerhafter Code in `java/fehlersuche/`. Anleitung in [`java/README.md`](java/README.md). |
 | [`werkzeuge/`](werkzeuge) | Hilfsskripte, die den Ordner `java/` aus den LaTeX-Quellen erzeugen und prüfen. |
 
-Die Dateinamen sind überall gleich aufgebaut: Kapitel 12 heißt `12-kontrollstrukturen` – als TeX-Datei, als PDF, als Test und als Java-Ordner.
+Die Dateinamen sind überall gleich aufgebaut: Kapitel 12 heißt `12-kontrollstrukturen` – als TeX-Datei, als PDF und als Test; im Java-Projekt heißt das Paket `kapitel12`.
 
 ## Das ganze Skript
 
@@ -33,7 +33,7 @@ Die Dateinamen sind überall gleich aufgebaut: Kapitel 12 heißt `12-kontrollstr
 
 ## Java-Code
 
-- [java/](java) – alle Java-Beispiele und alle Aufgaben mit Code als lauffähige `.java`-Dateien, nach Kapiteln geordnet
+- [java/](java) – alle Java-Beispiele und alle Aufgaben mit Code als fertiges Eclipse-Projekt, ein Paket pro Beispiel bzw. Aufgabe. Wie man es in Eclipse öffnet, steht in [java/README.md](java/README.md).
 
 ## Die einzelnen Kapitel
 

@@ -1,45 +1,54 @@
 # Java-Code zum Skript
 
-Hier liegt der gesamte Java-Code aus dem Skript als fertige `.java`-Dateien: alle Beispiele und alle Aufgaben, in denen Code vorkommt.
+Hier liegt der gesamte Java-Code aus dem Skript als fertiges **Eclipse-Projekt**: alle Beispiele und alle Aufgaben, in denen Code vorkommt.
+
+## In Eclipse öffnen
+
+1. Repository herunterladen (grüner Knopf *Code → Download ZIP*) und entpacken, oder mit Git klonen.
+2. In Eclipse: *File → Import… → General → Existing Projects into Workspace → Next*.
+3. Bei *Select root directory* den Ordner `java` aus dem Repository auswählen. Das Projekt **gdi_fstud_java** erscheint in der Liste. *Finish*.
+4. Im *Package Explorer* das gewünschte Paket aufklappen, die Klasse mit Rechtsklick anklicken und *Run As → Java Application* wählen.
+
+Das Projekt verwendet das Java, das in Eclipse als Standard eingestellt ist.
 
 ## Aufbau
 
-Pro Kapitel gibt es einen Ordner, darin pro Beispiel bzw. Aufgabe einen Unterordner, z. B.
+Zu jedem Beispiel und jeder Aufgabe mit Code gibt es ein eigenes Paket. Die Nummer im Paketnamen ist die Nummer im Skript:
 
 ```
-java/12-kontrollstrukturen/beispiel-12-04-schreibtischtest-einer-schleife/GgT.java
-java/12-kontrollstrukturen/aufgabe-12-04-was-wird-ausgegeben/TeilA.java
+src/kapitel12/beispiel04/GgT.java      ->  Beispiel 12.4
+src/kapitel12/aufgabe04/TeilA.java     ->  Aufgabe 12.4, Teil a)
+src/kapitel21/klausuraufgabe5/...      ->  Übungsklausur, Aufgabe 5
 ```
 
-Die Nummern entsprechen den Nummern im Skript (Beispiel 12.4, Aufgabe 12.4). Jeder Unterordner ist für sich übersetzbar; Klassen, die ein Beispiel aus einem anderen Beispiel braucht, liegen dort als Kopie. Im Kopf jeder Datei steht, zu welchem Kapitel und welcher Aufgabe sie gehört.
+Im Kopf jeder Datei steht außerdem, zu welchem Kapitel und welcher Aufgabe sie gehört. Klassen, die ein Beispiel aus einem anderen Beispiel braucht, liegen im Paket als Kopie. Eine Liste aller Pakete mit Titeln steht in [UEBERSICHT.md](UEBERSICHT.md).
 
-| Nr. | Kapitel | Beispiele | Aufgaben | Dateien |
-|---:|---|---:|---:|---:|
-| 3 | [Rechnen mit Dualzahlen und Zweierkomplement](03-zweierkomplement) | 1 | 0 | 1 |
-| 4 | [Dualzahlen mit Nachkommastellen und Gleitkommazahlen](04-nachkomma) | 1 | 2 | 3 |
-| 5 | [Codierung von Texten](05-zeichen) | 1 | 0 | 1 |
-| 10 | [Java: Variablen, Datentypen, Ein- und Ausgabe](10-java-grundlagen) | 3 | 4 | 17 |
-| 11 | [Java: Ausdrücke und Operatoren](11-operatoren) | 4 | 7 | 22 |
-| 12 | [Java: Kontrollstrukturen](12-kontrollstrukturen) | 5 | 7 | 23 |
-| 13 | [Java: Arrays und Aufzählungen](13-arrays) | 5 | 3 | 17 |
-| 14 | [Java: Methoden](14-methoden) | 5 | 10 | 17 |
-| 15 | [Rekursion](15-rekursion) | 4 | 11 | 22 |
-| 16 | [Algorithmenentwurf und Komplexität](16-komplexitaet) | 2 | 2 | 9 |
-| 17 | [Objektorientierung I: Klassen und Objekte](17-klassen) | 3 | 3 | 9 |
-| 18 | [Objektorientierung II: Vererbung, Polymorphie, Interfaces](18-vererbung) | 4 | 4 | 31 |
-| 19 | [Strings und Wrapper-Klassen](19-strings-wrapper) | 4 | 6 | 10 |
-| 21 | [Klausurtraining](21-klausurtraining) | 0 | 3 | 6 |
+| Nr. | Kapitel | Beispiele | Aufgaben |
+|---:|---|---:|---:|
+| 3 | [Rechnen mit Dualzahlen und Zweierkomplement](src/kapitel03) | 1 | 0 |
+| 4 | [Dualzahlen mit Nachkommastellen und Gleitkommazahlen](src/kapitel04) | 1 | 2 |
+| 5 | [Codierung von Texten](src/kapitel05) | 1 | 0 |
+| 10 | [Java: Variablen, Datentypen, Ein- und Ausgabe](src/kapitel10) | 3 | 2 |
+| 11 | [Java: Ausdrücke und Operatoren](src/kapitel11) | 4 | 7 |
+| 12 | [Java: Kontrollstrukturen](src/kapitel12) | 5 | 6 |
+| 13 | [Java: Arrays und Aufzählungen](src/kapitel13) | 5 | 2 |
+| 14 | [Java: Methoden](src/kapitel14) | 5 | 7 |
+| 15 | [Rekursion](src/kapitel15) | 4 | 11 |
+| 16 | [Algorithmenentwurf und Komplexität](src/kapitel16) | 2 | 2 |
+| 17 | [Objektorientierung I: Klassen und Objekte](src/kapitel17) | 3 | 2 |
+| 18 | [Objektorientierung II: Vererbung, Polymorphie, Interfaces](src/kapitel18) | 4 | 3 |
+| 19 | [Strings und Wrapper-Klassen](src/kapitel19) | 4 | 6 |
+| 21 | [Klausurtraining](src/kapitel21) | 0 | 3 |
 
-Kapitel ohne Java-Code (z. B. Zahlensysteme, Grammatiken) haben keinen Ordner.
+Kapitel ohne Java-Code (z. B. Zahlensysteme, Grammatiken) haben kein Paket.
 
-## Ausführen
+## Ohne Eclipse
 
-In Eclipse: die Dateien eines Unterordners in ein Java-Projekt kopieren und die Klasse mit der `main`-Methode starten. Auf der Kommandozeile:
+Im Ordner `java` auf der Kommandozeile:
 
 ```bash
-cd java/12-kontrollstrukturen/beispiel-12-04-schreibtischtest-einer-schleife
-javac *.java
-java GgT
+javac -d bin -encoding UTF-8 $(find src -name '*.java')
+java -cp bin kapitel12.beispiel04.GgT
 ```
 
 ## Was gegenüber dem Skript ergänzt wurde
@@ -52,16 +61,16 @@ java GgT
 
 ## Absichtlich fehlerhafter Code
 
-In diesen Aufgaben soll herausgefunden werden, ob und warum sich Code nicht übersetzen oder ausführen lässt. Die Dateien sind deshalb unverändert übernommen und lassen sich nicht (vollständig) übersetzen:
+In einigen Aufgaben soll man herausfinden, ob und warum sich Code nicht übersetzen lässt. Dieser Code liegt im Ordner [`fehlersuche`](fehlersuche), der **nicht** zum Build-Pfad gehört. Eclipse zeigt die Dateien an, meldet aber keine Fehler und blockiert nicht den Rest des Projekts. Wer die Fehlermeldungen sehen will, kopiert eine Datei in ein Paket unter `src`.
 
-- [`10-java-grundlagen/aufgabe-10-03-laesst-sich-das-ausfuehren`](10-java-grundlagen/aufgabe-10-03-laesst-sich-das-ausfuehren)
-- [`10-java-grundlagen/aufgabe-10-09-richtig-deklariert`](10-java-grundlagen/aufgabe-10-09-richtig-deklariert)
-- [`12-kontrollstrukturen/aufgabe-12-12-fehler-finden`](12-kontrollstrukturen/aufgabe-12-12-fehler-finden)
-- [`13-arrays/aufgabe-13-02-laesst-sich-das-ausfuehren`](13-arrays/aufgabe-13-02-laesst-sich-das-ausfuehren)
-- [`14-methoden/aufgabe-14-03-ueberladen`](14-methoden/aufgabe-14-03-ueberladen)
-- [`14-methoden/aufgabe-14-09-sichtbar-oder-nicht`](14-methoden/aufgabe-14-09-sichtbar-oder-nicht)
-- [`14-methoden/aufgabe-14-12-fehler-finden`](14-methoden/aufgabe-14-12-fehler-finden)
-- [`17-klassen/aufgabe-17-04-fehler-finden`](17-klassen/aufgabe-17-04-fehler-finden)
-- [`18-vererbung/aufgabe-18-03-erlaubt-oder-nicht`](18-vererbung/aufgabe-18-03-erlaubt-oder-nicht)
+- [`kapitel10.aufgabe03`](fehlersuche/kapitel10/aufgabe03) – Aufgabe 10.3
+- [`kapitel10.aufgabe09`](fehlersuche/kapitel10/aufgabe09) – Aufgabe 10.9
+- [`kapitel12.aufgabe12`](fehlersuche/kapitel12/aufgabe12) – Aufgabe 12.12
+- [`kapitel13.aufgabe02`](fehlersuche/kapitel13/aufgabe02) – Aufgabe 13.2
+- [`kapitel14.aufgabe03`](fehlersuche/kapitel14/aufgabe03) – Aufgabe 14.3
+- [`kapitel14.aufgabe09`](fehlersuche/kapitel14/aufgabe09) – Aufgabe 14.9
+- [`kapitel14.aufgabe12`](fehlersuche/kapitel14/aufgabe12) – Aufgabe 14.12
+- [`kapitel17.aufgabe04`](fehlersuche/kapitel17/aufgabe04) – Aufgabe 17.4
+- [`kapitel18.aufgabe03`](fehlersuche/kapitel18/aufgabe03) – Aufgabe 18.3
 
 Bei einigen weiteren Aufgaben endet das Programm absichtlich mit einem Laufzeitfehler (z. B. Aufgabe 15.11).

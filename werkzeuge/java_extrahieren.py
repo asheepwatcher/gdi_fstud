@@ -2,11 +2,15 @@
 # Zieht alle javacode-Blöcke aus tex/kapitel/*.tex und legt sie als übersetzbare
 # Java-Dateien im Ordner java/ ab (ein Unterordner pro Beispiel bzw. Aufgabe).
 # Ergänzungen und Sonderfälle (fehlende Variablen, main-Methoden, Vorlagen) stehen in ovr.py.
+# Ergebnis ist ein Eclipse-Projekt: java/src/kapitelNN/<paket>/*.java, absichtlich fehlerhafter
+# Code liegt in java/fehlersuche/ (nicht im Build-Pfad).
 # Aufruf:  python3 werkzeuge/java_extrahieren.py      danach:  werkzeuge/java_pruefen.sh
 import re, os, sys, glob, json, shutil, unicodedata
 HIER=os.path.dirname(os.path.abspath(__file__))
 SRC=os.path.join(HIER,'..','tex','kapitel')
-OUT=sys.argv[1] if len(sys.argv)>1 else os.path.join(HIER,'..','java')
+FINAL=sys.argv[1] if len(sys.argv)>1 else os.path.join(HIER,'..','java')
+import tempfile
+OUT=tempfile.mkdtemp()   # erst flach erzeugen, am Ende in die Eclipse-Struktur umsetzen
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 import ovr
 OVR0=ovr.OVR
@@ -58,7 +62,6 @@ groups={}
 for b in blocks:
     key=(b['base'],b['kind'],b['num'])
     groups.setdefault(key,[]).append(b)
-for alt in glob.glob(os.path.join(OUT,'[0-9][0-9]-*')): shutil.rmtree(alt)
 index=[]
 def header(b,extra=None):
     k={'beispiel':'Beispiel %d.%d'%(b['chap'],b['num']),'aufgabe':'Aufgabe %d.%d'%(b['chap'],b['num']),'klausur':'Übungsklausur, Aufgabe %d'%b['num'],'einfuehrung':'Einführung'}[b['kind']]
@@ -196,3 +199,78 @@ for dname,(tit,kap,text) in ovr.EXTRA.items():
     open(os.path.join(d,'Programmverstaendnis.java'),'w',encoding='utf8').write('// '+kap+'\n// '+tit+'\n'+''.join('// '+x+'\n' for x in ovr.PVNOTE)+'\n'+text)
 print(len(blocks),'Blöcke,',len(groups),'Ordner,',sum(len(x['files']) for x in index),'Dateien')
 from collections import Counter; print(Counter(x['cls'] for x in index))
+
+# ---------------------------------------------------------------------------
+# Umsetzen in die Eclipse-Struktur
+def paketname(sub):
+    for muster, vorsilbe in ((r'beispiel-\d+-(\d+)', 'beispiel'), (r'aufgabe-\d+-(\d+)', 'aufgabe'), (r'klausuraufgabe-(\d+)', 'klausuraufgabe')):
+        m = re.match(muster, sub)
+        if m: return vorsilbe + m.group(1)
+    return sub.replace('-', '')
+for alt in ['src', 'fehlersuche'] + [os.path.basename(x) for x in glob.glob(os.path.join(FINAL, '[0-9][0-9]-*'))]:
+    if os.path.isdir(os.path.join(FINAL, alt)): shutil.rmtree(os.path.join(FINAL, alt))
+eintraege = []
+for kapdir in sorted(os.listdir(OUT)):
+    if not re.match(r'\d\d-', kapdir): continue
+    kap = 'kapitel' + kapdir[:2]
+    for sub in sorted(os.listdir(os.path.join(OUT, kapdir))):
+        quelle = os.path.join(OUT, kapdir, sub)
+        paket = paketname(sub)
+        fehler = any((kapdir + '/' + sub).startswith(e) for e in ovr.ERRDIRS)
+        ziel = os.path.join(FINAL, 'fehlersuche' if fehler else 'src', kap, paket)
+        os.makedirs(ziel, exist_ok=True)
+        titel = ''; klassen = []
+        for datei in sorted(glob.glob(os.path.join(quelle, '*.java'))):
+            zeilen = open(datei, encoding='utf8').read().split('\n')
+            i = 0
+            while i < len(zeilen) and (zeilen[i].startswith('//') or zeilen[i].strip() == ''): i += 1
+            kopf = [z for z in zeilen[:i] if z.strip()]
+            if not titel and len(kopf) > 1: titel = kopf[1][3:]
+            text = '\n'.join(kopf) + '\n\npackage %s.%s;\n\n' % (kap, paket) + '\n'.join(zeilen[i:])
+            open(os.path.join(ziel, os.path.basename(datei)), 'w', encoding='utf8').write(text)
+            klassen.append(os.path.basename(datei)[:-5])
+        eintraege.append((kap, paket, titel, klassen, fehler))
+shutil.rmtree(OUT)
+
+# Eclipse-Projektdateien
+open(os.path.join(FINAL, '.project'), 'w').write("""<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>gdi_fstud_java</name>
+	<comment>Java-Code zum GDI-Kompaktskript</comment>
+	<projects></projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments></arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+</projectDescription>
+""")
+open(os.path.join(FINAL, '.classpath'), 'w').write("""<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
+""")
+os.makedirs(os.path.join(FINAL, '.settings'), exist_ok=True)
+open(os.path.join(FINAL, '.settings', 'org.eclipse.core.resources.prefs'), 'w').write("eclipse.preferences.version=1\nencoding/<project>=UTF-8\n")
+
+# Übersicht für die README
+kapiteltitel = {}
+for f in glob.glob(os.path.join(SRC, '[0-9][0-9]-*.tex')):
+    m = re.search(r'^\\section\{([^}]*)\}', open(f, encoding='utf8').read(), re.M)
+    if m: kapiteltitel['kapitel' + os.path.basename(f)[:2]] = detex(m.group(1))
+zeilen = []
+letztes = None
+for kap, paket, titel, klassen, fehler in eintraege:
+    if kap != letztes:
+        zeilen.append('\n### %s: %s\n\n| Paket | Im Skript | Klassen |\n|---|---|---|' % (kap, kapiteltitel.get(kap, '')))
+        letztes = kap
+    ort = 'fehlersuche' if fehler else 'src'
+    zeilen.append('| [`%s.%s`](%s/%s/%s) | %s%s | %s |' % (kap, paket, ort, kap, paket, titel.replace('|', '\\|'), ' (Fehlersuche)' if fehler else '', ', '.join('`%s`' % k for k in klassen)))
+open(os.path.join(FINAL, 'UEBERSICHT.md'), 'w', encoding='utf8').write('# Übersicht aller Pakete\n\nZu jedem Beispiel und jeder Aufgabe mit Code gibt es ein eigenes Paket. Die Nummer im Paketnamen ist die Nummer im Skript: `kapitel12.beispiel04` gehört zu Beispiel 12.4.\n' + '\n'.join(zeilen) + '\n')
+print(len(eintraege), 'Pakete,', sum(1 for e in eintraege if e[4]), 'davon Fehlersuche')
